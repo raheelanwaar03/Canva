@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PackageController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -39,6 +40,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/team', function () {
         return "Team Page (Coming in Module 2)";
     })->name('team');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/packages', [PackageController::class, 'index'])->name('packages.index');
+    Route::get('/packages/{package}/checkout', [PackageController::class, 'checkout'])->name('packages.checkout');
+    Route::post('/packages/{package}/submit-payment', [PackageController::class, 'submitPayment'])->name('packages.submitPayment');
 });
 
 
