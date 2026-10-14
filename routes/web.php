@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\PackageController;
 
 Route::get('/', function () {
@@ -49,6 +50,18 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::get('/upgrade', [PackageController::class, 'index'])->name('packages.upgrade');
+
+
+// Tasks
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+    Route::get('/tasks/{task}/view', [TaskController::class, 'view'])->name('tasks.view');
+    Route::post('/tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
+});
+
+
+
 
 // Admin Routes
 
