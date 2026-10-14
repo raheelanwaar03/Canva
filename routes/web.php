@@ -50,6 +50,16 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('/upgrade', [PackageController::class, 'index'])->name('packages.upgrade');
 
+// Admin Routes
+
+use App\Http\Controllers\Admin\PaymentApprovalController;
+
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/payments', [PaymentApprovalController::class, 'index'])->name('payments.index');
+    Route::post('/payments/{payment}/approve', [PaymentApprovalController::class, 'approve'])->name('payments.approve');
+    Route::post('/payments/{payment}/reject', [PaymentApprovalController::class, 'reject'])->name('payments.reject');
+});
+
 
 
 require __DIR__ . '/auth.php';
