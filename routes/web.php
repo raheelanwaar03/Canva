@@ -48,6 +48,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/packages/{package}/submit-payment', [PackageController::class, 'submitPayment'])->name('packages.submitPayment');
 });
 
+Route::get('/upgrade', [PackageController::class, 'index'])->name('packages.upgrade');
+
 
 
 require __DIR__ . '/auth.php';
