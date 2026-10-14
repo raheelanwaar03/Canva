@@ -4,6 +4,11 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\Admin\PaymentApprovalController;
+use App\Http\Controllers\WithdrawalController;
+use App\Http\Controllers\TeamController;
+use App\Http\Controllers\Admin\WithdrawalApprovalController;
+use App\Models\Withdrawal;
 
 Route::get('/', function () {
     return view('welcome');
@@ -61,11 +66,43 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
+// withdrawal routes
+
+Route::middleware(['auth'])->group(function () {
+    // Wallet
+    Route::get('/wallet', function () {
+        $user = auth()->user();
+        $wallet = $user->wallet;
+        $withdrawals = Withdrawal::where('user_id', $user->id)->latest()->take(10)->get();
+
+        $approvedWithdrawTotal = Withdrawal::where('user_id', $user->id)->where('status', 'approved')->sum('amount');
+        $pendingWithdrawTotal = Withdrawal::where('user_id', $user->id)->where('status', 'pending')->sum('amount');
+        $rejectedWithdrawTotal = Withdrawal::where('user_id', $user->id)->where('status', 'rejected')->sum('amount');
+
+        return view('wallet', compact('wallet', 'withdrawals', 'approvedWithdrawTotal', 'pendingWithdrawTotal', 'rejectedWithdrawTotal'));
+    })->name('wallet');
+
+    // Withdrawals
+    Route::get('/withdraw', [WithdrawalController::class, 'create'])->name('withdraw.create');
+    Route::post('/withdraw', [WithdrawalController::class, 'store'])->name('withdraw.store');
+
+    // Team
+    Route::get('/team', [TeamController::class, 'index'])->name('team');
+});
 
 
-// Admin Routes
 
-use App\Http\Controllers\Admin\PaymentApprovalController;
+
+                                // Admin Routes
+
+
+
+// Admin Withdrawals
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/withdrawals', [WithdrawalApprovalController::class, 'index'])->name('withdrawals.index');
+    Route::post('/withdrawals/{withdrawal}/approve', [WithdrawalApprovalController::class, 'approve'])->name('withdrawals.approve');
+    Route::post('/withdrawals/{withdrawal}/reject', [WithdrawalApprovalController::class, 'reject'])->name('withdrawals.reject');
+});
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/payments', [PaymentApprovalController::class, 'index'])->name('payments.index');
