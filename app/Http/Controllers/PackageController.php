@@ -17,13 +17,29 @@ class PackageController extends Controller
         return view('packages.index', compact('packages', 'activePackage'));
     }
 
-    // Checkout / Payment submission form
     public function checkout(Package $package)
     {
-        return view('packages.checkout', compact('package'));
+        $activeSub = auth()->user()?->activePackage;
+
+        $isUpgrade = false;
+        $amountToPay = $package->price;
+
+        if ($activeSub) {
+            if ($package->id === $activeSub->package_id) {
+                return redirect()->route('packages.index')->with('error', 'You already have this plan active.');
+            }
+
+            if ($package->price < $activeSub->package->price) {
+                return redirect()->route('packages.index')->with('error', 'Downgrades are not permitted.');
+            }
+
+            $isUpgrade = true;
+            $amountToPay = $package->price - $activeSub->package->price;
+        }
+
+        return view('packages.checkout', compact('package', 'isUpgrade', 'amountToPay'));
     }
 
-    // Store manual payment proof
     public function submitPayment(Request $request, Package $package)
     {
         $request->validate([
@@ -33,6 +49,17 @@ class PackageController extends Controller
             'screenshot' => ['nullable', 'image', 'max:4096'],
         ]);
 
+        $activeSub = auth()->user()?->activePackage;
+        $isUpgrade = false;
+        $amountToPay = $package->price;
+
+        if ($activeSub) {
+            if ($package->price > $activeSub->package->price) {
+                $isUpgrade = true;
+                $amountToPay = $package->price - $activeSub->package->price;
+            }
+        }
+
         $screenshotPath = null;
         if ($request->hasFile('screenshot')) {
             $screenshotPath = $request->file('screenshot')->store('payments', 'public');
@@ -41,15 +68,19 @@ class PackageController extends Controller
         PackagePayment::create([
             'user_id' => auth()->id(),
             'package_id' => $package->id,
-            'amount' => $package->price,
+            'amount' => $amountToPay,
             'payment_method' => $request->payment_method,
             'sender_number' => $request->sender_number,
             'trx_id' => $request->trx_id,
             'screenshot' => $screenshotPath,
-            'type' => 'new',
+            'type' => $isUpgrade ? 'upgrade' : 'new',
             'status' => 'pending',
         ]);
 
-        return redirect()->route('dashboard')->with('status', 'Payment submitted successfully! Admin will verify and activate your package soon.');
+        $msg = $isUpgrade
+            ? 'Upgrade payment submitted! Admin will verify and upgrade your plan.'
+            : 'Payment submitted successfully! Admin will verify and activate your package soon.';
+
+        return redirect()->route('dashboard')->with('status', $msg);
     }
 }

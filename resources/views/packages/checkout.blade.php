@@ -6,13 +6,26 @@
 
 @section('content')
     <div class="space-y-4 pt-1">
-
+    
         <!-- Plan Summary Header -->
-        <div class="glass-card-item rounded-2xl p-4 text-center">
+    <div class="glass-card-item rounded-2xl p-4 text-center">
+        @if(isset($isUpgrade) && $isUpgrade)
+            <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                Plan Upgrade
+            </span>
+            <h2 class="text-xl font-black text-slate-900 mt-1">Upgrade to {{ $package->name }}</h2>
+            <div class="text-2xl font-black text-indigo-600 mt-1">
+                Rs {{ number_format($amountToPay, 0) }}
+            </div>
+            <span class="text-[10px] text-slate-400 block mt-0.5">Price difference payable</span>
+        @else
             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Activating Package</span>
-            <h2 class="text-xl font-black text-slate-900">{{ $package->name }} Plan</h2>
-            <div class="text-2xl font-black text-indigo-600 mt-1">Rs {{ number_format($package->price, 0) }}</div>
-        </div>
+            <h2 class="text-xl font-black text-slate-900 mt-1">{{ $package->name }} Plan</h2>
+            <div class="text-2xl font-black text-indigo-600 mt-1">
+                Rs {{ number_format($package->price, 0) }}
+            </div>
+        @endif
+    </div>
 
         <!-- Admin Payment Account Information Box -->
         <div class="ref-gradient-card rounded-2xl p-4 text-white shadow-md space-y-2">

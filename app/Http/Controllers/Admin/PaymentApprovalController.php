@@ -41,10 +41,16 @@ class PaymentApprovalController extends Controller
                 'reviewed_at' => $now,
             ]);
 
-            // 2. Expire any previous active package for this user
-            UserPackage::where('user_id', $user->id)
+            // 2. Find previous active package (to calculate upgrade commission difference if any)
+            $previousSub = UserPackage::with('package')
+                ->where('user_id', $user->id)
                 ->where('status', 'active')
-                ->update(['status' => 'upgraded']);
+                ->first();
+
+            // Expire previous subscription
+            if ($previousSub) {
+                $previousSub->update(['status' => 'upgraded']);
+            }
 
             // 3. Activate new package for 30 days
             UserPackage::create([
@@ -55,22 +61,32 @@ class PaymentApprovalController extends Controller
                 'status' => 'active',
             ]);
 
-            // 4. Distribute Referral Commission to Direct Referrer (if exists)
-            if ($user->referred_by && $package->referral_commission > 0) {
-                $referrerWallet = Wallet::where('user_id', $user->referred_by)->lockForUpdate()->first();
-                if ($referrerWallet) {
-                    $comm = $package->referral_commission;
-                    $referrerWallet->increment('referral_earnings', $comm);
-                    $referrerWallet->increment('withdrawable_balance', $comm);
+            // 4. Distribute Referral Commission to Direct Referrer
+            if ($user->referred_by) {
+                $commission = $package->referral_commission;
 
-                    Transaction::create([
-                        'user_id' => $user->referred_by,
-                        'amount' => $comm,
-                        'type' => 'referral_bonus',
-                        'balance_type' => 'credit',
-                        'description' => "Referral bonus from {$user->name} ({$package->name} plan)",
-                        'reference_id' => $payment->id,
-                    ]);
+                // If it's an upgrade, award only the commission difference
+                if ($payment->type === 'upgrade' && $previousSub && $previousSub->package) {
+                    $commission = max(0, $package->referral_commission - $previousSub->package->referral_commission);
+                }
+
+                if ($commission > 0) {
+                    $referrerWallet = Wallet::where('user_id', $user->referred_by)->lockForUpdate()->first();
+                    if ($referrerWallet) {
+                        $referrerWallet->increment('referral_earnings', $commission);
+                        $referrerWallet->increment('withdrawable_balance', $commission);
+
+                        Transaction::create([
+                            'user_id' => $user->referred_by,
+                            'amount' => $commission,
+                            'type' => 'referral_bonus',
+                            'balance_type' => 'credit',
+                            'description' => $payment->type === 'upgrade'
+                                ? "Upgrade referral commission from {$user->name} ({$package->name})"
+                                : "Referral bonus from {$user->name} ({$package->name} plan)",
+                            'reference_id' => $payment->id,
+                        ]);
+                    }
                 }
             }
         });
