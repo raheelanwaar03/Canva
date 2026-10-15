@@ -15,6 +15,14 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (!auth()->check()) {
+            return redirect()->route('login');
+        }
+
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized. Access restricted to Canva ADS administrators.');
+        }
+
         return $next($request);
     }
 }

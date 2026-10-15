@@ -15,6 +15,16 @@ class IsUser
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (!auth()->check()) {
+            return redirect()->route('login');
+        }
+
+        // Banned check security rule
+        if (auth()->user()->status === 'banned') {
+            auth()->logout();
+            return redirect()->route('login')->withErrors(['email' => 'Your account has been suspended. Please contact support.']);
+        }
+
         return $next($request);
     }
 }
