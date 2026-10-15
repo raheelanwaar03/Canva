@@ -27,6 +27,7 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
         $request->session()->regenerate();
 
+        // Instant role-based landing:
         if ($request->user()->role === 'admin') {
             return redirect()->intended(route('admin.dashboard'));
         }

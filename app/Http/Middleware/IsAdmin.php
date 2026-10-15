@@ -8,19 +8,15 @@ use Symfony\Component\HttpFoundation\Response;
 
 class IsAdmin
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  Closure(Request): (Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
         if (!auth()->check()) {
             return redirect()->route('login');
         }
 
+        // If user is NOT an admin, block them completely
         if (auth()->user()->role !== 'admin') {
-            abort(403, 'Unauthorized. Access restricted to Canva ADS administrators.');
+            abort(403, 'Access denied. You do not have administrator permissions.');
         }
 
         return $next($request);
