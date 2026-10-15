@@ -12,7 +12,15 @@ class WithdrawalController extends Controller
 {
     public function create()
     {
-        $wallet = auth()->user()->wallet;
+        $user = auth()->user();
+        $wallet = $user->wallet ?: $user->wallet()->create([
+            'main_balance' => 0.00,
+            'task_earnings' => 0.00,
+            'referral_earnings' => 0.00,
+            'staff_earnings' => 0.00,
+            'withdrawable_balance' => 0.00,
+        ]);
+
         return view('withdraw', compact('wallet'));
     }
 

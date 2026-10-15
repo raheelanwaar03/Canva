@@ -1,12 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PaymentApprovalController;
 use App\Http\Controllers\Admin\WithdrawalApprovalController;
 use App\Http\Controllers\Admin\PackageManagementController;
 use App\Http\Controllers\Admin\TaskManagementController;
 
-// All routes here are automatically prefixed with /admin and protected by is_admin middleware
+// Main Admin Dashboard
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
 // Payment Approvals
 Route::get('/payments', [PaymentApprovalController::class, 'index'])->name('payments.index');

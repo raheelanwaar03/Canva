@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Canva ADS</title>
 
+    <!-- Canva ADS Dynamic SVG Favicon -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%2300c6ff'/><stop offset='50%25' stop-color='%230072ff'/><stop offset='100%25' stop-color='%239b51e0'/></linearGradient></defs><circle cx='50' cy='50' r='48' fill='url(%23g)' stroke='%23ffffff' stroke-width='4'/><text x='50' y='52' font-family='Arial, sans-serif' font-weight='900' font-size='22' font-style='italic' fill='%23ffffff' text-anchor='middle'>Canva</text><text x='50' y='72' font-family='Arial, sans-serif' font-weight='900' font-size='13' letter-spacing='2' fill='%23ffffff' text-anchor='middle'>ADS</text></svg>">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <!-- Tailwind Play CDN (Guarantees zero build/asset errors) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -33,6 +39,7 @@
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
+
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: #eef5ff;
@@ -61,6 +68,7 @@
             box-shadow: 0 10px 24px -4px rgba(79, 70, 229, 0.08), 0 4px 8px -2px rgba(0, 0, 0, 0.03);
             transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
+
         .glass-card-item:active {
             transform: scale(0.97);
         }
@@ -94,35 +102,42 @@
         }
     </style>
 </head>
+
 <body class="wave-background flex justify-center items-start min-h-screen">
 
     <!-- Mobile Shell: Centers on desktop, exact 100% width on phone -->
-    <div class="w-full max-w-[430px] min-h-screen relative flex flex-col justify-between pb-24 shadow-2xl bg-white/30 backdrop-blur-sm">
+    <div
+        class="w-full max-w-[430px] min-h-screen relative flex flex-col justify-between pb-24 shadow-2xl bg-white/30 backdrop-blur-sm">
 
         <!-- Top Header Bar -->
         <header class="px-5 pt-6 pb-2 flex items-center justify-between z-20">
-            @if(request()->routeIs('dashboard'))
+            @if (request()->routeIs('dashboard'))
                 <h1 class="text-2xl font-extrabold tracking-tight text-slate-900">Dashboard</h1>
                 <div class="flex items-center space-x-3">
-                    <button class="w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-slate-700 relative">
+                    <button
+                        class="w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-slate-700 relative">
                         <i class="fa-solid fa-bell text-base"></i>
-                        <span class="absolute top-2 right-2 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white"></span>
+                        <span
+                            class="absolute top-2 right-2 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white"></span>
                     </button>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-rose-500 hover:bg-rose-50">
+                        <button type="submit"
+                            class="w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-rose-500 hover:bg-rose-50">
                             <i class="fa-solid fa-arrow-right-from-bracket text-base"></i>
                         </button>
                     </form>
                 </div>
             @else
-                <button onclick="window.history.back()" class="w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-slate-700">
+                <button onclick="window.history.back()"
+                    class="w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-slate-700">
                     <i class="fa-solid fa-chevron-left text-sm"></i>
                 </button>
                 <span class="font-bold text-slate-900 text-lg">{{ $headerTitle ?? 'Canva ADS' }}</span>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-rose-500 hover:bg-rose-50">
+                    <button type="submit"
+                        class="w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-rose-500 hover:bg-rose-50">
                         <i class="fa-solid fa-arrow-right-from-bracket text-base"></i>
                     </button>
                 </form>
@@ -135,8 +150,10 @@
         </main>
 
         <!-- Bottom Navigation Bar -->
-        <nav class="fixed bottom-3 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[398px] bottom-nav-glass rounded-3xl py-2 px-3 flex justify-between items-center z-30">
-            <a href="{{ route('dashboard') }}" class="flex flex-col items-center py-1 px-3 {{ request()->routeIs('dashboard') ? 'text-indigo-600 font-extrabold' : 'text-slate-400' }}">
+        <nav
+            class="fixed bottom-3 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[398px] bottom-nav-glass rounded-3xl py-2 px-3 flex justify-between items-center z-30">
+            <a href="{{ route('dashboard') }}"
+                class="flex flex-col items-center py-1 px-3 {{ request()->routeIs('dashboard') ? 'text-indigo-600 font-extrabold' : 'text-slate-400' }}">
                 <i class="fa-solid fa-house text-lg"></i>
                 <span class="text-[10px] mt-0.5">Dashboard</span>
             </a>
@@ -144,15 +161,18 @@
                 <i class="fa-regular fa-bell text-lg"></i>
                 <span class="text-[10px] mt-0.5">Notifications</span>
             </a>
-            <a href="{{ route('tasks.index') }}" class="flex flex-col items-center py-1 px-3 {{ request()->routeIs('tasks.*') ? 'text-indigo-600 font-extrabold' : 'text-slate-400' }}">
+            <a href="{{ route('tasks.index') }}"
+                class="flex flex-col items-center py-1 px-3 {{ request()->routeIs('tasks.*') ? 'text-indigo-600 font-extrabold' : 'text-slate-400' }}">
                 <i class="fa-solid fa-clipboard-check text-lg"></i>
                 <span class="text-[10px] mt-0.5">Tasks</span>
             </a>
-            <a href="{{ route('wallet') }}" class="flex flex-col items-center py-1 px-3 {{ request()->routeIs('wallet') ? 'text-indigo-600 font-extrabold' : 'text-slate-400' }}">
+            <a href="{{ route('wallet') }}"
+                class="flex flex-col items-center py-1 px-3 {{ request()->routeIs('wallet') ? 'text-indigo-600 font-extrabold' : 'text-slate-400' }}">
                 <i class="fa-solid fa-wallet text-lg"></i>
                 <span class="text-[10px] mt-0.5">Wallet</span>
             </a>
-            <a href="{{ route('profile.edit') }}" class="flex flex-col items-center py-1 px-3 {{ request()->routeIs('profile.*') ? 'text-indigo-600 font-extrabold' : 'text-slate-400' }}">
+            <a href="{{ route('profile.edit') }}"
+                class="flex flex-col items-center py-1 px-3 {{ request()->routeIs('profile.*') ? 'text-indigo-600 font-extrabold' : 'text-slate-400' }}">
                 <i class="fa-regular fa-user text-lg"></i>
                 <span class="text-[10px] mt-0.5">Account</span>
             </a>
@@ -161,4 +181,5 @@
 
     @stack('scripts')
 </body>
+
 </html>

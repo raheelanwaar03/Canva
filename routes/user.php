@@ -17,7 +17,16 @@ Route::get('/dashboard', function () {
 // Wallet
 Route::get('/wallet', function () {
     $user = auth()->user();
-    $wallet = $user->wallet;
+
+    // Auto-create wallet if missing (e.g. for admin accounts)
+    $wallet = $user->wallet ?: $user->wallet()->create([
+        'main_balance' => 0.00,
+        'task_earnings' => 0.00,
+        'referral_earnings' => 0.00,
+        'staff_earnings' => 0.00,
+        'withdrawable_balance' => 0.00,
+    ]);
+
     $withdrawals = Withdrawal::where('user_id', $user->id)->latest()->take(10)->get();
 
     $approvedWithdrawTotal = Withdrawal::where('user_id', $user->id)->where('status', 'approved')->sum('amount');
