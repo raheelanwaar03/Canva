@@ -7,6 +7,8 @@ use App\Http\Controllers\WithdrawalController;
 use App\Http\Controllers\TeamController;
 use App\Models\Withdrawal;
 use App\Http\Controllers\ProfileController;
+use App\Models\Transaction;
+use App\Models\TaskLog;
 
 // Dashboard
 Route::get('/dashboard', function () {
@@ -60,3 +62,26 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// rewards
+Route::get('/rewards', function () {
+    $user = auth()->user();
+    $wallet = $user->wallet ?: $user->wallet()->create([
+        'main_balance' => 0.00,
+        'task_earnings' => 0.00,
+        'referral_earnings' => 0.00,
+        'staff_earnings' => 0.00,
+        'withdrawable_balance' => 0.00,
+    ]);
+
+    // Total ads completed count
+    $totalAdsCompleted = TaskLog::where('user_id', $user->id)->count();
+
+    // Reward transactions feed (Task rewards + Referral bonuses)
+    $rewardTransactions = Transaction::where('user_id', $user->id)
+        ->whereIn('type', ['task_reward', 'referral_bonus'])
+        ->latest()
+        ->paginate(15);
+
+    return view('rewards', compact('wallet', 'totalAdsCompleted', 'rewardTransactions'));
+})->name('rewards');

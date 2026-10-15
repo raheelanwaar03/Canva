@@ -83,7 +83,7 @@
             </a>
 
             <!-- 4. Rewards (Links to Wallet Ledger / Breakdown) -->
-            <a href="{{ route('wallet') }}" class="glass-card-item rounded-2xl p-3 flex items-center justify-between">
+            <a href="{{ route('rewards') }}" class="glass-card-item rounded-2xl p-3 flex items-center justify-between">
                 <div class="flex items-center space-x-2.5">
                     <div class="icon-box-3d bg-gradient-to-tr from-pink-400 to-rose-500 text-white">
                         <i class="fa-solid fa-gift text-base"></i>
