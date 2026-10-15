@@ -236,7 +236,7 @@
         </div>
     </div>
 
-    <!-- Official Channel Modal -->
+    <!-- Official Channel Dynamic Modal -->
     <div id="channelModal"
         class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
         <div
@@ -246,22 +246,33 @@
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <h3 class="text-sm font-black text-slate-900 flex items-center">
-                <i class="fa-solid fa-paper-plane mr-2 text-sky-500"></i> Official Community
+                <i class="fa-solid fa-paper-plane mr-2 text-sky-500"></i> Official Community Channels
             </h3>
-            <p class="text-xs text-slate-600">Join our official community channels for daily payment proofs and
-                announcements:</p>
-            <div class="space-y-2 pt-1">
-                <a href="https://telegram.org" target="_blank"
-                    class="block w-full py-2.5 px-3 bg-sky-50 hover:bg-sky-100 text-sky-700 rounded-xl text-xs font-bold text-center border border-sky-200">
-                    <i class="fa-brands fa-telegram mr-1.5 text-sm"></i> Join Telegram Channel
-                </a>
-                <a href="https://whatsapp.com" target="_blank"
-                    class="block w-full py-2.5 px-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-xs font-bold text-center border border-emerald-200">
-                    <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> Join WhatsApp Group
-                </a>
+            <p class="text-xs text-slate-500">Join our verified official channels for daily updates, bonus alerts, and
+                payment proofs:</p>
+
+            <div class="space-y-2.5 pt-1">
+                @forelse($channels ?? [] as $channel)
+                    <a href="{{ $channel->url }}" target="_blank"
+                        class="flex items-center justify-between w-full py-3 px-3.5 bg-gradient-to-r from-slate-50 to-indigo-50/50 hover:bg-indigo-50 border border-slate-200/80 rounded-2xl transition shadow-sm">
+                        <div class="flex items-center space-x-2.5">
+                            <div
+                                class="w-8 h-8 rounded-xl bg-white shadow-sm flex items-center justify-center text-base text-indigo-600">
+                                <i class="{{ $channel->icon }}"></i>
+                            </div>
+                            <span class="text-xs font-bold text-slate-800">{{ $channel->title }}</span>
+                        </div>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
+                    </a>
+                @empty
+                    <div class="p-3 bg-slate-100 rounded-xl text-center text-xs text-slate-400">
+                        Channels will be announced shortly.
+                    </div>
+                @endforelse
             </div>
         </div>
     </div>
+
 
     <!-- Contact Us / Support Modal -->
     <div id="supportModal"

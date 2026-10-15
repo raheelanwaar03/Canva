@@ -6,6 +6,9 @@ use App\Http\Controllers\Admin\PaymentApprovalController;
 use App\Http\Controllers\Admin\WithdrawalApprovalController;
 use App\Http\Controllers\Admin\PackageManagementController;
 use App\Http\Controllers\Admin\TaskManagementController;
+use App\Http\Controllers\Admin\ChannelManagementController;
+
+
 
 // Main Admin Dashboard
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -30,3 +33,11 @@ Route::get('/tasks', [TaskManagementController::class, 'index'])->name('tasks.in
 Route::post('/tasks', [TaskManagementController::class, 'store'])->name('tasks.store');
 Route::post('/tasks/{task}/toggle', [TaskManagementController::class, 'toggle'])->name('tasks.toggle');
 Route::delete('/tasks/{task}', [TaskManagementController::class, 'destroy'])->name('tasks.destroy');
+
+
+// Community Channels Management
+Route::get('/channels', [ChannelManagementController::class, 'index'])->name('channels.index');
+Route::post('/channels', [ChannelManagementController::class, 'store'])->name('channels.store');
+Route::put('/channels/{channel}', [ChannelManagementController::class, 'update'])->name('channels.update');
+Route::post('/channels/{channel}/toggle', [ChannelManagementController::class, 'toggle'])->name('channels.toggle');
+Route::delete('/channels/{channel}', [ChannelManagementController::class, 'destroy'])->name('channels.destroy');

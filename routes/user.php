@@ -9,11 +9,16 @@ use App\Models\Withdrawal;
 use App\Http\Controllers\ProfileController;
 use App\Models\Transaction;
 use App\Models\TaskLog;
+use App\Models\Channel;
+
+
 
 // Dashboard
+
 Route::get('/dashboard', function () {
     $user = auth()->user()->load(['wallet']);
-    return view('dashboard', compact('user'));
+    $channels = Channel::where('is_active', true)->get();
+    return view('dashboard', compact('user', 'channels'));
 })->name('dashboard');
 
 // Wallet
