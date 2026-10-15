@@ -4,11 +4,14 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\PackageController;
-use App\Http\Controllers\Admin\PaymentApprovalController;
 use App\Http\Controllers\WithdrawalController;
 use App\Http\Controllers\TeamController;
-use App\Http\Controllers\Admin\WithdrawalApprovalController;
 use App\Models\Withdrawal;
+// admin
+use App\Http\Controllers\Admin\PackageManagementController;
+use App\Http\Controllers\Admin\TaskManagementController;
+use App\Http\Controllers\Admin\PaymentApprovalController;
+use App\Http\Controllers\Admin\WithdrawalApprovalController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -93,7 +96,7 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-                                // Admin Routes
+// Admin Routes
 
 
 
@@ -108,6 +111,29 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/payments', [PaymentApprovalController::class, 'index'])->name('payments.index');
     Route::post('/payments/{payment}/approve', [PaymentApprovalController::class, 'approve'])->name('payments.approve');
     Route::post('/payments/{payment}/reject', [PaymentApprovalController::class, 'reject'])->name('payments.reject');
+});
+
+
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    // Payment Approvals
+    Route::get('/payments', [PaymentApprovalController::class, 'index'])->name('payments.index');
+    Route::post('/payments/{payment}/approve', [PaymentApprovalController::class, 'approve'])->name('payments.approve');
+    Route::post('/payments/{payment}/reject', [PaymentApprovalController::class, 'reject'])->name('payments.reject');
+
+    // Withdrawal Approvals
+    Route::get('/withdrawals', [WithdrawalApprovalController::class, 'index'])->name('withdrawals.index');
+    Route::post('/withdrawals/{withdrawal}/approve', [WithdrawalApprovalController::class, 'approve'])->name('withdrawals.approve');
+    Route::post('/withdrawals/{withdrawal}/reject', [WithdrawalApprovalController::class, 'reject'])->name('withdrawals.reject');
+
+    // Packages & Limits
+    Route::get('/packages', [PackageManagementController::class, 'index'])->name('packages.index');
+    Route::put('/packages/{package}', [PackageManagementController::class, 'update'])->name('packages.update');
+
+    // Ad Tasks
+    Route::get('/tasks', [TaskManagementController::class, 'index'])->name('tasks.index');
+    Route::post('/tasks', [TaskManagementController::class, 'store'])->name('tasks.store');
+    Route::post('/tasks/{task}/toggle', [TaskManagementController::class, 'toggle'])->name('tasks.toggle');
+    Route::delete('/tasks/{task}', [TaskManagementController::class, 'destroy'])->name('tasks.destroy');
 });
 
 
