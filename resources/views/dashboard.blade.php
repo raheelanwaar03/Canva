@@ -165,16 +165,17 @@
             </button>
 
             <!-- 11. Work (Daily Ads direct route) -->
-            <a href="{{ route('tasks.index') }}"
-                class="glass-card-item rounded-2xl p-3 flex items-center justify-between">
+            <!-- 11. About Us (Modal Popup) -->
+            <button type="button" onclick="openModal('aboutModal')"
+                class="glass-card-item rounded-2xl p-3 flex items-center justify-between text-left w-full hover:scale-[1.02] transition">
                 <div class="flex items-center space-x-2.5">
-                    <div class="icon-box-3d bg-gradient-to-tr from-indigo-500 to-purple-600 text-white">
-                        <i class="fa-solid fa-briefcase text-base"></i>
+                    <div class="icon-box-3d bg-gradient-to-tr from-cyan-500 to-blue-600 text-white">
+                        <i class="fa-solid fa-circle-info text-base"></i>
                     </div>
-                    <span class="text-xs font-bold text-slate-800">Work</span>
+                    <span class="text-xs font-bold text-slate-800">About Us</span>
                 </div>
                 <i class="fa-solid fa-chevron-right text-[11px] text-slate-400"></i>
-            </a>
+            </button>
 
             <!-- 12. Account Settings -->
             <a href="{{ route('profile.edit') }}"
@@ -297,6 +298,54 @@
                 class="block w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold text-center shadow">
                 Chat on WhatsApp &rarr;
             </a>
+        </div>
+    </div>
+
+    <!-- About Us Modal -->
+    <div id="aboutModal"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+        <div
+            class="glass-card-item bg-white/95 rounded-3xl p-5 w-full max-w-sm shadow-2xl space-y-3.5 relative border border-white">
+            <!-- Close Button -->
+            <button type="button" onclick="closeModal('aboutModal')"
+                class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-xs transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Header -->
+            <div class="flex items-center space-x-2.5">
+                <div
+                    class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center text-white shadow-sm">
+                    <i class="fa-solid fa-circle-info text-base"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-black text-slate-900">About Us</h3>
+                    <span class="text-[10px] text-slate-400 font-semibold">Canva ADS Platform</span>
+                </div>
+            </div>
+
+            <!-- Content Body -->
+            <div
+                class="space-y-2.5 text-xs text-slate-600 leading-relaxed bg-slate-50/90 p-4 rounded-2xl border border-slate-100 max-h-72 overflow-y-auto">
+                <p class="font-bold text-slate-900 text-xs">About Us — Canva</p>
+                <p>
+                    Canva is a well-known online design platform founded in 2013, with users around the world. Our platform
+                    is designed to provide members with a simple digital experience, featuring task activities, referral
+                    options, package information, and a user-friendly dashboard.
+                </p>
+                <p>
+                    Members can explore available tasks, track their account activity, manage their wallet, and invite
+                    others through the referral system. Our goal is to keep the platform organized, accessible, and easy to
+                    navigate.
+                </p>
+            </div>
+
+            <!-- Action CTA -->
+            <button type="button" onclick="closeModal('aboutModal')"
+                style="background: linear-gradient(90deg, #00c6ff 0%, #0072ff 50%, #9b51e0 100%);"
+                class="w-full text-white font-bold py-2.5 rounded-xl text-xs shadow-md hover:opacity-95 transition">
+                Close
+            </button>
         </div>
     </div>
 

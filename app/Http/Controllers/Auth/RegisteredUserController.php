@@ -72,6 +72,7 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // Client requirement: Redirect newly registered user directly to Package selection
+        return redirect()->route('packages.index');
     }
 }

@@ -189,4 +189,9 @@ class User extends Authenticatable
 
         return $matrix[$level][$packageName] ?? $activeSub->package->daily_task_limit;
     }
+
+    public function packagePayments()
+    {
+        return $this->hasMany(PackagePayment::class);
+    }
 }

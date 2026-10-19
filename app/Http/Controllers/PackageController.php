@@ -40,6 +40,29 @@ class PackageController extends Controller
         return view('packages.checkout', compact('package', 'isUpgrade', 'amountToPay'));
     }
 
+    // Show Pending Verification Page
+    public function pending()
+    {
+        $pendingPayment = auth()->user()->packagePayments()
+            ->with('package')
+            ->where('status', 'pending')
+            ->latest()
+            ->first();
+
+        // If admin already approved it, let them go to dashboard
+        if (auth()->user()->activePackage) {
+            return redirect()->route('dashboard');
+        }
+
+        // If no pending payment exists, send them back to choose a package
+        if (!$pendingPayment) {
+            return redirect()->route('packages.index');
+        }
+
+        return view('packages.pending', compact('pendingPayment'));
+    }
+
+    // Submit payment proof
     public function submitPayment(Request $request, Package $package)
     {
         $request->validate([
@@ -77,10 +100,7 @@ class PackageController extends Controller
             'status' => 'pending',
         ]);
 
-        $msg = $isUpgrade
-            ? 'Upgrade payment submitted! Admin will verify and upgrade your plan.'
-            : 'Payment submitted successfully! Admin will verify and activate your package soon.';
-
-        return redirect()->route('dashboard')->with('status', $msg);
+        // Redirect directly to the Pending Approval screen!
+        return redirect()->route('packages.pending');
     }
 }

@@ -5,7 +5,7 @@
 @endphp
 
 @section('content')
-    <div class="space-y-4 pt-1">
+    <div class="space-y-4 pt-1 pb-6">
 
         <!-- Canva ADS Logo Circle -->
         <div class="flex flex-col items-center">
@@ -17,13 +17,26 @@
             <h2 class="text-xl font-black text-slate-800 mt-2">Wallet</h2>
         </div>
 
+        <!-- Red Notice Banner: Hidden by default, toggled when Canva Earning card is clicked -->
+        <div id="canvaEarningAlert"
+            class="hidden p-3.5 bg-rose-50 border border-rose-200 text-rose-600 rounded-2xl text-xs font-bold shadow-sm flex items-center justify-between transition-all duration-300">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-circle-exclamation text-rose-500 text-sm"></i>
+                <span>You can withdraw your Canva Earnings only at Level 8.</span>
+            </div>
+            <button type="button" onclick="document.getElementById('canvaEarningAlert').classList.add('hidden')"
+                class="text-rose-400 hover:text-rose-700 text-xs px-1">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
         @if (session('success'))
             <div class="p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-2xl text-xs font-semibold">
                 {{ session('success') }}
             </div>
         @endif
 
-        <!-- 6 Balance & Earnings Cards (Sleek Glassmorphic Palette) -->
+        <!-- 6 Balance Cards Grid -->
         <div class="grid grid-cols-3 gap-2.5">
             <!-- 1. Current Balance -->
             <div
@@ -39,11 +52,14 @@
                 <div class="text-[9px] text-indigo-100 font-semibold mt-1">Referral Earning</div>
             </div>
 
-            <!-- 3. Canva Task Earnings -->
-            <div
-                class="bg-gradient-to-br from-purple-600 to-fuchsia-600 text-white rounded-2xl p-3 shadow-sm text-center flex flex-col justify-center">
+            <!-- 3. Canva Task Earnings (CLICKABLE WITH RED ALERT) -->
+            <div onclick="showCanvaEarningAlert()"
+                class="bg-gradient-to-br from-purple-600 to-fuchsia-600 text-white rounded-2xl p-3 shadow-sm text-center flex flex-col justify-center cursor-pointer hover:scale-[1.03] active:scale-95 transition-transform">
                 <div class="text-xs font-black truncate">Rs {{ number_format($wallet->task_earnings, 0) }}</div>
-                <div class="text-[9px] text-fuchsia-100 font-semibold mt-1">Canva Earning</div>
+                <div class="text-[9px] text-fuchsia-100 font-semibold mt-1 flex items-center justify-center space-x-1">
+                    <span>Canva Earning</span>
+                    <i class="fa-solid fa-circle-info text-[8px] text-fuchsia-200"></i>
+                </div>
             </div>
 
             <!-- 4. Approved Withdraw -->
@@ -68,13 +84,7 @@
             </div>
         </div>
 
-        <!-- Quick Withdraw CTA -->
-        <a href="{{ route('withdraw.create') }}"
-            style="background: linear-gradient(90deg, #00c6ff 0%, #0072ff 50%, #9b51e0 100%);"
-            class="block text-center text-white font-bold py-3 px-4 rounded-2xl text-xs shadow-md hover:opacity-95 transition">
-            Request New Withdrawal &rarr;
-        </a>
-
+        <!-- Action Buttons -->
         <div class="grid grid-cols-2 gap-2">
             <a href="{{ route('withdraw.create') }}" style="background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);"
                 class="block text-center text-white font-bold py-3 px-3 rounded-2xl text-xs shadow-md hover:opacity-95 transition">
@@ -120,4 +130,17 @@
         </div>
 
     </div>
+
+    @push('scripts')
+        <script>
+            function showCanvaEarningAlert() {
+                const alertBox = document.getElementById('canvaEarningAlert');
+                alertBox.classList.remove('hidden');
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+        </script>
+    @endpush
 @endsection
