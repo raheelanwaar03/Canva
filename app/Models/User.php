@@ -54,6 +54,50 @@ class User extends Authenticatable
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=6366f1&color=fff&bold=true';
     }
 
+    // In app/Models/User.php
+
+    public function getNextLevelInfoAttribute(): array
+    {
+        $count = $this->approvedDirectReferralsCount();
+        $level = $this->referral_level;
+
+        $thresholds = [
+            1 => 3,
+            2 => 12,
+            3 => 27,
+            4 => 150,
+            5 => 220,
+            6 => 370,
+            7 => 500,
+            8 => 1000,
+        ];
+
+        if ($level >= 8) {
+            return [
+                'next_level' => 8,
+                'needed' => 0,
+                'progress' => 100,
+                'current_count' => $count,
+                'target' => 1000,
+            ];
+        }
+
+        $target = $thresholds[$level + 1];
+        $prevTarget = $level > 0 ? $thresholds[$level] : 0;
+
+        $range = $target - $prevTarget;
+        $progressInRange = $count - $prevTarget;
+        $percent = min(100, max(0, round(($progressInRange / $range) * 100)));
+
+        return [
+            'next_level' => $level + 1,
+            'needed' => max(0, $target - $count),
+            'progress' => $percent,
+            'current_count' => $count,
+            'target' => $target,
+        ];
+    }
+
     public function wallet()
     {
         return $this->hasOne(Wallet::class);

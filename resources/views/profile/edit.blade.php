@@ -2,6 +2,7 @@
 
 @php
     $headerTitle = 'Account Settings';
+    $currentLvl = auth()->user()->referral_level;
 @endphp
 
 @section('content')
@@ -11,15 +12,23 @@
         <div class="glass-card-item rounded-3xl p-5 text-center relative overflow-hidden shadow-md">
             <div
                 class="w-20 h-20 rounded-full p-[2px] bg-gradient-to-tr from-cyan-400 via-indigo-500 to-fuchsia-500 shadow-md mx-auto mb-3">
-                <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=6366f1&color=fff&bold=true"
-                    alt="Avatar" class="w-full h-full rounded-full object-cover">
+                <img src="{{ auth()->user()->profile_photo_url }}" alt="Avatar"
+                    class="w-full h-full rounded-full object-cover">
             </div>
             <h2 class="text-lg font-black text-slate-900 leading-tight">{{ auth()->user()->name }}</h2>
             <p class="text-xs text-slate-500 mt-0.5">{{ auth()->user()->email }}</p>
-            <div class="mt-2.5 flex justify-center items-center space-x-2">
+
+            <!-- Read-Only Status Badges: Membership, Referral Level & Code -->
+            <div class="mt-3 flex flex-wrap justify-center items-center gap-1.5">
                 <span
                     class="px-3 py-0.5 rounded-full text-[10px] font-extrabold bg-purple-100 text-purple-700 border border-purple-200">
-                    {{ auth()->user()->activePackage?->package?->name ?? 'Basic' }} Member
+                    <i class="fa-solid fa-crown text-[9px] mr-1 text-purple-600"></i>
+                    {{ auth()->user()->activePackage?->package?->name ?? 'Basic' }}
+                </span>
+                <span
+                    class="px-3 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-100 text-indigo-700 border border-indigo-200">
+                    <i class="fa-solid fa-layer-group text-[9px] mr-1 text-indigo-600"></i>
+                    Level {{ $currentLvl }}
                 </span>
                 <span
                     class="px-3 py-0.5 rounded-full text-[10px] font-mono font-bold bg-slate-100 text-slate-600 border border-slate-200">
@@ -44,7 +53,7 @@
             </div>
         @endif
 
-        <!-- Update Profile Info Form -->
+        <!-- Update Personal Info & DP Form -->
         <div class="glass-card-item rounded-3xl p-5 shadow-md space-y-3.5">
             <div>
                 <h3 class="text-sm font-black text-slate-900">Personal Information & DP</h3>
@@ -61,7 +70,7 @@
                     <div class="flex items-center space-x-3.5">
                         <div
                             class="w-14 h-14 rounded-full p-[2px] bg-gradient-to-tr from-cyan-400 via-indigo-500 to-fuchsia-500 shadow flex-shrink-0">
-                            <img id="avatarPreview" src="{{ auth()->user()->profile_photo_url }}" alt="Avatar"
+                            <img id="avatarPreview" src="{{ auth()->user()->profile_photo_url }}" alt="Avatar Preview"
                                 class="w-full h-full rounded-full object-cover">
                         </div>
                         <div class="flex-1">
@@ -102,8 +111,25 @@
                     @endif
                 </div>
 
+                <!-- Read-Only Referral Level Display (Non-Editable) -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Referral Level (System Assigned)</label>
+                    <div
+                        class="flex items-center bg-slate-100/80 border border-slate-200 rounded-2xl px-3.5 py-2.5 cursor-not-allowed">
+                        <div
+                            class="w-6 h-6 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center mr-2 text-xs flex-shrink-0">
+                            <i class="fa-solid fa-lock"></i>
+                        </div>
+                        <input type="text" readonly
+                            value="Level {{ $currentLvl }} ({{ auth()->user()->approvedDirectReferralsCount() }} approved referrals)"
+                            class="w-full bg-transparent border-0 text-xs text-slate-600 font-bold focus:outline-none p-0 cursor-not-allowed">
+                    </div>
+                    <span class="text-[9px] text-slate-400 block mt-1">This level increases automatically based on your
+                        approved direct referrals.</span>
+                </div>
+
                 <button type="submit" style="background: linear-gradient(90deg, #00c6ff 0%, #0072ff 50%, #9b51e0 100%);"
-                    class="w-full text-white font-bold py-2.5 rounded-xl text-xs shadow-md hover:opacity-95 transition">
+                    class="w-full text-white font-bold py-2.5 rounded-xl text-xs shadow-md hover:opacity-95 transition mt-2">
                     Save Changes & Upload DP
                 </button>
             </form>
@@ -112,8 +138,8 @@
         <!-- Update Password Form -->
         <div class="glass-card-item rounded-3xl p-5 shadow-md space-y-3.5">
             <div>
-                <h3 class="text-sm font-black text-slate-900">Update Password</h3>
-                <p class="text-[10px] text-slate-400">Ensure your account is using a secure password</p>
+                <h3 class="text-sm font-black text-slate-900">Security & Password</h3>
+                <p class="text-[10px] text-slate-400">Update your account login password</p>
             </div>
 
             <form method="post" action="{{ route('password.update') }}" class="space-y-3">
@@ -177,19 +203,19 @@
         </div>
 
     </div>
-@endsection
 
-@push('scripts')
-    <script>
-        function previewAvatar(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('avatarPreview').src = e.target.result;
+    @push('scripts')
+        <script>
+            function previewAvatar(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('avatarPreview').src = e.target.result;
+                    }
+                    reader.readAsDataURL(file);
                 }
-                reader.readAsDataURL(file);
             }
-        }
-    </script>
-@endpush
+        </script>
+    @endpush
+@endsection

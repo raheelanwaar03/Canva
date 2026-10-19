@@ -19,11 +19,18 @@
             </div>
             <div>
                 <h2 class="text-xl font-extrabold text-slate-900 leading-tight">{{ auth()->user()->name }}</h2>
-                <span
-                    class="inline-flex items-center px-3 py-0.5 mt-1 rounded-full text-xs font-semibold bg-white/80 text-purple-700 shadow-sm border border-purple-100">
-                    <i class="fa-solid fa-crown text-[10px] mr-1.5 text-purple-600"></i>
-                    {{ auth()->user()->activePackage?->package?->name ?? 'Basic' }} Member
-                </span>
+                <div class="flex items-center space-x-1.5 mt-1">
+                    <span
+                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/80 text-purple-700 shadow-sm border border-purple-100">
+                        <i class="fa-solid fa-crown text-[10px] mr-1 text-purple-600"></i>
+                        {{ auth()->user()->activePackage?->package?->name ?? 'Basic' }}
+                    </span>
+                    <span
+                        class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                        <i class="fa-solid fa-layer-group text-[10px] mr-1 text-indigo-500"></i>
+                        Level {{ auth()->user()->referral_level }}
+                    </span>
+                </div>
             </div>
         </div>
 

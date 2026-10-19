@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Set New Password — Canva ADS</title>
 
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%2300c6ff'/><stop offset='50%25' stop-color='%230072ff'/><stop offset='100%25' stop-color='%239b51e0'/></linearGradient></defs><circle cx='50' cy='50' r='48' fill='url(%23g)' stroke='%23ffffff' stroke-width='4'/><text x='50' y='52' font-family='Arial, sans-serif' font-weight='900' font-size='22' font-style='italic' fill='%23ffffff' text-anchor='middle'>Canva</text><text x='50' y='72' font-family='Arial, sans-serif' font-weight='900' font-size='13' letter-spacing='2' fill='%23ffffff' text-anchor='middle'>ADS</text></svg>">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
