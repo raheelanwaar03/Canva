@@ -8,12 +8,13 @@
             <div class="relative">
                 <div
                     class="w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-cyan-400 via-indigo-500 to-fuchsia-500 shadow-md">
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=6366f1&color=fff&bold=true"
-                        alt="Avatar" class="w-full h-full rounded-full object-cover">
+                    <img src="{{ auth()->user()->profile_photo_url }}" alt="Avatar"
+                        class="w-full h-full rounded-full object-cover">
                 </div>
-                <a href="{{ route('profile.edit') }}"
+                <!-- Shortcut to open Profile Settings to update picture -->
+                <a href="{{ route('profile.edit') }}" title="Change DP in Settings"
                     class="absolute bottom-0 right-0 w-5 h-5 bg-indigo-600 text-white rounded-full flex items-center justify-center text-[10px] shadow border border-white hover:scale-110 transition">
-                    <i class="fa-solid fa-pen"></i>
+                    <i class="fa-solid fa-camera"></i>
                 </a>
             </div>
             <div>
