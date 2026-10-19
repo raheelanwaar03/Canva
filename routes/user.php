@@ -10,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Models\Transaction;
 use App\Models\TaskLog;
 use App\Models\Channel;
+use App\Http\Controllers\TransferController;
 
 
 
@@ -90,3 +91,6 @@ Route::get('/rewards', function () {
 
     return view('rewards', compact('wallet', 'totalAdsCompleted', 'rewardTransactions'));
 })->name('rewards');
+
+Route::get('/transfer', [TransferController::class, 'index'])->name('transfer.index');
+Route::post('/transfer', [TransferController::class, 'store'])->name('transfer.store');

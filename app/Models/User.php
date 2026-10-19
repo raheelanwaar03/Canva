@@ -28,6 +28,8 @@ class User extends Authenticatable
         'referred_by',
         'role',
         'status',
+        'first_task_bonus_received',
+
     ];
 
     /**
@@ -124,5 +126,67 @@ class User extends Authenticatable
             'reason' => '15-day period ended. You must bring 1 approved direct referral every 7 days to unlock tasks.',
             'days_left' => 0
         ];
+    }
+
+    // In app/Models/User.php
+
+    /**
+     * Count active approved direct referrals
+     */
+    public function approvedDirectReferralsCount(): int
+    {
+        return $this->referrals()
+            ->whereHas('packages', function ($q) {
+                $q->whereIn('status', ['active', 'upgraded']);
+            })
+            ->count();
+    }
+
+    /**
+     * Determine Referral Level (0 to 8) based on approved direct referrals
+     */
+    public function getReferralLevelAttribute(): int
+    {
+        $count = $this->approvedDirectReferralsCount();
+
+        if ($count >= 1000) return 8;
+        if ($count >= 500)  return 7;
+        if ($count >= 370)  return 6;
+        if ($count >= 220)  return 5;
+        if ($count >= 150)  return 4;
+        if ($count >= 27)   return 3;
+        if ($count >= 12)   return 2;
+        if ($count >= 3)    return 1;
+
+        return 0;
+    }
+
+    /**
+     * Dynamic Daily Task Limit based on Active Package & Referral Level
+     * Follows Section 5 Exact Matrix
+     */
+    public function getEffectiveDailyTaskLimitAttribute(): int
+    {
+        $activeSub = $this->activePackage;
+        if (!$activeSub) return 0;
+
+        $packageName = strtolower(trim($activeSub->package->name));
+        $level = $this->referral_level;
+
+        // Exact Client Matrix:
+        // Level => [Basic, Gold, Standard, Premium]
+        $matrix = [
+            0 => ['basic' => 1, 'gold' => 2, 'standard' => 4, 'premium' => 6],
+            1 => ['basic' => 1, 'gold' => 2, 'standard' => 4, 'premium' => 6],
+            2 => ['basic' => 3, 'gold' => 2, 'standard' => 4, 'premium' => 6],
+            3 => ['basic' => 4, 'gold' => 2, 'standard' => 4, 'premium' => 6],
+            4 => ['basic' => 4, 'gold' => 2, 'standard' => 4, 'premium' => 6],
+            5 => ['basic' => 5, 'gold' => 2, 'standard' => 5, 'premium' => 6],
+            6 => ['basic' => 6, 'gold' => 2, 'standard' => 6, 'premium' => 6],
+            7 => ['basic' => 6, 'gold' => 2, 'standard' => 6, 'premium' => 6],
+            8 => ['basic' => 7, 'gold' => 2, 'standard' => 7, 'premium' => 7],
+        ];
+
+        return $matrix[$level][$packageName] ?? $activeSub->package->daily_task_limit;
     }
 }

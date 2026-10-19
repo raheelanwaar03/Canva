@@ -28,7 +28,7 @@ class WithdrawalController extends Controller
     {
         $request->validate([
             'method' => ['required', 'in:Easypaisa,JazzCash'],
-            'amount' => ['required', 'numeric', 'min:50'],
+            'amount' => ['required', 'numeric', 'min:500'],
             'account_details' => ['required', 'string', 'max:255'],
         ]);
 

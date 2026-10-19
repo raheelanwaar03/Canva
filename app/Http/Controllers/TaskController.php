@@ -11,31 +11,29 @@ use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller
 {
+    // In app/Http/Controllers/TaskController.php
+
     public function index()
     {
         $user = auth()->user();
         $today = now()->toDateString();
 
-        // 1. Check referral & 15-day eligibility engine
         $eligibility = $user->getTaskEligibilityStatus();
         $activeSub = $user->activePackage;
 
-        // 2. Count completed tasks today
         $completedTodayCount = TaskLog::where('user_id', $user->id)
             ->where('completed_date', $today)
             ->count();
 
-        $dailyLimit = $activeSub ? $activeSub->package->daily_task_limit : 0;
-        $rewardPerTask = $activeSub ? $activeSub->package->reward_per_task : 0;
+        // Uses the dynamic referral matrix limit!
+        $dailyLimit = $user->effective_daily_task_limit;
         $remainingTasks = max(0, $dailyLimit - $completedTodayCount);
 
-        // 3. Fetch completed task IDs today
         $completedTaskIds = TaskLog::where('user_id', $user->id)
             ->where('completed_date', $today)
             ->pluck('task_id')
             ->toArray();
 
-        // 4. Get active tasks
         $tasks = Task::where('is_active', true)->get();
 
         return view('tasks.index', compact(
@@ -44,12 +42,109 @@ class TaskController extends Controller
             'activeSub',
             'completedTodayCount',
             'dailyLimit',
-            'rewardPerTask',
             'remainingTasks',
             'completedTaskIds'
         ));
     }
 
+    public function complete(Request $request, Task $task)
+    {
+        $user = auth()->user();
+        $today = now()->toDateString();
+        $eligibility = $user->getTaskEligibilityStatus();
+
+        if (!$eligibility['unlocked']) {
+            return response()->json(['success' => false, 'message' => $eligibility['reason']], 403);
+        }
+
+        $activeSub = $user->activePackage;
+        if (!$activeSub) {
+            return response()->json(['success' => false, 'message' => 'Active plan required.'], 403);
+        }
+
+        return DB::transaction(function () use ($user, $task, $activeSub, $today) {
+            // Enforce dynamic matrix limit
+            $completedTodayCount = TaskLog::where('user_id', $user->id)
+                ->where('completed_date', $today)
+                ->lockForUpdate()
+                ->count();
+
+            if ($completedTodayCount >= $user->effective_daily_task_limit) {
+                return response()->json(['success' => false, 'message' => 'Daily task limit reached!'], 400);
+            }
+
+            $alreadyDone = TaskLog::where('user_id', $user->id)
+                ->where('task_id', $task->id)
+                ->where('completed_date', $today)
+                ->exists();
+
+            if ($alreadyDone) {
+                return response()->json(['success' => false, 'message' => 'Task already completed today.'], 400);
+            }
+
+            // Section 2 & 3: Standard rewards
+            $mainReward = 7.00;
+            $rewardsBonus = 200.00;
+            $firstTaskBonus = 0.00;
+
+            // Check if first-ever task completed
+            $freshUser = User::where('id', $user->id)->lockForUpdate()->first();
+            if (!$freshUser->first_task_bonus_received) {
+                $firstTaskBonus = 50.00;
+                $freshUser->update(['first_task_bonus_received' => true]);
+            }
+
+            $totalMainCredited = $mainReward + $firstTaskBonus;
+
+            // 1. Create completion log
+            TaskLog::create([
+                'user_id' => $user->id,
+                'task_id' => $task->id,
+                'user_package_id' => $activeSub->id,
+                'reward_earned' => $totalMainCredited,
+                'completed_date' => $today,
+            ]);
+
+            // 2. Credit Wallet safely
+            $wallet = Wallet::where('user_id', $user->id)->lockForUpdate()->first();
+            $wallet->increment('main_balance', $totalMainCredited);
+            $wallet->increment('withdrawable_balance', $totalMainCredited);
+            $wallet->increment('task_earnings', $totalMainCredited);
+            $wallet->increment('rewards_balance', $rewardsBonus);
+
+            // 3. Transactions
+            Transaction::create([
+                'user_id' => $user->id,
+                'amount' => $mainReward,
+                'type' => 'task_reward',
+                'balance_type' => 'credit',
+                'description' => "Task Reward: {$task->title}",
+                'reference_id' => $task->id,
+            ]);
+
+            if ($firstTaskBonus > 0) {
+                Transaction::create([
+                    'user_id' => $user->id,
+                    'amount' => $firstTaskBonus,
+                    'type' => 'task_reward',
+                    'balance_type' => 'credit',
+                    'description' => "First-Ever Task Welcome Bonus",
+                    'reference_id' => $task->id,
+                ]);
+            }
+
+            $message = "Ad completed! Credited Rs {$mainReward} to Main Balance and Rs {$rewardsBonus} to Rewards Balance.";
+            if ($firstTaskBonus > 0) {
+                $message .= " + Rs 50 First-Task Bonus received!";
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'new_balance' => $wallet->fresh()->withdrawable_balance,
+            ]);
+        });
+    }
     // View & watch single ad task
     public function view(Task $task)
     {
@@ -86,76 +181,5 @@ class TaskController extends Controller
         }
 
         return view('tasks.view', compact('task', 'activeSub'));
-    }
-
-    // Verify & credit reward after timer completes
-    public function complete(Request $request, Task $task)
-    {
-        $user = auth()->user();
-        $today = now()->toDateString();
-        $eligibility = $user->getTaskEligibilityStatus();
-
-        if (!$eligibility['unlocked']) {
-            return response()->json(['success' => false, 'message' => $eligibility['reason']], 403);
-        }
-
-        $activeSub = $user->activePackage;
-        if (!$activeSub) {
-            return response()->json(['success' => false, 'message' => 'Active plan required.'], 403);
-        }
-
-        return DB::transaction(function () use ($user, $task, $activeSub, $today) {
-            // Lock to prevent race condition attacks
-            $completedTodayCount = TaskLog::where('user_id', $user->id)
-                ->where('completed_date', $today)
-                ->lockForUpdate()
-                ->count();
-
-            if ($completedTodayCount >= $activeSub->package->daily_task_limit) {
-                return response()->json(['success' => false, 'message' => 'Daily task limit reached!'], 400);
-            }
-
-            $alreadyDone = TaskLog::where('user_id', $user->id)
-                ->where('task_id', $task->id)
-                ->where('completed_date', $today)
-                ->exists();
-
-            if ($alreadyDone) {
-                return response()->json(['success' => false, 'message' => 'Ad already completed today.'], 400);
-            }
-
-            $reward = $activeSub->package->reward_per_task;
-
-            // 1. Create completion log
-            TaskLog::create([
-                'user_id' => $user->id,
-                'task_id' => $task->id,
-                'user_package_id' => $activeSub->id,
-                'reward_earned' => $reward,
-                'completed_date' => $today,
-            ]);
-
-            // 2. Credit Wallet safely
-            $wallet = Wallet::where('user_id', $user->id)->lockForUpdate()->first();
-            $wallet->increment('main_balance', $reward);
-            $wallet->increment('task_earnings', $reward);
-            $wallet->increment('withdrawable_balance', $reward);
-
-            // 3. Create Transaction record
-            Transaction::create([
-                'user_id' => $user->id,
-                'amount' => $reward,
-                'type' => 'task_reward',
-                'balance_type' => 'credit',
-                'description' => "Ad reward: {$task->title}",
-                'reference_id' => $task->id,
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => "Congratulations! Rs " . number_format($reward, 2) . " credited to your wallet.",
-                'new_balance' => $wallet->fresh()->withdrawable_balance,
-            ]);
-        });
     }
 }

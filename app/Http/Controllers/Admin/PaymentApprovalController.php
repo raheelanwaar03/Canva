@@ -23,6 +23,8 @@ class PaymentApprovalController extends Controller
     }
 
     // Approve payment
+    // In app/Http/Controllers/Admin/PaymentApprovalController.php
+
     public function approve(PackagePayment $payment)
     {
         if ($payment->status !== 'pending') {
@@ -41,13 +43,11 @@ class PaymentApprovalController extends Controller
                 'reviewed_at' => $now,
             ]);
 
-            // 2. Find previous active package (to calculate upgrade commission difference if any)
-            $previousSub = UserPackage::with('package')
-                ->where('user_id', $user->id)
+            // 2. Expire previous subscription
+            $previousSub = UserPackage::where('user_id', $user->id)
                 ->where('status', 'active')
                 ->first();
 
-            // Expire previous subscription
             if ($previousSub) {
                 $previousSub->update(['status' => 'upgraded']);
             }
@@ -57,41 +57,85 @@ class PaymentApprovalController extends Controller
                 'user_id' => $user->id,
                 'package_id' => $package->id,
                 'started_at' => $now,
-                'expires_at' => $now->copy()->addDays($package->duration_days ?? 30),
+                'expires_at' => $now->copy()->addDays(30),
                 'status' => 'active',
             ]);
 
-            // 4. Distribute Referral Commission to Direct Referrer
-            if ($user->referred_by) {
-                $commission = $package->referral_commission;
+            // 4. Commission Distribution (Section 6 & 7)
+            if ($payment->type === 'upgrade') {
+                // Direct inviter upgrade commission only (e.g. 20% on price difference)
+                if ($user->referred_by) {
+                    $upgradeComm = $payment->amount * 0.20; // 20% of difference paid
+                    if ($upgradeComm > 0) {
+                        $uplineWallet = Wallet::where('user_id', $user->referred_by)->lockForUpdate()->first();
+                        if ($uplineWallet) {
+                            $uplineWallet->increment('main_balance', $upgradeComm);
+                            $uplineWallet->increment('withdrawable_balance', $upgradeComm);
+                            $uplineWallet->increment('referral_earnings', $upgradeComm);
 
-                // If it's an upgrade, award only the commission difference
-                if ($payment->type === 'upgrade' && $previousSub && $previousSub->package) {
-                    $commission = max(0, $package->referral_commission - $previousSub->package->referral_commission);
-                }
-
-                if ($commission > 0) {
-                    $referrerWallet = Wallet::where('user_id', $user->referred_by)->lockForUpdate()->first();
-                    if ($referrerWallet) {
-                        $referrerWallet->increment('referral_earnings', $commission);
-                        $referrerWallet->increment('withdrawable_balance', $commission);
-
-                        Transaction::create([
-                            'user_id' => $user->referred_by,
-                            'amount' => $commission,
-                            'type' => 'referral_bonus',
-                            'balance_type' => 'credit',
-                            'description' => $payment->type === 'upgrade'
-                                ? "Upgrade referral commission from {$user->name} ({$package->name})"
-                                : "Referral bonus from {$user->name} ({$package->name} plan)",
-                            'reference_id' => $payment->id,
-                        ]);
+                            Transaction::create([
+                                'user_id' => $user->referred_by,
+                                'amount' => $upgradeComm,
+                                'type' => 'referral_bonus',
+                                'balance_type' => 'credit',
+                                'description' => "Direct Upgrade Commission from {$user->name} ({$package->name})",
+                                'reference_id' => $payment->id,
+                            ]);
+                        }
                     }
+                }
+            } else {
+                // New Package Purchase: 3-Tier Commission
+                // Rates: L1 = 25%, L2 = 3%, L3 = 1%
+                // Rule: Basic, Standard, Premium pay L1 only. Gold pays L1, L2, L3.
+                $pkgPrice = $payment->amount;
+                $isGold = strtolower($package->name) === 'gold';
+
+                $commissionTiers = [
+                    1 => ['rate' => 0.25, 'desc' => 'Direct Inviter (Level 1 - 25%)'],
+                    2 => ['rate' => 0.03, 'desc' => 'Level 2 Upline (3%)'],
+                    3 => ['rate' => 0.01, 'desc' => 'Level 3 Upline (1%)'],
+                ];
+
+                $currentUplineId = $user->referred_by;
+                $tier = 1;
+
+                while ($currentUplineId && $tier <= 3) {
+                    // If not Gold, stop after Level 1
+                    if (!$isGold && $tier > 1) {
+                        break;
+                    }
+
+                    $upline = User::with('activePackage')->find($currentUplineId);
+
+                    // Only credit if upline has an active package
+                    if ($upline && $upline->activePackage) {
+                        $commAmount = round($pkgPrice * $commissionTiers[$tier]['rate'], 2);
+
+                        $uplineWallet = Wallet::where('user_id', $upline->id)->lockForUpdate()->first();
+                        if ($uplineWallet && $commAmount > 0) {
+                            $uplineWallet->increment('main_balance', $commAmount);
+                            $uplineWallet->increment('withdrawable_balance', $commAmount);
+                            $uplineWallet->increment('referral_earnings', $commAmount);
+
+                            Transaction::create([
+                                'user_id' => $upline->id,
+                                'amount' => $commAmount,
+                                'type' => 'referral_bonus',
+                                'balance_type' => 'credit',
+                                'description' => "{$commissionTiers[$tier]['desc']} from {$user->name} ({$package->name})",
+                                'reference_id' => $payment->id,
+                            ]);
+                        }
+                    }
+
+                    $currentUplineId = $upline?->referred_by;
+                    $tier++;
                 }
             }
         });
 
-        return back()->with('success', "Payment approved and {$payment->package->name} plan activated for {$payment->user->name}!");
+        return back()->with('success', "Payment approved and {$payment->package->name} plan activated!");
     }
 
     // Reject payment
