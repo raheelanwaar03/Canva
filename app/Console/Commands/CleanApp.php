@@ -44,27 +44,17 @@ class CleanApp extends Command
         // 1. Wipe and recreate physical storage image directories
         $this->warn('Purging storage image directories (payments, avatars)...');
 
-        // Remove uploaded files
         Storage::disk('public')->deleteDirectory('payments');
         Storage::disk('public')->deleteDirectory('avatars');
 
-        // Recreate clean empty directories
         Storage::disk('public')->makeDirectory('payments');
         Storage::disk('public')->makeDirectory('avatars');
 
-        // 2. Refresh Storage Symlink
-        $this->info('Resetting public/storage symlink...');
-        $publicStoragePath = public_path('storage');
-        if (File::exists($publicStoragePath)) {
-            File::delete($publicStoragePath);
-        }
-        Artisan::call('storage:link');
-
-        // 3. Database Fresh Migration
+        // 2. Database Fresh Migration (Do NOT call storage:link here)
         $this->warn('Resetting database and running fresh migrations...');
         Artisan::call('migrate:fresh', ['--force' => true]);
 
-        // 4. Clear all compiled views, routes, configs, and application cache
+        // 3. Clear all compiled views, routes, configs, and application cache
         $this->info('Clearing views, cache, config, and route caches...');
         Artisan::call('cache:clear');
         Artisan::call('config:clear');
