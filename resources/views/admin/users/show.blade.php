@@ -7,11 +7,11 @@
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-xl font-black text-slate-900 tracking-tight">User Detail — {{ $user->name }}</h1>
-            <p class="text-xs text-slate-500">Member since {{ $user->created_at->format('d M, Y') }}</p>
+            <p class="text-xs text-slate-500">Member since {{ $user->created_at ? $user->created_at->format('d M, Y') : 'N/A' }}</p>
         </div>
         <form action="{{ route('admin.users.loginAs', $user->id) }}" method="POST">
             @csrf
-            <button type="submit" class="px-4 py-2 bg-[#3b49df] hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow flex items-center space-x-1.5">
+            <button type="submit" class="px-4 py-2 bg-[#3b49df] hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow flex items-center space-x-1.5 transition">
                 <i class="fa-solid fa-right-to-bracket"></i>
                 <span>Login as User</span>
             </button>
@@ -24,16 +24,22 @@
         </div>
     @endif
 
+    @if(session('error'))
+        <div class="p-3.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs font-semibold">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        <!-- LEFT COLUMN: 4 WALLET & METRICS CARDS (Exact match to Client Image) -->
+        <!-- LEFT COLUMN: 4 WALLET & METRICS CARDS -->
         <div class="space-y-3">
 
             <!-- Balance Card (Blue) -->
             <div class="bg-[#3b49df] text-white rounded-2xl p-4 shadow-sm flex items-center justify-between">
                 <div>
                     <span class="text-[10px] font-bold text-indigo-200 uppercase tracking-wider">Main Balance</span>
-                    <div class="text-xl font-black mt-0.5">Rs {{ number_format($wallet->withdrawable_balance, 2) }}</div>
+                    <div class="text-xl font-black mt-0.5">Rs {{ number_format($wallet->withdrawable_balance ?? 0, 2) }}</div>
                 </div>
                 <i class="fa-solid fa-wallet text-2xl text-indigo-300"></i>
             </div>
@@ -65,7 +71,7 @@
                 <i class="fa-solid fa-arrow-right-arrow-left text-2xl text-slate-400"></i>
             </div>
 
-            <!-- Action Buttons Grid (Client image exact buttons) -->
+            <!-- Action Buttons Grid -->
             <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
                 <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Admin Controls</h4>
 
@@ -77,7 +83,7 @@
             </div>
         </div>
 
-        <!-- RIGHT COLUMN: INFORMATION OF USER FORM (Matches Client Screenshot) -->
+        <!-- RIGHT COLUMN: INFORMATION OF USER FORM -->
         <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
             <h3 class="text-sm font-black text-slate-900 border-b border-slate-100 pb-3">Information of {{ $user->name }}</h3>
 
@@ -99,12 +105,12 @@
 
                 <div>
                     <label class="block text-slate-500 font-bold mb-1">Referral Level</label>
-                    <input type="text" readonly value="Level {{ $user->referral_level }}" class="w-full bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-2 text-indigo-700 font-black focus:outline-none">
+                    <input type="text" readonly value="Level {{ $user->referral_level ?? 0 }}" class="w-full bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-2 text-indigo-700 font-black focus:outline-none">
                 </div>
 
                 <div>
                     <label class="block text-slate-500 font-bold mb-1">Total Direct Team</label>
-                    <input type="text" readonly value="{{ $user->referrals->count() }} Members" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 font-bold focus:outline-none">
+                    <input type="text" readonly value="{{ $user->referrals()->count() }} Members" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 font-bold focus:outline-none">
                 </div>
 
                 <div>

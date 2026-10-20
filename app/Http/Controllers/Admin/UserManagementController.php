@@ -24,12 +24,32 @@ class UserManagementController extends Controller
     // Individual User Profile in Admin Dashboard (Matches Client Image 1)
     public function show(User $user)
     {
-        $wallet = $user->wallet ?: $user->wallet()->create();
-        $user->load(['packages.package', 'referrer.referrals', 'referrals']);
+        // 1. Ensure wallet exists safely
+        $wallet = Wallet::firstOrCreate(
+            ['user_id' => $user->id],
+            [
+                'main_balance' => 0.00,
+                'rewards_balance' => 0.00,
+                'task_earnings' => 0.00,
+                'referral_earnings' => 0.00,
+                'staff_earnings' => 0.00,
+                'withdrawable_balance' => 0.00,
+            ]
+        );
 
-        $totalDeposited = $user->packagePayments()->where('status', 'approved')->sum('amount');
-        $totalWithdrawn = $user->withdrawals()->where('status', 'approved')->sum('amount');
-        $transactionsCount = Transaction::where('user_id', $user->id)->count();
+        // 2. Safe calculation with fallback direct DB queries
+        $totalDeposited = \App\Models\PackagePayment::where('user_id', $user->id)
+            ->where('status', 'approved')
+            ->sum('amount');
+
+        $totalWithdrawn = \App\Models\Withdrawal::where('user_id', $user->id)
+            ->where('status', 'approved')
+            ->sum('amount');
+
+        $transactionsCount = \App\Models\Transaction::where('user_id', $user->id)->count();
+
+        // Safe load of referrer if exists
+        $user->load(['referrer']);
 
         return view('admin.users.show', compact('user', 'wallet', 'totalDeposited', 'totalWithdrawn', 'transactionsCount'));
     }
