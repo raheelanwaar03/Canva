@@ -1,21 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Canva ADS</title>
 
-    <!-- Dynamic SVG Favicon -->
-    <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%2300c6ff'/><stop offset='50%25' stop-color='%230072ff'/><stop offset='100%25' stop-color='%239b51e0'/></linearGradient></defs><circle cx='50' cy='50' r='48' fill='url(%23g)' stroke='%23ffffff' stroke-width='4'/><text x='50' y='52' font-family='Arial, sans-serif' font-weight='900' font-size='22' font-style='italic' fill='%23ffffff' text-anchor='middle'>Canva</text><text x='50' y='72' font-family='Arial, sans-serif' font-weight='900' font-size='13' letter-spacing='2' fill='%23ffffff' text-anchor='middle'>ADS</text></svg>">
+    <!-- Dynamic Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%2300c6ff'/><stop offset='50%25' stop-color='%230072ff'/><stop offset='100%25' stop-color='%239b51e0'/></linearGradient></defs><circle cx='50' cy='50' r='48' fill='url(%23g)' stroke='%23ffffff' stroke-width='4'/><text x='50' y='52' font-family='Arial, sans-serif' font-weight='900' font-size='22' font-style='italic' fill='%23ffffff' text-anchor='middle'>Canva</text><text x='50' y='72' font-family='Arial, sans-serif' font-weight='900' font-size='13' letter-spacing='2' fill='%23ffffff' text-anchor='middle'>ADS</text></svg>">
 
-    <!-- Google Fonts -->
+    <!-- Fonts: Plus Jakarta Sans & Custom Script Font for Canva -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <!-- Tailwind Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,183 +21,139 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: #eef5ff;
+            background: #eef2fe;
             min-height: 100vh;
             margin: 0;
             padding: 0;
         }
-
-        .wave-background {
+        .canva-brand-script {
+            font-family: 'Dancing Script', cursive;
+        }
+        .ambient-wave-canvas {
             background:
-                radial-gradient(circle at 15% 10%, rgba(56, 189, 248, 0.45) 0%, transparent 45%),
-                radial-gradient(circle at 90% 15%, rgba(217, 70, 239, 0.35) 0%, transparent 45%),
-                radial-gradient(circle at 50% 60%, rgba(129, 140, 248, 0.25) 0%, transparent 50%),
-                radial-gradient(circle at 80% 90%, rgba(56, 189, 248, 0.35) 0%, transparent 50%),
-                #e8f1fc;
+                radial-gradient(circle at 12% 10%, rgba(0, 198, 255, 0.28) 0%, transparent 45%),
+                radial-gradient(circle at 90% 12%, rgba(192, 132, 252, 0.30) 0%, transparent 45%),
+                radial-gradient(circle at 50% 55%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 85% 95%, rgba(0, 198, 255, 0.25) 0%, transparent 50%),
+                #edf2fe;
             background-attachment: fixed;
         }
-
-        .glass-card-item {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+        /* 3D Glass Action Cards (Matches user.jpeg) */
+        .glass-action-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.95);
-            box-shadow: 0 10px 24px -4px rgba(79, 70, 229, 0.08), 0 4px 8px -2px rgba(0, 0, 0, 0.03);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            box-shadow: 0 10px 25px -4px rgba(99, 102, 241, 0.08), 0 3px 8px -2px rgba(0, 0, 0, 0.03);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        .ref-gradient-card {
-            background: linear-gradient(105deg, #00d2ff 0%, #3a7bd5 50%, #9055ff 100%);
-            box-shadow: 0 12px 28px -6px rgba(0, 180, 255, 0.35);
+        .glass-action-card:active {
+            transform: scale(0.94);
         }
-
-        .icon-box-3d {
-            width: 44px;
-            height: 44px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            box-shadow: 0 8px 16px -3px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.6);
+        /* Liquid Hero Glass Card */
+        .hero-fluid-card {
+            background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 50%, #06b6d4 100%);
+            box-shadow: 0 18px 40px -10px rgba(79, 70, 229, 0.45);
+            border-radius: 38px;
         }
-
         .bottom-nav-glass {
-            background: rgba(255, 255, 255, 0.92);
+            background: rgba(255, 255, 255, 0.96);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 -8px 30px rgba(79, 70, 229, 0.12);
+            box-shadow: 0 -8px 28px rgba(79, 70, 229, 0.10);
         }
     </style>
 </head>
+<body class="ambient-wave-canvas flex justify-center items-start min-h-screen relative overflow-x-hidden">
 
-<body class="wave-background flex justify-center items-start min-h-screen">
+    <!-- Subtle Floating 3D Spheres in Ambient Background (Matches sample) -->
+    <div class="fixed top-24 -left-6 w-14 h-14 rounded-full bg-gradient-to-tr from-cyan-400 to-indigo-500 blur-[1px] opacity-40 shadow-xl pointer-events-none"></div>
+    <div class="fixed top-64 right-3 w-10 h-10 rounded-full bg-gradient-to-tr from-purple-400 to-fuchsia-500 blur-[1px] opacity-35 shadow-lg pointer-events-none"></div>
+    <div class="fixed bottom-36 left-4 w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-300 to-cyan-400 blur-[1px] opacity-40 shadow-lg pointer-events-none"></div>
 
-    @if (session()->has('impersonated_by'))
-        <div
-            class="bg-amber-500 text-white text-[11px] font-bold px-4 py-2 flex justify-between items-center z-50 sticky top-0 shadow">
-            <span>Viewing as: <strong>{{ auth()->user()->name }}</strong></span>
-            <a href="{{ route('impersonate.leave') }}"
-                class="bg-white text-amber-700 px-2.5 py-0.5 rounded-lg text-[10px] font-black uppercase hover:bg-amber-50 transition">
-                Return to Admin &rarr;
-            </a>
-        </div>
-    @endif
+    <!-- Mobile Screen Wrapper -->
+    <div class="w-full max-w-[430px] min-h-screen relative flex flex-col justify-between pb-24 shadow-2xl bg-white/20 backdrop-blur-sm z-10">
 
-    <div
-        class="w-full max-w-[430px] min-h-screen relative flex flex-col justify-between pb-24 shadow-2xl bg-white/30 backdrop-blur-sm">
-
-        <!-- Top Header Bar -->
+        <!-- Top Header Navigation (Exact Match to user.jpeg) -->
         <header class="px-5 pt-6 pb-2 flex items-center justify-between z-20">
-            @if (request()->routeIs('dashboard'))
-                <h1 class="text-2xl font-extrabold tracking-tight text-slate-900">Dashboard</h1>
-                <div class="flex items-center space-x-3">
-                    <button
-                        class="w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-slate-700 relative">
-                        <i class="fa-solid fa-bell text-base"></i>
-                        <span
-                            class="absolute top-2 right-2 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white"></span>
-                    </button>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit"
-                            class="w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-rose-500 hover:bg-rose-50">
-                            <i class="fa-solid fa-arrow-right-from-bracket text-base"></i>
-                        </button>
-                    </form>
-                </div>
-            @else
-                <button onclick="window.history.back()"
-                    class="w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-slate-700">
-                    <i class="fa-solid fa-chevron-left text-sm"></i>
+            <!-- Brand Script Logo -->
+            <a href="{{ route('dashboard') }}" class="canva-brand-script text-4xl font-black tracking-tight text-[#00c4cc] hover:opacity-90">
+                Canva
+            </a>
+
+            <div class="flex items-center space-x-2.5">
+                <!-- Notifications Bell -->
+                <button type="button" class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-700 relative hover:bg-slate-50 transition">
+                    <i class="fa-solid fa-bell text-sm"></i>
+                    <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full"></span>
                 </button>
-                <span class="font-bold text-slate-900 text-lg">{{ $headerTitle ?? 'Canva ADS' }}</span>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit"
-                        class="w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-rose-500 hover:bg-rose-50">
-                        <i class="fa-solid fa-arrow-right-from-bracket text-base"></i>
-                    </button>
-                </form>
-            @endif
+
+                <!-- User Avatar / Initials Pill with Dropdown Arrow -->
+                <a href="{{ route('profile.edit') }}" class="flex items-center space-x-1 pl-1 pr-2 py-1 rounded-full bg-white shadow-sm hover:bg-slate-50 transition border border-slate-100">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-inner overflow-hidden">
+                        @if(auth()->user()->avatar)
+                            <img src="{{ auth()->user()->profile_photo_url }}" class="w-full h-full object-cover" alt="DP">
+                        @else
+                            {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
+                        @endif
+                    </div>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                </a>
+            </div>
         </header>
 
-        <!-- Main Page Content -->
-        <main class="flex-1 px-4 py-2">
+        <!-- Main Dynamic Content -->
+        <main class="flex-1 px-4 py-1">
             @yield('content')
         </main>
 
-        <!-- Dynamic Bottom Navigation Bar -->
-        <nav
-            class="fixed bottom-3 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[398px] bottom-nav-glass rounded-3xl py-2 px-3 flex justify-between items-center z-30">
-            @if (request()->is('admin*') || (auth()->check() && auth()->user()->role === 'admin'))
-                {{-- ADMIN NAV --}}
-                <a href="{{ route('admin.dashboard') }}"
-                    class="flex flex-col items-center py-1 px-2.5 {{ request()->routeIs('admin.dashboard*') ? 'text-indigo-600 font-extrabold' : 'text-slate-400' }}">
-                    <i class="fa-solid fa-chart-pie text-base"></i>
-                    <span class="text-[9px] mt-0.5">Overview</span>
-                </a>
-                <a href="{{ route('admin.payments.index') }}"
-                    class="flex flex-col items-center py-1 px-2.5 {{ request()->routeIs('admin.payments.*') ? 'text-indigo-600 font-extrabold' : 'text-slate-400' }}">
-                    <i class="fa-solid fa-credit-card text-base"></i>
-                    <span class="text-[9px] mt-0.5">Payments</span>
-                </a>
-                <a href="{{ route('admin.withdrawals.index') }}"
-                    class="flex flex-col items-center py-1 px-2.5 {{ request()->routeIs('admin.withdrawals.*') ? 'text-indigo-600 font-extrabold' : 'text-slate-400' }}">
-                    <i class="fa-solid fa-money-bill-transfer text-base"></i>
-                    <span class="text-[9px] mt-0.5">Payouts</span>
-                </a>
-                <a href="{{ route('admin.packages.index') }}"
-                    class="flex flex-col items-center py-1 px-2.5 {{ request()->routeIs('admin.packages.*') ? 'text-indigo-600 font-extrabold' : 'text-slate-400' }}">
-                    <i class="fa-solid fa-crown text-base"></i>
-                    <span class="text-[9px] mt-0.5">Plans</span>
-                </a>
-                <a href="{{ route('admin.tasks.index') }}"
-                    class="flex flex-col items-center py-1 px-2.5 {{ request()->routeIs('admin.tasks.*') ? 'text-indigo-600 font-extrabold' : 'text-slate-400' }}">
-                    <i class="fa-solid fa-bullhorn text-base"></i>
-                    <span class="text-[9px] mt-0.5">Ads</span>
-                </a>
-            @else
-                {{-- USER NAV --}}
-                <a href="{{ route('dashboard') }}"
-                    class="flex flex-col items-center py-1 px-3 {{ request()->routeIs('dashboard') ? 'text-indigo-600 font-extrabold' : 'text-slate-400' }}">
-                    <i class="fa-solid fa-house text-lg"></i>
-                    <span class="text-[10px] mt-0.5">Dashboard</span>
-                </a>
-                <a href="#" class="flex flex-col items-center py-1 px-3 text-slate-400">
-                    <i class="fa-regular fa-bell text-lg"></i>
-                    <span class="text-[10px] mt-0.5">Notifications</span>
-                </a>
-                <a href="{{ route('tasks.index') }}"
-                    class="flex flex-col items-center py-1 px-3 {{ request()->routeIs('tasks.*') ? 'text-indigo-600 font-extrabold' : 'text-slate-400' }}">
-                    <i class="fa-solid fa-clipboard-check text-lg"></i>
-                    <span class="text-[10px] mt-0.5">Tasks</span>
-                </a>
-                <a href="{{ route('wallet') }}"
-                    class="flex flex-col items-center py-1 px-3 {{ request()->routeIs('wallet') ? 'text-indigo-600 font-extrabold' : 'text-slate-400' }}">
-                    <i class="fa-solid fa-wallet text-lg"></i>
-                    <span class="text-[10px] mt-0.5">Wallet</span>
-                </a>
-                <a href="{{ route('profile.edit') }}"
-                    class="flex flex-col items-center py-1 px-3 {{ request()->routeIs('profile.*') ? 'text-indigo-600 font-extrabold' : 'text-slate-400' }}">
-                    <i class="fa-regular fa-user text-lg"></i>
-                    <span class="text-[10px] mt-0.5">Account</span>
-                </a>
-            @endif
+        <!-- Bottom Navigation Bar (Matches user.jpeg) -->
+        <nav class="fixed bottom-3 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[398px] bottom-nav-glass rounded-3xl py-2 px-3 flex justify-between items-center z-30">
+            <!-- Home -->
+            <a href="{{ route('dashboard') }}" class="flex flex-col items-center py-1 px-2.5 {{ request()->routeIs('dashboard') ? 'text-indigo-600 font-extrabold' : 'text-slate-400 hover:text-slate-600' }}">
+                <i class="fa-solid fa-house text-base"></i>
+                <span class="text-[9px] mt-0.5">Home</span>
+            </a>
+
+            <!-- Notifications -->
+            <a href="#" class="flex flex-col items-center py-1 px-2.5 text-slate-400 hover:text-slate-600">
+                <i class="fa-regular fa-bell text-base"></i>
+                <span class="text-[9px] mt-0.5">Notifications</span>
+            </a>
+
+            <!-- Earnings ($ icon) -->
+            <a href="{{ route('rewards') }}" class="flex flex-col items-center py-1 px-2.5 {{ request()->routeIs('rewards*') ? 'text-indigo-600 font-extrabold' : 'text-slate-400 hover:text-slate-600' }}">
+                <i class="fa-solid fa-dollar-sign text-base"></i>
+                <span class="text-[9px] mt-0.5">Earnings</span>
+            </a>
+
+            <!-- Support (Headset icon) -->
+            <button type="button" onclick="openModal('supportModal')" class="flex flex-col items-center py-1 px-2.5 text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-headset text-base"></i>
+                <span class="text-[9px] mt-0.5">Support</span>
+            </button>
+
+            <!-- Account -->
+            <a href="{{ route('profile.edit') }}" class="flex flex-col items-center py-1 px-2.5 {{ request()->routeIs('profile.*') ? 'text-indigo-600 font-extrabold' : 'text-slate-400 hover:text-slate-600' }}">
+                <i class="fa-regular fa-user text-base"></i>
+                <span class="text-[9px] mt-0.5">Account</span>
+            </a>
         </nav>
 
     </div>
 
+    <!-- Floating Toast Notification Container -->
+    <div id="copyToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 transform -translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="px-5 py-2.5 rounded-2xl bg-slate-900/90 text-white text-xs font-bold shadow-2xl backdrop-blur-md flex items-center space-x-2 border border-white/20">
+            <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+            <span id="toastMessage">Referral link copied to clipboard!</span>
+        </div>
+    </div>
+
     @stack('scripts')
 </body>
-
 </html>
