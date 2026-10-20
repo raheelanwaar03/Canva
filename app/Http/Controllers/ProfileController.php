@@ -31,35 +31,28 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        $validated = $request->validated();
-
-        // Handle avatar upload
-        if ($request->hasFile('avatar')) {
-            $request->validate([
-                'avatar' => ['image', 'mimes:jpeg,png,jpg,webp', 'max:2048'], // 2MB max
-            ]);
-
-            // Delete old avatar if exists
-            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-                Storage::disk('public')->delete($user->avatar);
-            }
-
-            $path = $request->file('avatar')->store('avatars', 'public');
-            $user->avatar = $path;
-        }
-
-        $user->fill([
-            'name' => $request->name,
-            'email' => $request->email,
-        ]);
+        // Fill standard attributes
+        $user->fill($request->safe()->only(['name', 'email']));
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
         }
 
+        // Handle avatar upload & persistence
+        if ($request->hasFile('avatar')) {
+            // Delete old avatar if one already exists
+            if ($user->avatar && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->avatar)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->avatar);
+            }
+
+            // Store new file to storage/app/public/avatars
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $path;
+        }
+
         $user->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return redirect()->route('profile.edit')->with('status', 'profile-updated');
     }
 
     /**

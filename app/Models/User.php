@@ -47,7 +47,7 @@ class User extends Authenticatable
 
     public function getProfilePhotoUrlAttribute(): string
     {
-        if ($this->avatar && \Illuminate\Support\Facades\Storage::disk('public')->exists($this->avatar)) {
+        if (!empty($this->avatar)) {
             return asset('storage/' . $this->avatar);
         }
 

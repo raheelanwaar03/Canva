@@ -5,17 +5,10 @@
 
         <!-- Profile Header Section -->
         <div class="flex items-center space-x-3.5 px-1 pt-1">
-            <div class="relative">
-                <div
-                    class="w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-cyan-400 via-indigo-500 to-fuchsia-500 shadow-md">
-                    <img src="{{ auth()->user()->profile_photo_url }}" alt="Avatar"
-                        class="w-full h-full rounded-full object-cover">
-                </div>
-                <!-- Shortcut to open Profile Settings to update picture -->
-                <a href="{{ route('profile.edit') }}" title="Change DP in Settings"
-                    class="absolute bottom-0 right-0 w-5 h-5 bg-indigo-600 text-white rounded-full flex items-center justify-center text-[10px] shadow border border-white hover:scale-110 transition">
-                    <i class="fa-solid fa-camera"></i>
-                </a>
+            <div
+                class="w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-cyan-400 via-indigo-500 to-fuchsia-500 shadow-md flex-shrink-0">
+                <img src="{{ auth()->user()->profile_photo_url }}?v={{ auth()->user()->updated_at?->timestamp }}"
+                    alt="Profile Picture" class="w-full h-full rounded-full object-cover">
             </div>
             <div>
                 <h2 class="text-xl font-extrabold text-slate-900 leading-tight">{{ auth()->user()->name }}</h2>
@@ -26,7 +19,7 @@
                         {{ auth()->user()->activePackage?->package?->name ?? 'Basic' }}
                     </span>
                     <span
-                        class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
                         <i class="fa-solid fa-layer-group text-[10px] mr-1 text-indigo-500"></i>
                         Level {{ auth()->user()->referral_level }}
                     </span>
