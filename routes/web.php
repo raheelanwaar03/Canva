@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\ImpersonateController;
 
 // Public Landing Page
 Route::get('/', function () {
@@ -13,17 +14,20 @@ Route::get('/', function () {
 });
 
 // Authentication routes (Login, Register, Logout)
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 // USER ROUTES ONLY (Blocked for Admin)
 Route::middleware(['auth', 'is_user'])->group(function () {
-    require __DIR__.'/user.php';
+    require __DIR__ . '/user.php';
 });
+
+
+Route::get('/leave-impersonation', [ImpersonateController::class, 'leave'])->name('impersonate.leave');
 
 // ADMIN ROUTES ONLY (Blocked for Regular Users)
 Route::middleware(['auth', 'is_admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        require __DIR__.'/admin.php';
+        require __DIR__ . '/admin.php';
     });

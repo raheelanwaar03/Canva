@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\WithdrawalApprovalController;
 use App\Http\Controllers\Admin\PackageManagementController;
 use App\Http\Controllers\Admin\TaskManagementController;
 use App\Http\Controllers\Admin\ChannelManagementController;
+use App\Http\Controllers\Admin\ImpersonateController;
 
 
 
@@ -41,3 +42,7 @@ Route::post('/channels', [ChannelManagementController::class, 'store'])->name('c
 Route::put('/channels/{channel}', [ChannelManagementController::class, 'update'])->name('channels.update');
 Route::post('/channels/{channel}/toggle', [ChannelManagementController::class, 'toggle'])->name('channels.toggle');
 Route::delete('/channels/{channel}', [ChannelManagementController::class, 'destroy'])->name('channels.destroy');
+
+
+// Impersonate / Login as user
+Route::post('/users/{user}/login-as', [ImpersonateController::class, 'loginAs'])->name('users.loginAs');

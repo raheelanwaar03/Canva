@@ -96,4 +96,7 @@ Route::middleware(['has_active_package'])->group(function () {
     // Plan Upgrade Shortcut
     Route::get('/upgrade', [PackageController::class, 'index'])->name('packages.upgrade');
 
+    // In routes/user.php
+    Route::get('/packages/rejected', [PackageController::class, 'rejected'])->name('packages.rejected');
+    Route::post('/packages/{payment}/resubmit', [PackageController::class, 'resubmit'])->name('packages.resubmit');
 });

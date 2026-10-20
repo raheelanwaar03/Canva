@@ -21,18 +21,39 @@ class HasActivePackage
             return $next($request);
         }
 
-        // Check if user has an active, unexpired package
-        if (!$user->activePackage) {
-            // Check if user submitted a payment that is pending approval
-            $hasPending = $user->packagePayments()->where('status', 'pending')->exists();
+        // Whitelisted onboarding routes - DO NOT REDIRECT if user is already on these
+        if ($request->routeIs([
+            'packages.index',
+            'packages.pending',
+            'packages.rejected',
+            'packages.checkout',
+            'packages.submitPayment',
+            'packages.resubmit',
+            'profile.*',
+            'logout'
+        ])) {
+            return $next($request);
+        }
 
-            if ($hasPending) {
+        // If user already has an active, approved package, let them proceed
+        if ($user->activePackage) {
+            return $next($request);
+        }
+
+        // Check the latest payment attempt
+        $latestPayment = $user->packagePayments()->latest()->first();
+
+        if ($latestPayment) {
+            if ($latestPayment->status === 'pending') {
                 return redirect()->route('packages.pending');
             }
 
-            return redirect()->route('packages.index')->with('error', 'Please choose a membership package to activate your account.');
+            if ($latestPayment->status === 'rejected') {
+                return redirect()->route('packages.rejected');
+            }
         }
 
-        return $next($request);
+        // No payment made yet -> send to package selection
+        return redirect()->route('packages.index')->with('error', 'Please choose a package to activate your account.');
     }
 }

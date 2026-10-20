@@ -163,13 +163,17 @@ class PaymentApprovalController extends Controller
             return back()->with('error', 'Payment has already been processed.');
         }
 
+        $request->validate([
+            'admin_note' => ['required', 'string', 'max:500'],
+        ]);
+
         $payment->update([
             'status' => 'rejected',
-            'admin_note' => $request->input('admin_note', 'Invalid payment details or screenshot'),
+            'admin_note' => $request->admin_note,
             'reviewed_by' => auth()->id(),
             'reviewed_at' => now(),
         ]);
 
-        return back()->with('success', 'Payment rejected.');
+        return back()->with('success', "Payment for {$payment->user->name} has been rejected with the provided reason.");
     }
 }

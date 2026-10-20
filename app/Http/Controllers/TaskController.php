@@ -25,9 +25,12 @@ class TaskController extends Controller
             ->where('completed_date', $today)
             ->count();
 
-        // Uses the dynamic referral matrix limit!
+        // Dynamic referral matrix limit
         $dailyLimit = $user->effective_daily_task_limit;
         $remainingTasks = max(0, $dailyLimit - $completedTodayCount);
+
+        // Fixed Rs 7 reward per task
+        $rewardPerTask = 7.00;
 
         $completedTaskIds = TaskLog::where('user_id', $user->id)
             ->where('completed_date', $today)
@@ -37,13 +40,8 @@ class TaskController extends Controller
         $tasks = Task::where('is_active', true)->get();
 
         return view('tasks.index', compact(
-            'tasks',
-            'eligibility',
-            'activeSub',
-            'completedTodayCount',
-            'dailyLimit',
-            'remainingTasks',
-            'completedTaskIds'
+            'tasks', 'eligibility', 'activeSub', 'completedTodayCount',
+            'dailyLimit', 'rewardPerTask', 'remainingTasks', 'completedTaskIds'
         ));
     }
 
