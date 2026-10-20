@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ImpersonateController;
+use App\Http\Controllers\ReceiptController;
 
 // Public Landing Page
 Route::get('/', function () {
@@ -21,6 +22,9 @@ Route::middleware(['auth', 'is_user'])->group(function () {
     require __DIR__ . '/user.php';
 });
 
+
+// Dedicated route to serve payment receipts directly via PHP
+Route::get('/receipts/{filename}', [ReceiptController::class, 'show'])->name('receipts.show');
 
 Route::get('/leave-impersonation', [ImpersonateController::class, 'leave'])->name('impersonate.leave');
 

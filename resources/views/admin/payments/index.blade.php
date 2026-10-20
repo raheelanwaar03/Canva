@@ -60,7 +60,8 @@
             const screenshot = btn.getAttribute('data-screenshot');
             const proofBox = document.getElementById('modalProofBox');
             if (screenshot && screenshot.trim().length > 0) {
-                const imgUrl = '/storage/' + screenshot;
+                const cleanFileName = screenshot.replace(/^payments\//, '');
+                const imgUrl = '/receipts/' + cleanFileName;
                 proofBox.innerHTML = '<div class="mt-2 text-center">' +
                     '<span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Payment Receipt</span>' +
                     '<a href="' + imgUrl + '" target="_blank" class="block group">' +
