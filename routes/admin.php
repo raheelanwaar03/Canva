@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\PackageManagementController;
 use App\Http\Controllers\Admin\TaskManagementController;
 use App\Http\Controllers\Admin\ChannelManagementController;
 use App\Http\Controllers\Admin\ImpersonateController;
+use App\Http\Controllers\Admin\UserManagementController;
 
 
 
@@ -43,6 +44,10 @@ Route::put('/channels/{channel}', [ChannelManagementController::class, 'update']
 Route::post('/channels/{channel}/toggle', [ChannelManagementController::class, 'toggle'])->name('channels.toggle');
 Route::delete('/channels/{channel}', [ChannelManagementController::class, 'destroy'])->name('channels.destroy');
 
-
 // Impersonate / Login as user
 Route::post('/users/{user}/login-as', [ImpersonateController::class, 'loginAs'])->name('users.loginAs');
+
+// User Management
+Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
+Route::get('/users/{user}', [UserManagementController::class, 'show'])->name('users.show');
+Route::post('/users/{user}/adjust-balance', [UserManagementController::class, 'adjustBalance'])->name('users.adjustBalance');

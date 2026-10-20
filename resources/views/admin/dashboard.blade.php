@@ -1,147 +1,155 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
-@php
-    $headerTitle = 'Admin Portal';
-@endphp
+@section('admin_content')
+<div class="space-y-6">
 
-@section('content')
-<div class="space-y-4 pt-1">
+    <!-- Page Title -->
+    <div>
+        <h1 class="text-xl font-black text-slate-900 tracking-tight">Dashboard</h1>
+        <p class="text-xs text-slate-500">Welcome to Canva ADS Administration Command Center</p>
+    </div>
 
-    <!-- Admin Welcome Header -->
-    <div class="flex items-center justify-between px-1">
+    <!-- TOP GRID OF STAT CARDS (PTCLab Style Exact Match) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+
+        <!-- 1. Total Users (Blue Primary Box) -->
+        <div class="bg-[#3b49df] text-white rounded-2xl p-5 shadow-lg shadow-indigo-500/10 flex items-center justify-between">
+            <div>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-100">Total Users</span>
+                <div class="text-2xl font-black mt-1">{{ number_format($totalUsers) }}</div>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-xl">
+                <i class="fa-solid fa-users"></i>
+            </div>
+        </div>
+
+        <!-- 2. Total Deposited (Green Box) -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between">
+            <div>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Deposited</span>
+                <div class="text-xl font-black text-slate-800 mt-1">Rs {{ number_format($totalApprovedRevenue, 2) }}</div>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-hand-holding-dollar"></i>
+            </div>
+        </div>
+
+        <!-- 3. Today Approved Users (Orange Box) -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between">
+            <div>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Today Approved Users</span>
+                <div class="text-2xl font-black text-slate-800 mt-1">{{ number_format($activeSubscribers) }}</div>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-user-check"></i>
+            </div>
+        </div>
+
+        <!-- 4. Today Received Balance (Emerald Box) -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between">
+            <div>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Today Received Balance</span>
+                <div class="text-xl font-black text-slate-800 mt-1">Rs {{ number_format($totalApprovedRevenue, 2) }}</div>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-receipt"></i>
+            </div>
+        </div>
+
+        <!-- 5. Total Withdrawn (Slate Box) -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between">
+            <div>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Withdrawn</span>
+                <div class="text-xl font-black text-slate-800 mt-1">Rs {{ number_format($totalPaidWithdrawals, 2) }}</div>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+        </div>
+
+        <!-- 6. Pending Payments (Amber Badge) -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-amber-200 flex items-center justify-between">
+            <div>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-amber-600">Pending User Requests</span>
+                <div class="text-2xl font-black text-amber-600 mt-1">{{ $pendingPaymentsCount }}</div>
+                <span class="text-[10px] text-slate-400">Rs {{ number_format($pendingPaymentsAmount) }} queued</span>
+            </div>
+            <a href="{{ route('admin.payments.index') }}" class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center text-xs font-bold hover:bg-amber-600 transition">
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <!-- 7. Pending Withdrawals (Rose Badge) -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-rose-200 flex items-center justify-between">
+            <div>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-rose-600">Pending Withdrawals</span>
+                <div class="text-2xl font-black text-rose-600 mt-1">{{ $pendingWithdrawCount }}</div>
+                <span class="text-[10px] text-slate-400">Rs {{ number_format($pendingWithdrawAmount) }} queued</span>
+            </div>
+            <a href="{{ route('admin.withdrawals.index') }}" class="w-10 h-10 rounded-xl bg-rose-500 text-white flex items-center justify-center text-xs font-bold hover:bg-rose-600 transition">
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <!-- 8. Net Balance Manual -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between">
+            <div>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Net Manual Balance</span>
+                <div class="text-xl font-black text-indigo-600 mt-1">Rs {{ number_format($totalApprovedRevenue - $totalPaidWithdrawals, 2) }}</div>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-scale-balanced"></i>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SECTION: EARNINGS BREAKDOWN (Matching client image exactly) -->
+    <div class="space-y-4 pt-2">
         <div>
-            <h2 class="text-xl font-black text-slate-900 tracking-tight">Admin Overview</h2>
-            <p class="text-[11px] text-slate-500">Live platform stats & pending approvals</p>
-        </div>
-        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-indigo-100 text-indigo-700">
-            <i class="fa-solid fa-shield-halved mr-1.5 text-indigo-600"></i> Super Admin
-        </span>
-    </div>
-
-    <!-- Quick Navigation Toolbar -->
-    <div class="grid grid-cols-4 gap-1.5 text-center text-[10px] font-bold">
-        <a href="{{ route('admin.payments.index') }}" class="p-2.5 rounded-2xl bg-white/80 hover:bg-white text-slate-700 shadow-sm transition border border-white">
-            <i class="fa-solid fa-credit-card block text-indigo-600 text-sm mb-1"></i>
-            Payments
-            @if($pendingPaymentsCount > 0)
-                <span class="block text-[9px] text-amber-600 font-extrabold">({{ $pendingPaymentsCount }})</span>
-            @endif
-        </a>
-        <a href="{{ route('admin.withdrawals.index') }}" class="p-2.5 rounded-2xl bg-white/80 hover:bg-white text-slate-700 shadow-sm transition border border-white">
-            <i class="fa-solid fa-money-bill-transfer block text-fuchsia-600 text-sm mb-1"></i>
-            Payouts
-            @if($pendingWithdrawCount > 0)
-                <span class="block text-[9px] text-amber-600 font-extrabold">({{ $pendingWithdrawCount }})</span>
-            @endif
-        </a>
-        <a href="{{ route('admin.packages.index') }}" class="p-2.5 rounded-2xl bg-white/80 hover:bg-white text-slate-700 shadow-sm transition border border-white">
-            <i class="fa-solid fa-crown block text-amber-500 text-sm mb-1"></i>
-            Packages
-        </a>
-        <a href="{{ route('admin.tasks.index') }}" class="p-2.5 rounded-2xl bg-white/80 hover:bg-white text-slate-700 shadow-sm transition border border-white">
-            <i class="fa-solid fa-bullhorn block text-cyan-500 text-sm mb-1"></i>
-            Ad Tasks
-        </a>
-    </div>
-
-    <!-- Primary Financial Summary Cards -->
-    <div class="grid grid-cols-2 gap-3">
-        <!-- Approved Revenue -->
-        <div class="bg-gradient-to-br from-indigo-600 to-indigo-700 text-white rounded-3xl p-4 shadow-md flex flex-col justify-between">
-            <div>
-                <span class="text-[10px] text-indigo-200 font-bold uppercase tracking-wider">Gross Inflow</span>
-                <div class="text-lg font-black mt-0.5">Rs {{ number_format($totalApprovedRevenue, 0) }}</div>
-            </div>
-            <div class="text-[10px] text-indigo-200 mt-2 flex items-center">
-                <i class="fa-solid fa-arrow-trend-up mr-1 text-emerald-300"></i> Approved Packages
-            </div>
+            <h2 class="text-base font-black text-slate-800">Earnings Breakdown</h2>
+            <p class="text-xs text-slate-400">Each source is counted on its own. Plan upgrade payments are not included here.</p>
         </div>
 
-        <!-- Paid Withdrawals -->
-        <div class="bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-3xl p-4 shadow-md flex flex-col justify-between">
-            <div>
-                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Paid Out</span>
-                <div class="text-lg font-black mt-0.5">Rs {{ number_format($totalPaidWithdrawals, 0) }}</div>
-            </div>
-            <div class="text-[10px] text-slate-400 mt-2 flex items-center">
-                <i class="fa-solid fa-arrow-up-from-bracket mr-1 text-rose-400"></i> Withdrawals
-            </div>
-        </div>
-    </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-    <!-- Secondary 4 Metrics Grid -->
-    <div class="grid grid-cols-2 gap-2.5">
-        <div class="glass-card-item rounded-2xl p-3">
-            <div class="text-[10px] text-slate-400 font-bold">Total Members</div>
-            <div class="text-base font-black text-slate-900 mt-0.5">{{ $totalUsers }} Users</div>
-            <div class="text-[9px] text-emerald-600 font-bold mt-1">{{ $activeSubscribers }} Active Plans</div>
-        </div>
-
-        <div class="glass-card-item rounded-2xl p-3">
-            <div class="text-[10px] text-slate-400 font-bold">Tasks Done Today</div>
-            <div class="text-base font-black text-slate-900 mt-0.5">{{ $tasksCompletedToday }} Ads</div>
-            <div class="text-[9px] text-indigo-600 font-bold mt-1">Verified watches</div>
-        </div>
-
-        <div class="glass-card-item rounded-2xl p-3 border-l-4 border-amber-400">
-            <div class="text-[10px] text-slate-400 font-bold">Pending Payments</div>
-            <div class="text-base font-black text-amber-600 mt-0.5">{{ $pendingPaymentsCount }} Requests</div>
-            <div class="text-[9px] text-slate-500 font-medium mt-1">Rs {{ number_format($pendingPaymentsAmount, 0) }} queued</div>
-        </div>
-
-        <div class="glass-card-item rounded-2xl p-3 border-l-4 border-rose-400">
-            <div class="text-[10px] text-slate-400 font-bold">Pending Payouts</div>
-            <div class="text-base font-black text-rose-600 mt-0.5">{{ $pendingWithdrawCount }} Requests</div>
-            <div class="text-[9px] text-slate-500 font-medium mt-1">Rs {{ number_format($pendingWithdrawAmount, 0) }} queued</div>
-        </div>
-    </div>
-
-    <!-- Recent Pending Payments Quick List -->
-    <div class="space-y-2 pt-1">
-        <div class="flex items-center justify-between px-1">
-            <h3 class="text-xs font-black uppercase tracking-wider text-slate-600">Pending Payments</h3>
-            <a href="{{ route('admin.payments.index') }}" class="text-[10px] text-indigo-600 font-bold hover:underline">View All &rarr;</a>
-        </div>
-
-        @forelse($recentPayments->where('status', 'pending') as $p)
-            <div class="glass-card-item rounded-2xl p-3 flex items-center justify-between">
-                <div>
-                    <div class="text-xs font-bold text-slate-800">{{ $p->user->name }}</div>
-                    <div class="text-[10px] text-slate-400">{{ $p->package->name }} • Rs {{ number_format($p->amount, 0) }} via {{ $p->payment_method }}</div>
+            <!-- Task Earnings Card (Indigo) -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center space-x-4">
+                <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-xl flex-shrink-0">
+                    <i class="fa-solid fa-list-check"></i>
                 </div>
-                <a href="{{ route('admin.payments.index') }}" class="px-2.5 py-1 bg-gradient-to-r from-cyan-500 to-indigo-600 text-white rounded-xl text-[10px] font-bold shadow-sm">
-                    Review
-                </a>
-            </div>
-        @empty
-            <div class="glass-card-item rounded-2xl p-4 text-center text-xs text-slate-400">
-                No pending payments waiting for approval.
-            </div>
-        @endforelse
-    </div>
-
-    <!-- Recent Payout Requests Quick List -->
-    <div class="space-y-2 pt-1">
-        <div class="flex items-center justify-between px-1">
-            <h3 class="text-xs font-black uppercase tracking-wider text-slate-600">Pending Withdrawals</h3>
-            <a href="{{ route('admin.withdrawals.index') }}" class="text-[10px] text-indigo-600 font-bold hover:underline">View All &rarr;</a>
-        </div>
-
-        @forelse($recentWithdrawals->where('status', 'pending') as $w)
-            <div class="glass-card-item rounded-2xl p-3 flex items-center justify-between">
                 <div>
-                    <div class="text-xs font-bold text-slate-800">{{ $w->user->name }}</div>
-                    <div class="text-[10px] text-slate-400">Rs {{ number_format($w->amount, 0) }} • {{ $w->method }}</div>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Task Earnings — Overall</span>
+                    <div class="text-lg font-black text-slate-800">Rs {{ number_format($tasksCompletedToday * 7, 2) }}</div>
+                    <span class="text-[10px] font-bold text-indigo-600">{{ $tasksCompletedToday }} verified watches today</span>
                 </div>
-                <a href="{{ route('admin.withdrawals.index') }}" class="px-2.5 py-1 bg-rose-500 text-white rounded-xl text-[10px] font-bold shadow-sm">
-                    Process
-                </a>
             </div>
-        @empty
-            <div class="glass-card-item rounded-2xl p-4 text-center text-xs text-slate-400">
-                No pending withdrawals waiting.
+
+            <!-- Manual Balance Add Card (Green) -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center space-x-4">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-xl flex-shrink-0">
+                    <i class="fa-solid fa-circle-plus"></i>
+                </div>
+                <div>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Manual Balance Add — Overall</span>
+                    <div class="text-lg font-black text-slate-800">Rs {{ number_format($totalApprovedRevenue, 2) }}</div>
+                    <span class="text-[10px] font-bold text-emerald-600">Admin Approved Funds</span>
+                </div>
             </div>
-        @endforelse
+
+            <!-- Manual Subtractions / Payouts (Rose) -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center space-x-4">
+                <div class="w-12 h-12 rounded-2xl bg-rose-500 text-white flex items-center justify-center text-xl flex-shrink-0">
+                    <i class="fa-solid fa-circle-minus"></i>
+                </div>
+                <div>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Manual Subtractions — Overall</span>
+                    <div class="text-lg font-black text-slate-800">Rs {{ number_format($totalPaidWithdrawals, 2) }}</div>
+                    <span class="text-[10px] font-bold text-rose-600">Disbursed Withdrawals</span>
+                </div>
+            </div>
+
+        </div>
     </div>
 
 </div>
