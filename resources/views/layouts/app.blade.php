@@ -113,9 +113,9 @@
     <div
         class="w-full max-w-[430px] min-h-screen relative flex flex-col justify-between pb-24 shadow-2xl bg-white/20 backdrop-blur-sm z-10">
 
-        <!-- Top Header Navigation (Exact Match to user.jpeg) -->
-        <header class="px-5 pt-6 pb-2 flex items-center justify-between z-20">
-            <!-- Cavaearn Branded Header -->
+        <!-- Top Header Navigation -->
+        <header class="px-5 pt-6 pb-2 flex items-center justify-between z-20 relative">
+            <!-- Redesigned CanvaEdits Header -->
             <a href="{{ route('dashboard') }}" class="flex items-center space-x-2.5 group">
                 <div
                     class="w-9 h-9 rounded-xl overflow-hidden shadow-md group-hover:scale-105 transition-transform flex-shrink-0 border border-white/20">
@@ -129,7 +129,7 @@
                 </div>
             </a>
 
-            <div class="flex items-center space-x-2.5">
+            <div class="flex items-center space-x-2.5 relative">
                 <!-- Notifications Bell -->
                 <button type="button"
                     class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-700 relative hover:bg-slate-50 transition">
@@ -137,20 +137,57 @@
                     <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full"></span>
                 </button>
 
-                <!-- User Avatar / Initials Pill with Dropdown Arrow -->
-                <a href="{{ route('profile.edit') }}"
-                    class="flex items-center space-x-1 pl-1 pr-2 py-1 rounded-full bg-white shadow-sm hover:bg-slate-50 transition border border-slate-100">
-                    <div
-                        class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-inner overflow-hidden">
-                        @if (auth()->user()->avatar)
-                            <img src="{{ auth()->user()->profile_photo_url }}" class="w-full h-full object-cover"
-                                alt="DP">
-                        @else
-                            {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
-                        @endif
+                <!-- Interactive User Avatar / Initials Dropdown Pill -->
+                <div class="relative">
+                    <button type="button" id="userMenuButton" onclick="toggleUserMenu()"
+                        class="flex items-center space-x-1 pl-1 pr-2 py-1 rounded-full bg-white shadow-sm hover:bg-slate-50 active:scale-95 transition border border-slate-100 focus:outline-none">
+                        <div
+                            class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-inner overflow-hidden">
+                            @if (auth()->check() && auth()->user()->avatar)
+                                <img src="{{ auth()->user()->profile_photo_url }}" class="w-full h-full object-cover"
+                                    alt="DP">
+                            @elseif(auth()->check())
+                                {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
+                            @else
+                                CE
+                            @endif
+                        </div>
+                        <i id="userMenuChevron"
+                            class="fa-solid fa-chevron-down text-[10px] text-slate-400 transition-transform duration-200"></i>
+                    </button>
+
+                    <!-- Dropdown Menu / Action Sheet -->
+                    <div id="userDropdownMenu"
+                        class="hidden absolute right-0 mt-2 w-48 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-white py-2 z-50 transform origin-top-right transition-all">
+
+                        <!-- User Name Header -->
+                        <div class="px-3.5 py-2 border-b border-slate-100">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Signed in
+                                as</span>
+                            <span
+                                class="text-xs font-black text-slate-800 truncate block">{{ auth()->user()->name ?? 'User' }}</span>
+                        </div>
+
+                        <!-- 1. Go to Account Settings -->
+                        <a href="{{ route('profile.edit') }}"
+                            class="flex items-center space-x-2.5 px-3.5 py-2.5 text-xs font-bold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition">
+                            <i class="fa-regular fa-user text-sm text-indigo-500 w-4 text-center"></i>
+                            <span>Account Settings</span>
+                        </a>
+
+                        <!-- 2. Logout Action -->
+                        <form method="POST" action="{{ route('logout') }}" class="pt-1 border-t border-slate-100">
+                            @csrf
+                            <button type="submit"
+                                class="w-full flex items-center space-x-2.5 px-3.5 py-2.5 text-xs font-bold text-rose-600 hover:bg-rose-50 transition text-left">
+                                <i
+                                    class="fa-solid fa-arrow-right-from-bracket text-sm text-rose-500 w-4 text-center"></i>
+                                <span>Sign Out</span>
+                            </button>
+                        </form>
                     </div>
-                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
-                </a>
+                </div>
+
             </div>
         </header>
 
@@ -212,6 +249,33 @@
     </div>
 
     @stack('scripts')
+
+    <script>
+        function toggleUserMenu() {
+            const menu = document.getElementById('userDropdownMenu');
+            const chevron = document.getElementById('userMenuChevron');
+            if (!menu) return;
+
+            menu.classList.toggle('hidden');
+            if (chevron) {
+                chevron.classList.toggle('rotate-180');
+            }
+        }
+
+        // Close dropdown when tapping anywhere outside
+        document.addEventListener('click', function(event) {
+            const button = document.getElementById('userMenuButton');
+            const menu = document.getElementById('userDropdownMenu');
+            const chevron = document.getElementById('userMenuChevron');
+
+            if (button && menu && !button.contains(event.target) && !menu.contains(event.target)) {
+                menu.classList.add('hidden');
+                if (chevron) {
+                    chevron.classList.remove('rotate-180');
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>
