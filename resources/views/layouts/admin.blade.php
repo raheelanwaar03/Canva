@@ -8,8 +8,8 @@
     <title>{{ $title ?? 'Admin Panel' }} — Cavaearn</title>
 
     <!-- Cavaearn Admin Favicon -->
-    <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='ceFavAdm' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%233b49df'/><stop offset='50%25' stop-color='%2300c4cc'/><stop offset='100%25' stop-color='%237c3aed'/></linearGradient></defs><rect width='100' height='100' rx='28' fill='url(%23ceFavAdm)'/><text x='50' y='64' font-family='Arial, sans-serif' font-weight='900' font-size='42' font-style='italic' fill='%23ffffff' text-anchor='middle'>C</text><circle cx='76' cy='24' r='6' fill='%2300ffc2'/></svg>">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}?v=3">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('images/logo-icon.png') }}?v=3">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -52,14 +52,13 @@
         <!-- Logo / Brand Header -->
         <div class="h-16 flex items-center justify-between px-5 border-b border-slate-800/80 bg-[#090d14]">
             <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-2.5">
-                <div
-                    class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-cyan-400 via-indigo-500 to-fuchsia-500 flex items-center justify-center text-white text-base font-black italic shadow">
-                    C
+                <div class="w-9 h-9 rounded-xl overflow-hidden shadow-md flex-shrink-0 border border-slate-800">
+                    <img src="{{ asset('images/logo-icon.png') }}" alt="Cavaearn" class="w-full h-full object-cover">
                 </div>
-                <div>
-                    <div class="leading-none">
-                        <span class="canvearn-brand-script text-xl font-bold text-[#00c4cc]">Cava</span><span
-                            class="text-white font-extrabold text-sm tracking-tight">earn</span>
+                <div class="leading-none">
+                    <div class="flex items-baseline">
+                        <span class="canvearn-brand-script text-xl font-bold text-[#00c4cc]">Cava</span>
+                        <span class="text-white font-extrabold text-sm tracking-tight ml-0.5">earn</span>
                     </div>
                     <span class="text-[9px] text-indigo-400 font-bold tracking-widest block mt-0.5">ADMIN PANEL</span>
                 </div>

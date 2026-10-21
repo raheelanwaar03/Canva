@@ -7,9 +7,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Cavaearn — Digital Advertising & Earnings Platform</title>
 
-    <!-- Cavaearn SVG Favicon -->
-    <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='cavaFav' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%2300c4cc'/><stop offset='50%25' stop-color='%234f46e5'/><stop offset='100%25' stop-color='%238b5cf6'/></linearGradient></defs><rect width='100' height='100' rx='28' fill='url(%23cavaFav)'/><text x='50' y='64' font-family='Arial, sans-serif' font-weight='900' font-size='42' font-style='italic' fill='%23ffffff' text-anchor='middle'>C</text><circle cx='76' cy='24' r='6' fill='%2300ffc2'/></svg>">
+    <!-- Cavaearn Branded Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}?v=3">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('images/logo-icon.png') }}?v=3">
 
     <!-- Fonts: Plus Jakarta Sans & Custom Script Font for Canva -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -115,17 +115,19 @@
 
         <!-- Top Header Navigation (Exact Match to user.jpeg) -->
         <header class="px-5 pt-6 pb-2 flex items-center justify-between z-20">
-            <!-- Brand Script Logo -->
-            <a href="{{ route('dashboard') }}" class="flex items-center space-x-2 group">
+            <!-- Cavaearn Branded Header -->
+            <a href="{{ route('dashboard') }}" class="flex items-center space-x-2.5 group">
+                <!-- Iconic 3D Rounded Icon -->
                 <div
-                    class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-cyan-400 via-indigo-600 to-fuchsia-600 p-[2px] shadow-md group-hover:scale-105 transition-transform flex-shrink-0">
-                    <div class="w-full h-full bg-[#000842] rounded-2xl flex items-center justify-center">
-                        <span class="text-white font-black text-sm italic tracking-tighter">C</span>
-                    </div>
+                    class="w-9 h-9 rounded-xl overflow-hidden shadow-md group-hover:scale-105 transition-transform flex-shrink-0 border border-white/20">
+                    <img src="{{ asset('images/logo-icon.png') }}" alt="Cavaearn Icon"
+                        class="w-full h-full object-cover">
                 </div>
-                <div class="leading-none">
-                    <span class="canvearn-brand-script text-2xl font-black text-[#00c4cc]">Cava</span><span
-                        class="text-xl font-black text-indigo-600 tracking-tight">earn</span>
+                <!-- Stylish brand title with fixed size & flexbox to never spill -->
+                <div class="leading-none flex items-baseline">
+                    <span
+                        class="canvearn-brand-script text-[26px] font-black text-[#00c4cc] drop-shadow-sm tracking-tight">Cava</span>
+                    <span class="text-xl font-extrabold text-indigo-600 tracking-tight ml-0.5">earn</span>
                 </div>
             </a>
 

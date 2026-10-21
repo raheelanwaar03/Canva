@@ -10,13 +10,10 @@
             <div class="absolute -bottom-12 -left-12 w-36 h-36 bg-fuchsia-400/30 rounded-full blur-2xl pointer-events-none">
             </div>
 
-            <!-- Centered Cavaearn Circular Badge with Glowing Ring -->
+            <!-- Centered Cavaearn Token Icon -->
             <div
-                class="w-20 h-20 rounded-full p-[3px] bg-gradient-to-tr from-cyan-400 via-indigo-400 to-purple-500 mx-auto shadow-2xl mb-3 flex items-center justify-center">
-                <div class="w-full h-full rounded-full bg-[#001042] flex flex-col items-center justify-center shadow-inner">
-                    <span class="canvearn-brand-script text-white text-2xl font-bold tracking-tight">Cava</span>
-                    <span class="text-[8px] font-black text-cyan-300 tracking-widest uppercase -mt-1.5">EARN</span>
-                </div>
+                class="w-16 h-16 rounded-2xl overflow-hidden shadow-2xl border-2 border-white/40 mx-auto mb-3.5 flex items-center justify-center bg-slate-900">
+                <img src="{{ asset('images/logo-icon.png') }}" alt="Cavaearn" class="w-full h-full object-cover">
             </div>
 
             <!-- User Name -->
