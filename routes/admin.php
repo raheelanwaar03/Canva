@@ -51,3 +51,10 @@ Route::post('/users/{user}/login-as', [ImpersonateController::class, 'loginAs'])
 Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
 Route::get('/users/{user}', [UserManagementController::class, 'show'])->name('users.show');
 Route::post('/users/{user}/adjust-balance', [UserManagementController::class, 'adjustBalance'])->name('users.adjustBalance');
+
+// User Details, Editing & Management
+Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
+Route::get('/users/{user}', [UserManagementController::class, 'show'])->name('users.show');
+Route::get('/users/{user}/edit', [UserManagementController::class, 'edit'])->name('users.edit');
+Route::put('/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
+Route::post('/users/{user}/adjust-balance', [UserManagementController::class, 'adjustBalance'])->name('users.adjustBalance');
