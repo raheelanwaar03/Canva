@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'Admin Panel' }} — Canva ADS</title>
+    <title>{{ $title ?? 'Admin Panel' }} — Cavaearn</title>
+
+    <!-- Cavaearn Admin Favicon -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='ceFavAdm' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%233b49df'/><stop offset='50%25' stop-color='%2300c4cc'/><stop offset='100%25' stop-color='%237c3aed'/></linearGradient></defs><rect width='100' height='100' rx='28' fill='url(%23ceFavAdm)'/><text x='50' y='64' font-family='Arial, sans-serif' font-weight='900' font-size='42' font-style='italic' fill='%23ffffff' text-anchor='middle'>C</text><circle cx='76' cy='24' r='6' fill='%2300ffc2'/></svg>">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,29 +23,45 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+
         /* Custom scrollbar for sidebar */
-        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
-        .sidebar-scroll::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+        .sidebar-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar-scroll::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 4px;
+        }
     </style>
 </head>
+
 <body class="text-slate-800 antialiased flex min-h-screen bg-[#f4f6f9]">
 
     <!-- Overlay for Mobile Sidebar -->
     <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden lg:hidden"></div>
 
     <!-- 1. DARK SIDEBAR (PTCLab Style) -->
-    <aside id="adminSidebar" class="fixed top-0 bottom-0 left-0 w-64 bg-[#0c1017] text-slate-300 z-50 flex flex-col transition-transform duration-300 -translate-x-full lg:translate-x-0 shadow-2xl">
+    <aside id="adminSidebar"
+        class="fixed top-0 bottom-0 left-0 w-64 bg-[#0c1017] text-slate-300 z-50 flex flex-col transition-transform duration-300 -translate-x-full lg:translate-x-0 shadow-2xl">
 
         <!-- Logo / Brand Header -->
         <div class="h-16 flex items-center justify-between px-5 border-b border-slate-800/80 bg-[#090d14]">
             <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-2.5">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-400 via-indigo-500 to-fuchsia-500 flex items-center justify-center text-white text-xs font-black italic shadow">
+                <div
+                    class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-cyan-400 via-indigo-500 to-fuchsia-500 flex items-center justify-center text-white text-base font-black italic shadow">
                     C
                 </div>
                 <div>
-                    <span class="text-white font-black tracking-wider text-sm block">CANVA ADS</span>
-                    <span class="text-[9px] text-indigo-400 font-bold tracking-widest block -mt-1">ADMIN PORTAL</span>
+                    <div class="leading-none">
+                        <span class="canvearn-brand-script text-xl font-bold text-[#00c4cc]">Cava</span><span
+                            class="text-white font-extrabold text-sm tracking-tight">earn</span>
+                    </div>
+                    <span class="text-[9px] text-indigo-400 font-bold tracking-widest block mt-0.5">ADMIN PANEL</span>
                 </div>
             </a>
             <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-white text-lg">
@@ -52,13 +73,15 @@
         <nav class="flex-1 overflow-y-auto sidebar-scroll py-4 px-3 space-y-1 text-xs font-semibold">
 
             <!-- Dashboard Link -->
-            <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.dashboard*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white' }}">
+            <a href="{{ route('admin.dashboard') }}"
+                class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.dashboard*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white' }}">
                 <i class="fa-solid fa-house w-4 text-center"></i>
                 <span class="flex-1">Dashboard</span>
             </a>
 
             <!-- All Approved Users -->
-            <a href="{{ route('admin.users.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.users.*') ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white' }}">
+            <a href="{{ route('admin.users.index') }}"
+                class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.users.*') ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white' }}">
                 <i class="fa-regular fa-circle-check w-4 text-center"></i>
                 <span class="flex-1">All Approved Users</span>
             </a>
@@ -68,25 +91,30 @@
                 $pendingDeposits = \App\Models\PackagePayment::where('status', 'pending')->count();
                 $pendingWithdrawalsCount = \App\Models\Withdrawal::where('status', 'pending')->count();
             @endphp
-            <a href="{{ route('admin.payments.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.payments.*') ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white' }}">
+            <a href="{{ route('admin.payments.index') }}"
+                class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.payments.*') ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white' }}">
                 <i class="fa-regular fa-circle-dot w-4 text-center"></i>
                 <span class="flex-1">New User Request</span>
-                @if($pendingDeposits > 0)
-                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-500 text-white animate-pulse">{{ $pendingDeposits }}</span>
+                @if ($pendingDeposits > 0)
+                    <span
+                        class="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-500 text-white animate-pulse">{{ $pendingDeposits }}</span>
                 @endif
             </a>
 
             <!-- Withdrawal Requests -->
-            <a href="{{ route('admin.withdrawals.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.withdrawals.*') ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white' }}">
+            <a href="{{ route('admin.withdrawals.index') }}"
+                class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.withdrawals.*') ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white' }}">
                 <i class="fa-solid fa-money-bill-transfer w-4 text-center"></i>
                 <span class="flex-1">Withdrawal Request</span>
-                @if($pendingWithdrawalsCount > 0)
-                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-white">{{ $pendingWithdrawalsCount }}</span>
+                @if ($pendingWithdrawalsCount > 0)
+                    <span
+                        class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-white">{{ $pendingWithdrawalsCount }}</span>
                 @endif
             </a>
 
             <!-- Plan Upgrades -->
-            <a href="{{ route('admin.packages.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.packages.*') ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white' }}">
+            <a href="{{ route('admin.packages.index') }}"
+                class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.packages.*') ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white' }}">
                 <i class="fa-solid fa-arrow-up-right-dots w-4 text-center"></i>
                 <span class="flex-1">Plan Upgrade Settings</span>
             </a>
@@ -97,13 +125,15 @@
             </div>
 
             <!-- Ad Tasks -->
-            <a href="{{ route('admin.tasks.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.tasks.*') ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white' }}">
+            <a href="{{ route('admin.tasks.index') }}"
+                class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.tasks.*') ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white' }}">
                 <i class="fa-solid fa-bullhorn w-4 text-center"></i>
                 <span class="flex-1">Daily Ads Inventory</span>
             </a>
 
             <!-- Official Channels -->
-            <a href="{{ route('admin.channels.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.channels.*') ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white' }}">
+            <a href="{{ route('admin.channels.index') }}"
+                class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.channels.*') ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white' }}">
                 <i class="fa-solid fa-paper-plane w-4 text-center"></i>
                 <span class="flex-1">Official Channels</span>
             </a>
@@ -120,7 +150,8 @@
     <div class="flex-1 flex flex-col min-w-0 lg:pl-64">
 
         <!-- Top Header Navigation Bar -->
-        <header class="h-16 bg-[#000842] text-white flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 shadow-md">
+        <header
+            class="h-16 bg-[#000842] text-white flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 shadow-md">
 
             <div class="flex items-center space-x-3 flex-1 max-w-lg">
                 <!-- Hamburger Button (Mobile) -->
@@ -134,7 +165,7 @@
                         <i class="fa-solid fa-magnifying-glass text-xs"></i>
                     </div>
                     <input type="text" placeholder="Search here..."
-                           class="w-full bg-white/10 text-white placeholder-slate-300 text-xs rounded-xl pl-8 pr-3 py-2 border border-white/20 focus:outline-none focus:bg-white/20 transition">
+                        class="w-full bg-white/10 text-white placeholder-slate-300 text-xs rounded-xl pl-8 pr-3 py-2 border border-white/20 focus:outline-none focus:bg-white/20 transition">
                 </div>
             </div>
 
@@ -142,7 +173,7 @@
             <div class="flex items-center space-x-3">
                 <a href="{{ route('admin.payments.index') }}" class="relative p-2 text-slate-200 hover:text-white">
                     <i class="fa-regular fa-bell text-base"></i>
-                    @if($pendingDeposits > 0)
+                    @if ($pendingDeposits > 0)
                         <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full"></span>
                     @endif
                 </a>
@@ -152,7 +183,8 @@
                     <span class="hidden sm:block text-xs font-bold text-white">{{ auth()->user()->name }}</span>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" title="Logout" class="w-8 h-8 rounded-full bg-white/10 hover:bg-rose-500 text-white flex items-center justify-center text-xs transition">
+                        <button type="submit" title="Logout"
+                            class="w-8 h-8 rounded-full bg-white/10 hover:bg-rose-500 text-white flex items-center justify-center text-xs transition">
                             <i class="fa-solid fa-arrow-right-from-bracket"></i>
                         </button>
                     </form>
@@ -178,4 +210,5 @@
 
     @stack('scripts')
 </body>
+
 </html>

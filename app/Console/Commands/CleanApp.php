@@ -64,7 +64,7 @@ class CleanApp extends Command
         // 5. Create Default Admin Account
         $this->info('Creating Default Admin...');
         $admin = User::create([
-            'name' => 'Canva ADS Admin',
+            'name' => 'Cavaearn ADS Admin',
             'email' => 'admin@gmail.com',
             'password' => Hash::make('asdfasdf'),
             'referral_code' => 'ADMIN01',
@@ -106,7 +106,7 @@ class CleanApp extends Command
         ]);
 
         // 7. Seed the 4 Packages with Client V2 Limits & Commissions
-        $this->info('Seeding the 4 Canva ADS Packages...');
+        $this->info('Seeding the 4 Cavaearn Packages...');
         $packages = [
             [
                 'name' => 'Basic',
@@ -149,11 +149,11 @@ class CleanApp extends Command
         // 8. Seed Default Advertising Tasks
         $this->info('Seeding default advertising tasks...');
         $ads = [
-            ['title' => 'Canva Pro Brand Kit Promotion', 'description' => 'Explore corporate design branding templates on Canva.', 'ad_url' => 'https://canva.com', 'duration_seconds' => 15, 'is_active' => true],
-            ['title' => 'AI Magic Studio Sponsored Ad', 'description' => 'Discover generative AI design tools for marketing collateral.', 'ad_url' => 'https://canva.com', 'duration_seconds' => 15, 'is_active' => true],
-            ['title' => 'Social Media Video Ads Spotlight', 'description' => 'View short-form video template animations and trends.', 'ad_url' => 'https://canva.com', 'duration_seconds' => 15, 'is_active' => true],
-            ['title' => 'Print On Demand Commercial Feature', 'description' => 'Review custom business card and merchandise print services.', 'ad_url' => 'https://canva.com', 'duration_seconds' => 15, 'is_active' => true],
-            ['title' => 'Canva Enterprise Collaboration Ad', 'description' => 'Learn how modern global teams design together in real-time.', 'ad_url' => 'https://canva.com', 'duration_seconds' => 15, 'is_active' => true],
+            ['title' => 'Cavaearn Pro Brand Kit Promotion', 'description' => 'Explore corporate design branding templates on Cavaearn.', 'ad_url' => 'https://Cavaearn.com', 'duration_seconds' => 15, 'is_active' => true],
+            ['title' => 'AI Magic Studio Sponsored Ad', 'description' => 'Discover generative AI design tools for marketing collateral.', 'ad_url' => 'https://Cavaearn.com', 'duration_seconds' => 15, 'is_active' => true],
+            ['title' => 'Social Media Video Spotlight', 'description' => 'View short-form video template animations and trends.', 'ad_url' => 'https://Cavaearn.com', 'duration_seconds' => 15, 'is_active' => true],
+            ['title' => 'Print On Demand Commercial Feature', 'description' => 'Review custom business card and merchandise print services.', 'ad_url' => 'https://Cavaearn.com', 'duration_seconds' => 15, 'is_active' => true],
+            ['title' => 'Cavaearn Enterprise Collaboration Ad', 'description' => 'Learn how modern global teams design together in real-time.', 'ad_url' => 'https://Cavaearn.com', 'duration_seconds' => 15, 'is_active' => true],
         ];
 
         foreach ($ads as $ad) {
@@ -163,14 +163,14 @@ class CleanApp extends Command
         // 9. Seed Official Community Channels
         $this->info('Seeding default official channels...');
         Channel::create([
-            'title' => 'Canva Official',
-            'url' => 'https://t.me/canva_official',
+            'title' => 'Cavaearn Official',
+            'url' => 'https://t.me/Cavaearn_official',
             'icon' => 'fa-brands fa-telegram',
             'is_active' => true,
         ]);
 
         Channel::create([
-            'title' => 'Canva Extra Bonus & Rewards',
+            'title' => 'Cavaearn Extra Bonus & Rewards',
             'url' => 'https://chat.whatsapp.com/sample_invite',
             'icon' => 'fa-brands fa-whatsapp',
             'is_active' => true,

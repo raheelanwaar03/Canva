@@ -10,11 +10,12 @@
             <div class="absolute -bottom-12 -left-12 w-36 h-36 bg-fuchsia-400/30 rounded-full blur-2xl pointer-events-none">
             </div>
 
-            <!-- Centered Canva Circular Badge with Glowing Ring -->
+            <!-- Centered Cavaearn Circular Badge with Glowing Ring -->
             <div
                 class="w-20 h-20 rounded-full p-[3px] bg-gradient-to-tr from-cyan-400 via-indigo-400 to-purple-500 mx-auto shadow-2xl mb-3 flex items-center justify-center">
-                <div class="w-full h-full rounded-full bg-[#001042] flex items-center justify-center shadow-inner">
-                    <span class="canva-brand-script text-white text-2xl font-bold tracking-tight">Canva</span>
+                <div class="w-full h-full rounded-full bg-[#001042] flex flex-col items-center justify-center shadow-inner">
+                    <span class="canvearn-brand-script text-white text-2xl font-bold tracking-tight">Cava</span>
+                    <span class="text-[8px] font-black text-cyan-300 tracking-widest uppercase -mt-1.5">EARN</span>
                 </div>
             </div>
 
@@ -377,7 +378,7 @@
             <!-- 1 to 2 Lines of Explanatory Text -->
             <div class="p-2.5 bg-slate-50/90 rounded-2xl border border-slate-100 text-center">
                 <p class="text-[11px] text-slate-700 leading-snug font-medium">
-                    Canva ADS is a registered and active taxpayer under the Federal Board of Revenue (FBR). All digital
+                    Cavaearn ADS is a registered and active taxpayer under the Federal Board of Revenue (FBR). All digital
                     advertisement and payout operations comply with national tax regulations.
                 </p>
             </div>
@@ -388,7 +389,6 @@
                 class="w-full text-white font-bold py-2.5 rounded-xl text-xs shadow-md hover:opacity-95 transition">
                 Close
             </button>
-
         </div>
     </div>
 
@@ -473,21 +473,21 @@
                 </div>
                 <div>
                     <h3 class="text-sm font-black text-slate-900">About Us</h3>
-                    <span class="text-[10px] text-slate-400 font-semibold">Canva Platform</span>
+                    <span class="text-[10px] text-slate-400 font-semibold">Cavaearn Platform</span>
                 </div>
             </div>
             <div
                 class="space-y-2.5 text-xs text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100 max-h-72 overflow-y-auto">
-                <p class="font-bold text-slate-900 text-xs">About Us — Canva</p>
+                <p class="font-bold text-slate-900 text-xs">About Us — Cavaearn</p>
                 <p>
-                    Canva is a well-known online design platform founded in 2013, with users around the world. Our platform
-                    is designed to provide members with a simple digital experience, featuring task activities, referral
-                    options, package information, and a user-friendly dashboard.
+                    Cavaearn is a modern digital advertising and rewards platform designed to provide members with a
+                    transparent online earning experience. Our platform connects advertisers with active viewers through
+                    daily task activities, verified rewards, team building, and an intuitive dashboard.
                 </p>
                 <p>
-                    Members can explore available tasks, track their account activity, manage their wallet, and invite
-                    others through the referral system. Our goal is to keep the platform organized, accessible, and easy to
-                    navigate.
+                    Members can explore available tasks, track their daily progress, manage their dual-wallet earnings, and
+                    invite others through the referral tier structure. Our mission is to keep the platform fast, secure, and
+                    rewarding for our community.
                 </p>
             </div>
             <button type="button" onclick="closeModal('aboutModal')"
@@ -512,7 +512,7 @@
             <p class="text-xs text-slate-500">Need help with package activation or withdrawal?</p>
             <div class="space-y-1.5 text-xs text-slate-700 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
                 <div><span class="text-slate-400">Support Hours:</span> <strong>9:00 AM – 10:00 PM</strong></div>
-                <div><span class="text-slate-400">Email:</span> <strong>support@canvaads.com</strong></div>
+                <div><span class="text-slate-400">Email:</span> <strong>support@cavaearn.com</strong></div>
                 <div><span class="text-slate-400">WhatsApp:</span> <strong class="font-mono">+92 300 1234567</strong>
                 </div>
             </div>

@@ -11,7 +11,7 @@
         <div class="flex flex-col items-center">
             <div
                 class="w-20 h-20 rounded-full bg-gradient-to-tr from-cyan-400 via-indigo-500 to-fuchsia-500 flex flex-col items-center justify-center shadow-lg border-2 border-white/60">
-                <span class="font-extrabold text-white text-lg tracking-wider italic">Canva</span>
+                <span class="font-extrabold text-white text-lg tracking-wider italic">Cavaearn</span>
                 <span class="font-black text-white text-[11px] tracking-widest -mt-1">ADS</span>
             </div>
             <h2 class="text-xl font-black text-slate-800 mt-2">Wallet</h2>
@@ -22,7 +22,7 @@
             class="hidden p-3.5 bg-rose-50 border border-rose-200 text-rose-600 rounded-2xl text-xs font-bold shadow-sm flex items-center justify-between transition-all duration-300">
             <div class="flex items-center space-x-2">
                 <i class="fa-solid fa-circle-exclamation text-rose-500 text-sm"></i>
-                <span>You can withdraw your Canva Earnings only at Level 8.</span>
+                <span>You can withdraw your Cavaearn Earnings only at Level 8.</span>
             </div>
             <button type="button" onclick="document.getElementById('canvaEarningAlert').classList.add('hidden')"
                 class="text-rose-400 hover:text-rose-700 text-xs px-1">
@@ -57,7 +57,7 @@
                 class="bg-gradient-to-br from-purple-600 to-fuchsia-600 text-white rounded-2xl p-3 shadow-sm text-center flex flex-col justify-center cursor-pointer hover:scale-[1.03] active:scale-95 transition-transform">
                 <div class="text-xs font-black truncate">Rs {{ number_format($wallet->task_earnings, 0) }}</div>
                 <div class="text-[9px] text-fuchsia-100 font-semibold mt-1 flex items-center justify-center space-x-1">
-                    <span>Canva Earning</span>
+                    <span>Cavaearn Earning</span>
                     <i class="fa-solid fa-circle-info text-[8px] text-fuchsia-200"></i>
                 </div>
             </div>

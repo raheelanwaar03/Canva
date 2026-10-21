@@ -4,10 +4,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Canva ADS — Earn Daily Watching Ads</title>
+    <title>Cavaearn — Earn Daily Watching Ads</title>
 
     <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%2300c6ff'/><stop offset='50%25' stop-color='%230072ff'/><stop offset='100%25' stop-color='%239b51e0'/></linearGradient></defs><circle cx='50' cy='50' r='48' fill='url(%23g)' stroke='%23ffffff' stroke-width='4'/><text x='50' y='52' font-family='Arial, sans-serif' font-weight='900' font-size='22' font-style='italic' fill='%23ffffff' text-anchor='middle'>Canva</text><text x='50' y='72' font-family='Arial, sans-serif' font-weight='900' font-size='13' letter-spacing='2' fill='%23ffffff' text-anchor='middle'>ADS</text></svg>">
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%2300c6ff'/><stop offset='50%25' stop-color='%230072ff'/><stop offset='100%25' stop-color='%239b51e0'/></linearGradient></defs><circle cx='50' cy='50' r='48' fill='url(%23g)' stroke='%23ffffff' stroke-width='4'/><text x='50' y='52' font-family='Arial, sans-serif' font-weight='900' font-size='22' font-style='italic' fill='%23ffffff' text-anchor='middle'>Cavaearn</text><text x='50' y='72' font-family='Arial, sans-serif' font-weight='900' font-size='13' letter-spacing='2' fill='%23ffffff' text-anchor='middle'>ADS</text></svg>">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -55,11 +55,11 @@
         <!-- Logo Branding Header -->
         <div
             class="w-24 h-24 rounded-full bg-gradient-to-tr from-cyan-400 via-indigo-500 to-fuchsia-500 flex flex-col items-center justify-center shadow-xl border-4 border-white/80 mb-5">
-            <span class="font-extrabold text-white text-2xl tracking-wider italic">Canva</span>
+            <span class="font-extrabold text-white text-2xl tracking-wider italic">Cavaearn</span>
             <span class="font-black text-white text-xs tracking-widest -mt-1">ADS</span>
         </div>
 
-        <h1 class="text-3xl font-black text-slate-900 tracking-tight text-center">Canva ADS</h1>
+        <h1 class="text-3xl font-black text-slate-900 tracking-tight text-center">Cavaearn</h1>
         <p class="text-xs text-slate-500 text-center mt-1.5 max-w-xs">
             The next-generation advertising platform. Watch daily ads, build your team, and withdraw your earnings
             directly.
@@ -121,7 +121,7 @@
 
         <!-- Footer Note -->
         <p class="text-[11px] text-slate-400 text-center mt-6">
-            &copy; {{ date('Y') }} Canva ADS. Fast, secure, and reliable payouts via JazzCash & Easypaisa.
+            &copy; {{ date('Y') }} Cavaearn. Fast, secure, and reliable payouts via JazzCash & Easypaisa.
         </p>
 
     </div>

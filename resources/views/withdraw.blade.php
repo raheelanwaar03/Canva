@@ -11,7 +11,7 @@
         <div class="flex flex-col items-center">
             <div
                 class="w-20 h-20 rounded-full bg-gradient-to-tr from-cyan-400 via-indigo-500 to-fuchsia-500 flex flex-col items-center justify-center shadow-lg border-2 border-white/60">
-                <span class="font-extrabold text-white text-lg tracking-wider italic">Canva</span>
+                <span class="font-extrabold text-white text-lg tracking-wider italic">Cavaearn</span>
                 <span class="font-black text-white text-[11px] tracking-widest -mt-1">ADS</span>
             </div>
             <h2 class="text-xl font-black text-slate-800 mt-2">Withdraw</h2>

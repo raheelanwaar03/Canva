@@ -5,11 +5,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Canva ADS</title>
+    <title>Cavaearn — Digital Advertising & Earnings Platform</title>
 
-    <!-- Dynamic Favicon -->
+    <!-- Cavaearn SVG Favicon -->
     <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%2300c6ff'/><stop offset='50%25' stop-color='%230072ff'/><stop offset='100%25' stop-color='%239b51e0'/></linearGradient></defs><circle cx='50' cy='50' r='48' fill='url(%23g)' stroke='%23ffffff' stroke-width='4'/><text x='50' y='52' font-family='Arial, sans-serif' font-weight='900' font-size='22' font-style='italic' fill='%23ffffff' text-anchor='middle'>Canva</text><text x='50' y='72' font-family='Arial, sans-serif' font-weight='900' font-size='13' letter-spacing='2' fill='%23ffffff' text-anchor='middle'>ADS</text></svg>">
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='cavaFav' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%2300c4cc'/><stop offset='50%25' stop-color='%234f46e5'/><stop offset='100%25' stop-color='%238b5cf6'/></linearGradient></defs><rect width='100' height='100' rx='28' fill='url(%23cavaFav)'/><text x='50' y='64' font-family='Arial, sans-serif' font-weight='900' font-size='42' font-style='italic' fill='%23ffffff' text-anchor='middle'>C</text><circle cx='76' cy='24' r='6' fill='%2300ffc2'/></svg>">
 
     <!-- Fonts: Plus Jakarta Sans & Custom Script Font for Canva -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -116,9 +116,17 @@
         <!-- Top Header Navigation (Exact Match to user.jpeg) -->
         <header class="px-5 pt-6 pb-2 flex items-center justify-between z-20">
             <!-- Brand Script Logo -->
-            <a href="{{ route('dashboard') }}"
-                class="canva-brand-script text-4xl font-black tracking-tight text-[#00c4cc] hover:opacity-90">
-                Canva
+            <a href="{{ route('dashboard') }}" class="flex items-center space-x-2 group">
+                <div
+                    class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-cyan-400 via-indigo-600 to-fuchsia-600 p-[2px] shadow-md group-hover:scale-105 transition-transform flex-shrink-0">
+                    <div class="w-full h-full bg-[#000842] rounded-2xl flex items-center justify-center">
+                        <span class="text-white font-black text-sm italic tracking-tighter">C</span>
+                    </div>
+                </div>
+                <div class="leading-none">
+                    <span class="canvearn-brand-script text-2xl font-black text-[#00c4cc]">Cava</span><span
+                        class="text-xl font-black text-indigo-600 tracking-tight">earn</span>
+                </div>
             </a>
 
             <div class="flex items-center space-x-2.5">
@@ -176,8 +184,7 @@
             </a>
 
             <!-- 4. Support (Direct WhatsApp Chat with Admin) -->
-            <a href="https://wa.me/923001234567?text=Hello%20Canva%20ADS%20Admin,%20I%20need%20assistance."
-                target="_blank"
+            <a href="https://wa.me/923001234567?text=Hello%20Cavaearn%20Admin,%20I%20need%20assistance." target="_blank"
                 class="flex flex-col items-center py-1 px-2.5 text-slate-400 hover:text-emerald-600 transition">
                 <i class="fa-brands fa-whatsapp text-lg text-emerald-500"></i>
                 <span class="text-[9px] mt-0.5">Support</span>

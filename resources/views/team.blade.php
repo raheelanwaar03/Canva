@@ -59,7 +59,7 @@
         @else
             <div class="p-2.5 bg-emerald-50 rounded-2xl text-[11px] font-bold text-emerald-700 text-center border border-emerald-200 flex items-center justify-center space-x-1.5">
                 <i class="fa-solid fa-crown text-emerald-600 text-xs"></i>
-                <span>Max Tier Reached: Level 8 (Canva Earnings Withdrawable)</span>
+                <span>Max Tier Reached: Level 8 (Cavaearn Withdrawable)</span>
             </div>
         @endif
     </div>
