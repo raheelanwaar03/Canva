@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'Admin Panel' }} — Cavaearn</title>
+    <title>{{ $title ?? 'Admin Panel' }} — CanvaEdits</title>
 
     <!-- Cavaearn Admin Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}?v=3">
@@ -49,16 +49,15 @@
     <aside id="adminSidebar"
         class="fixed top-0 bottom-0 left-0 w-64 bg-[#0c1017] text-slate-300 z-50 flex flex-col transition-transform duration-300 -translate-x-full lg:translate-x-0 shadow-2xl">
 
-        <!-- Logo / Brand Header -->
         <div class="h-16 flex items-center justify-between px-5 border-b border-slate-800/80 bg-[#090d14]">
             <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-2.5">
                 <div class="w-9 h-9 rounded-xl overflow-hidden shadow-md flex-shrink-0 border border-slate-800">
-                    <img src="{{ asset('images/logo-icon.png') }}" alt="Cavaearn" class="w-full h-full object-cover">
+                    <img src="{{ asset('images/logo-icon.png') }}" alt="CanvaEdits" class="w-full h-full object-cover">
                 </div>
                 <div class="leading-none">
                     <div class="flex items-baseline">
-                        <span class="canvearn-brand-script text-xl font-bold text-[#00c4cc]">Cava</span>
-                        <span class="text-white font-extrabold text-sm tracking-tight ml-0.5">earn</span>
+                        <span class="canvearn-brand-script text-xl font-bold text-[#00c4cc]">Canva</span>
+                        <span class="text-white font-extrabold text-sm tracking-tight ml-0.5">Edits</span>
                     </div>
                     <span class="text-[9px] text-indigo-400 font-bold tracking-widest block mt-0.5">ADMIN PANEL</span>
                 </div>
@@ -141,7 +140,7 @@
 
         <!-- Footer / Version -->
         <div class="p-3 border-t border-slate-800/80 bg-[#090d14] text-center text-[10px] text-slate-500 font-mono">
-            CANVA ADS v2.4 • PTCLAB
+            CANVAEDITS v2.6 • PTCLAB
         </div>
     </aside>
 

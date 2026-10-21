@@ -5,11 +5,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Cavaearn — Digital Advertising & Earnings Platform</title>
+    <title>CanvaEdits — Digital Advertising & Earnings Platform</title>
 
-    <!-- Cavaearn Branded Favicon -->
-    <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}?v=3">
-    <link rel="shortcut icon" type="image/png" href="{{ asset('images/logo-icon.png') }}?v=3">
+    <!-- CanvaEdits Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}?v=4">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('images/logo-icon.png') }}?v=4">
 
     <!-- Fonts: Plus Jakarta Sans & Custom Script Font for Canva -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -117,17 +117,15 @@
         <header class="px-5 pt-6 pb-2 flex items-center justify-between z-20">
             <!-- Cavaearn Branded Header -->
             <a href="{{ route('dashboard') }}" class="flex items-center space-x-2.5 group">
-                <!-- Iconic 3D Rounded Icon -->
                 <div
                     class="w-9 h-9 rounded-xl overflow-hidden shadow-md group-hover:scale-105 transition-transform flex-shrink-0 border border-white/20">
-                    <img src="{{ asset('images/logo-icon.png') }}" alt="Cavaearn Icon"
+                    <img src="{{ asset('images/logo-icon.png') }}" alt="CanvaEdits Icon"
                         class="w-full h-full object-cover">
                 </div>
-                <!-- Stylish brand title with fixed size & flexbox to never spill -->
                 <div class="leading-none flex items-baseline">
                     <span
-                        class="canvearn-brand-script text-[26px] font-black text-[#00c4cc] drop-shadow-sm tracking-tight">Cava</span>
-                    <span class="text-xl font-extrabold text-indigo-600 tracking-tight ml-0.5">earn</span>
+                        class="canvearn-brand-script text-[26px] font-black text-[#00c4cc] drop-shadow-sm tracking-tight">Canva</span>
+                    <span class="text-xl font-extrabold text-indigo-600 tracking-tight ml-0.5">Edits</span>
                 </div>
             </a>
 
@@ -186,7 +184,8 @@
             </a>
 
             <!-- 4. Support (Direct WhatsApp Chat with Admin) -->
-            <a href="https://wa.me/923001234567?text=Hello%20Cavaearn%20Admin,%20I%20need%20assistance." target="_blank"
+            <a href="https://wa.me/923001234567?text=Hello%20CanvaEdits%20Admin,%20I%20need%20assistance."
+                target="_blank"
                 class="flex flex-col items-center py-1 px-2.5 text-slate-400 hover:text-emerald-600 transition">
                 <i class="fa-brands fa-whatsapp text-lg text-emerald-500"></i>
                 <span class="text-[9px] mt-0.5">Support</span>
