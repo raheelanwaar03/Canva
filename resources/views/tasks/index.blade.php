@@ -32,19 +32,19 @@
             <!-- Stats Summary Card -->
             <div class="ref-gradient-card rounded-2xl p-4 text-white shadow-md">
                 <div class="flex justify-between items-center mb-2">
-                    <span class="text-xs font-bold text-white/90">Daily Tasks Progress</span>
-                    <span class="text-[10px] bg-white/20 px-2.5 py-0.5 rounded-full font-bold">
+                    <span class="text-xs font-bold text-indigo-600/90">Daily Tasks Progress</span>
+                    <span class="text-[10px] text-indigo-600/90 px-2.5 py-0.5 rounded-full font-bold">
                         {{ $eligibility['days_left'] }} Days Left in Window
                     </span>
                 </div>
                 <div class="flex justify-between items-end">
                     <div>
-                        <div class="text-2xl font-black">{{ $completedTodayCount }} / {{ $dailyLimit }}</div>
-                        <div class="text-[10px] text-white/80">Completed Today</div>
+                        <div class="text-2xl text-indigo-600 font-black">{{ $completedTodayCount }} / {{ $dailyLimit }}</div>
+                        <div class="text-[10px] text-indigo-600/80">Completed Today</div>
                     </div>
                     <div class="text-right">
-                        <div class="text-sm font-bold">Rs {{ number_format($rewardPerTask, 0) }}</div>
-                        <div class="text-[10px] text-white/80">Per Ad Reward</div>
+                        <div class="text-sm text-indigo-600 font-bold">Rs {{ number_format($rewardPerTask, 0) }}</div>
+                        <div class="text-[10px] text-indigo-600/80">Per Ad Reward</div>
                     </div>
                 </div>
             </div>
