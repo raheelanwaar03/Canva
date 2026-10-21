@@ -11,14 +11,38 @@ use Illuminate\Http\Request;
 class UserManagementController extends Controller
 {
     // List all users
-    public function index()
-    {
-        $users = User::with(['wallet', 'activePackage.package', 'referrer'])
-            ->where('role', 'user')
-            ->latest()
-            ->paginate(20);
+    // In app/Http/Controllers/Admin/UserManagementController.php
 
-        return view('admin.users.index', compact('users'));
+    public function index(Request $request)
+    {
+        $status = $request->query('status', 'all');
+
+        $query = User::with(['wallet', 'activePackage.package', 'referrer', 'packagePayments'])
+            ->where('role', 'user');
+
+        if ($status === 'approved') {
+            // Users who have an active or upgraded package
+            $query->whereHas('packages', function ($q) {
+                $q->whereIn('status', ['active', 'upgraded']);
+            });
+        } elseif ($status === 'pending') {
+            // Users who have a pending payment request
+            $query->whereHas('packagePayments', function ($q) {
+                $q->where('status', 'pending');
+            });
+        } elseif ($status === 'rejected') {
+            // Users who have a rejected payment request and no active plan
+            $query->whereHas('packagePayments', function ($q) {
+                $q->where('status', 'rejected');
+            })->whereDoesntHave('packages', function ($q) {
+                $q->where('status', 'active');
+            });
+        }
+
+        // Get all matching users so DataTables handles instant search & pagination
+        $users = $query->latest()->get();
+
+        return view('admin.users.index', compact('users', 'status'));
     }
 
     // Individual User Profile in Admin Dashboard (Matches Client Image 1)

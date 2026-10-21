@@ -22,7 +22,7 @@
                 ],
                 language: {
                     search: "",
-                    searchPlaceholder: "Search payments..."
+                    searchPlaceholder: "🔍 Search by user, email, or TRX..."
                 }
             });
         });
