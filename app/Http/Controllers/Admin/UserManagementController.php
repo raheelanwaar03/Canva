@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+// <-- MUST BE IMPORTED
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -290,26 +291,15 @@ class UserManagementController extends Controller
         return back()->with('success', $msg);
     }
 
-    /**
-     * Log in as a user / applicant
-     */
     public function impersonate(User $user)
     {
-        // Save original admin ID in session
         session(['admin_impersonator_id' => Auth::id()]);
-
-        // Log in as the user
         Auth::login($user);
-
-        // Regenerate session to prevent session fixation
         request()->session()->regenerate();
 
-        return redirect()->route('dashboard')->with('status', "You are now logged in as {$user->name}.");
+        return redirect()->route('dashboard')->with('status', "Logged in as {$user->name}");
     }
 
-    /**
-     * Return to admin account
-     */
     public function leaveImpersonation()
     {
         $adminId = session('admin_impersonator_id');
@@ -325,7 +315,7 @@ class UserManagementController extends Controller
             Auth::login($admin);
             request()->session()->regenerate();
 
-            return redirect()->route('admin.users.index')->with('status', 'Returned to Admin Dashboard.');
+            return redirect()->route('admin.dashboard')->with('status', 'Returned to admin.');
         }
 
         Auth::logout();

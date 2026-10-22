@@ -22,7 +22,7 @@ Route::middleware(['auth'])->group(function () {
     require __DIR__ . '/user.php';
 });
 
-// Impersonation leave route (Must be outside admin middleware so impersonated users can exit)
+// Impersonation leave route (Outside admin group so users can exit impersonation)
 Route::post('/impersonate/leave', [UserManagementController::class, 'leaveImpersonation'])
     ->middleware('auth')
     ->name('impersonate.leave');
@@ -30,8 +30,8 @@ Route::post('/impersonate/leave', [UserManagementController::class, 'leaveImpers
 // Receipts Serving Route
 Route::get('/receipts/{filename}', [ReceiptController::class, 'show'])->name('receipts.show');
 
-// ADMIN ROUTES (Protected by auth and admin middleware)
-Route::middleware(['auth', 'admin'])
+// ADMIN ROUTES (Uses 'is_admin' middleware alias)
+Route::middleware(['auth', 'is_admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
