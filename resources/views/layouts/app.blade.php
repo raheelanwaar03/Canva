@@ -98,6 +98,23 @@
 
 <body class="ambient-wave-canvas flex justify-center items-start min-h-screen relative overflow-x-hidden">
 
+    @if (session()->has('admin_impersonator_id'))
+        <div
+            class="bg-amber-500 text-slate-900 px-4 py-2 text-xs font-black flex items-center justify-between sticky top-0 z-50 shadow-md">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>Viewing as: <strong>{{ auth()->user()->name }}</strong> (Admin Impersonation)</span>
+            </div>
+            <form method="POST" action="{{ route('impersonate.leave') }}">
+                @csrf
+                <button type="submit"
+                    class="bg-slate-900 text-white px-3 py-1 rounded-lg text-[11px] font-bold hover:bg-black transition">
+                    Return to Admin
+                </button>
+            </form>
+        </div>
+    @endif
+
     <!-- Subtle Floating 3D Spheres in Ambient Background (Matches sample) -->
     <div
         class="fixed top-24 -left-6 w-14 h-14 rounded-full bg-gradient-to-tr from-cyan-400 to-indigo-500 blur-[1px] opacity-40 shadow-xl pointer-events-none">

@@ -168,12 +168,12 @@
                     </a>
 
                     <!-- Login As User -->
-                    <form action="{{ route('admin.users.loginAs', $user->id) }}" method="POST"
-                        onsubmit="return confirm('Log in as {{ $user->name }}? Your admin session will be preserved.')">
+                    <form method="POST" action="{{ route('admin.users.impersonate', $user->id) }}" class="inline-block">
                         @csrf
                         <button type="submit"
-                            class="px-4 py-2.5 bg-[#3b49df] hover:bg-indigo-700 text-white font-extrabold rounded-xl text-xs shadow-sm flex items-center space-x-1.5 transition">
-                            <i class="fa-solid fa-right-to-bracket text-xs"></i>
+                            onclick="return confirm('Log in as {{ $user->name }}? You will be redirected to their dashboard.');"
+                            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow transition flex items-center space-x-1.5">
+                            <i class="fa-solid fa-user-secret"></i>
                             <span>Login as User</span>
                         </button>
                     </form>
@@ -368,22 +368,26 @@
 
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-2">
                                 <div><span class="text-slate-400 block text-[10px] font-bold uppercase">Amount</span>
-                                    <strong class="text-slate-900">Rs {{ number_format($p->amount, 0) }}</strong></div>
+                                    <strong class="text-slate-900">Rs {{ number_format($p->amount, 0) }}</strong>
+                                </div>
                                 <div><span class="text-slate-400 block text-[10px] font-bold uppercase">Gateway</span>
-                                    <span class="font-bold text-slate-800">{{ $p->payment_method }}</span></div>
+                                    <span class="font-bold text-slate-800">{{ $p->payment_method }}</span>
+                                </div>
                                 <div><span class="text-slate-400 block text-[10px] font-bold uppercase">Sender
                                         Number</span> <span
                                         class="font-mono font-bold text-slate-700">{{ $p->sender_number }}</span></div>
                                 <div><span class="text-slate-400 block text-[10px] font-bold uppercase">TRX ID</span> <span
                                         class="font-mono font-black text-indigo-600">{{ $p->trx_id }}</span></div>
                                 <div><span class="text-slate-400 block text-[10px] font-bold uppercase">Submitted</span>
-                                    <span>{{ $p->created_at->format('d M, Y H:i') }}</span></div>
+                                    <span>{{ $p->created_at->format('d M, Y H:i') }}</span>
+                                </div>
                                 <div><span class="text-slate-400 block text-[10px] font-bold uppercase">Reviewed</span>
                                     <span>{{ $p->reviewed_at ? $p->reviewed_at->format('d M, Y H:i') : 'Pending' }}</span>
                                 </div>
                                 <div class="col-span-2 truncate"><span
                                         class="text-slate-400 block text-[10px] font-bold uppercase">Reviewer</span>
-                                    <span>{{ $p->reviewer?->name ?? 'N/A' }}</span></div>
+                                    <span>{{ $p->reviewer?->name ?? 'N/A' }}</span>
+                                </div>
                             </div>
 
                             @if ($p->admin_note)

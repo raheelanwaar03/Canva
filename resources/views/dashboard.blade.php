@@ -283,6 +283,32 @@
                 <span class="text-[11px] font-bold text-slate-800">Wallet</span>
             </a>
 
+            <!-- Wallet Card -->
+            <a href="{{ route('wallet') }}"
+                class="glass-action-card rounded-3xl p-4 flex flex-col items-center justify-center text-center group">
+                <div
+                    class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl mb-2 group-hover:scale-110 transition-transform shadow-sm">
+                    <i class="fa-solid fa-wallet text-indigo-500"></i>
+                </div>
+                <span class="text-xs font-bold text-slate-700">Wallet</span>
+            </a>
+
+            <!-- Upgrade Plan Card (NEW) -->
+            <a href="{{ route('packages.index') }}"
+                class="glass-action-card rounded-3xl p-4 flex flex-col items-center justify-center text-center group relative overflow-hidden">
+                <!-- Subtle Highlight Ribbon -->
+                <span class="absolute top-2 right-2 flex h-2 w-2">
+                    <span
+                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                </span>
+                <div
+                    class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-400/20 to-indigo-500/20 text-cyan-600 flex items-center justify-center text-xl mb-2 group-hover:scale-110 transition-transform shadow-sm">
+                    <i class="fa-solid fa-circle-arrow-up text-[#00c4cc]"></i>
+                </div>
+                <span class="text-xs font-bold text-slate-700">Upgrade Plan</span>
+            </a>
+
         </div>
 
         <!-- Botanical Silhouette Accents at Bottom-Right (Matches user.jpeg) -->

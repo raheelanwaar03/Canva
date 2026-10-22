@@ -7,10 +7,7 @@ use App\Http\Controllers\Admin\WithdrawalApprovalController;
 use App\Http\Controllers\Admin\PackageManagementController;
 use App\Http\Controllers\Admin\TaskManagementController;
 use App\Http\Controllers\Admin\ChannelManagementController;
-use App\Http\Controllers\Admin\ImpersonateController;
 use App\Http\Controllers\Admin\UserManagementController;
-
-
 
 // Main Admin Dashboard
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -36,7 +33,6 @@ Route::post('/tasks', [TaskManagementController::class, 'store'])->name('tasks.s
 Route::post('/tasks/{task}/toggle', [TaskManagementController::class, 'toggle'])->name('tasks.toggle');
 Route::delete('/tasks/{task}', [TaskManagementController::class, 'destroy'])->name('tasks.destroy');
 
-
 // Community Channels Management
 Route::get('/channels', [ChannelManagementController::class, 'index'])->name('channels.index');
 Route::post('/channels', [ChannelManagementController::class, 'store'])->name('channels.store');
@@ -45,14 +41,9 @@ Route::post('/channels/{channel}/toggle', [ChannelManagementController::class, '
 Route::delete('/channels/{channel}', [ChannelManagementController::class, 'destroy'])->name('channels.destroy');
 
 // Impersonate / Login as user
-Route::post('/users/{user}/login-as', [ImpersonateController::class, 'loginAs'])->name('users.loginAs');
+Route::post('/users/{user}/impersonate', [UserManagementController::class, 'impersonate'])->name('users.impersonate');
 
-// User Management
-Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
-Route::get('/users/{user}', [UserManagementController::class, 'show'])->name('users.show');
-Route::post('/users/{user}/adjust-balance', [UserManagementController::class, 'adjustBalance'])->name('users.adjustBalance');
-
-// User Details, Editing & Management
+// User Management (Clean, single definitions)
 Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
 Route::get('/users/{user}', [UserManagementController::class, 'show'])->name('users.show');
 Route::get('/users/{user}/edit', [UserManagementController::class, 'edit'])->name('users.edit');

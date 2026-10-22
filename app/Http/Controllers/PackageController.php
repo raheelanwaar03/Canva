@@ -66,10 +66,19 @@ class PackageController extends Controller
     public function submitPayment(Request $request, Package $package)
     {
         $request->validate([
-            'payment_method' => ['required', 'in:Easypaisa,JazzCash'],
-            'sender_number' => ['required', 'string', 'max:50'],
-            'trx_id' => ['required', 'string', 'max:100'],
-            'screenshot' => ['nullable', 'image', 'max:4096'],
+            'trx_id' => 'required|string|max:100',
+            'sender_number' => 'required|string|max:50',
+            'screenshot' => [
+                'required',          // Must be present
+                'file',              // Must be an uploaded file
+                'image',             // Must be a valid image
+                'mimes:jpeg,jpg,png,webp', // Explicit formats
+                'max:5120',          // Max 5MB
+            ],
+        ], [
+            'screenshot.required' => 'Payment screenshot is strictly required. Please attach your payment receipt before submitting.',
+            'screenshot.image'    => 'The uploaded file must be an image (JPG, PNG, or WEBP).',
+            'screenshot.max'      => 'The screenshot size must not exceed 5MB.',
         ]);
 
         $activeSub = auth()->user()?->activePackage;
@@ -169,5 +178,59 @@ class PackageController extends Controller
         ]);
 
         return redirect()->route('packages.pending');
+    }
+
+    public function upgradeCheckout(Package $package)
+    {
+        $user = auth()->user();
+        $currentPackage = $user->activePackage ?? $user->package;
+
+        // Calculate price difference
+        $amountToPay = $package->price;
+        if ($currentPackage && $currentPackage->price < $package->price) {
+            $amountToPay = $package->price - $currentPackage->price;
+        }
+
+        return view('packages.checkout', [
+            'package' => $package,
+            'currentPackage' => $currentPackage,
+            'amountToPay' => $amountToPay,
+            'isUpgrade' => true,
+        ]);
+    }
+
+    public function submitUpgrade(Request $request, Package $package)
+    {
+        $request->validate([
+            'trx_id' => 'required|string|max:100',
+            'sender_number' => 'required|string|max:50',
+            'screenshot' => 'required|image|mimes:jpeg,jpg,png,webp|max:5120',
+        ], [
+            'screenshot.required' => 'Payment screenshot is mandatory before submitting.',
+        ]);
+
+        $user = auth()->user();
+        $currentPackage = $user->activePackage ?? $user->package;
+
+        $amountToPay = $package->price;
+        if ($currentPackage && $currentPackage->price < $package->price) {
+            $amountToPay = $package->price - $currentPackage->price;
+        }
+
+        $screenshotPath = $request->file('screenshot')->store('payment_proofs', 'public');
+
+        PackagePayment::create([
+            'user_id' => $user->id,
+            'package_id' => $package->id,
+            'amount' => $amountToPay,
+            'payment_method' => 'EasyPaisa',
+            'trx_id' => $request->trx_id,
+            'sender_number' => $request->sender_number,
+            'screenshot' => $screenshotPath,
+            'status' => 'pending',
+            'is_upgrade' => true,
+        ]);
+
+        return redirect()->route('dashboard')->with('status', 'Upgrade request submitted successfully! Awaiting admin review.');
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\ImpersonateController;
+use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\ReceiptController;
 
 // Public Landing Page
@@ -17,19 +17,21 @@ Route::get('/', function () {
 // Authentication routes (Login, Register, Logout)
 require __DIR__ . '/auth.php';
 
-// USER ROUTES ONLY (Blocked for Admin)
-Route::middleware(['auth', 'is_user'])->group(function () {
+// USER ROUTES (For authenticated members)
+Route::middleware(['auth'])->group(function () {
     require __DIR__ . '/user.php';
 });
 
+// Impersonation leave route (Must be outside admin middleware so impersonated users can exit)
+Route::post('/impersonate/leave', [UserManagementController::class, 'leaveImpersonation'])
+    ->middleware('auth')
+    ->name('impersonate.leave');
 
-// Dedicated route to serve payment receipts directly via PHP
+// Receipts Serving Route
 Route::get('/receipts/{filename}', [ReceiptController::class, 'show'])->name('receipts.show');
 
-Route::get('/leave-impersonation', [ImpersonateController::class, 'leave'])->name('impersonate.leave');
-
-// ADMIN ROUTES ONLY (Blocked for Regular Users)
-Route::middleware(['auth', 'is_admin'])
+// ADMIN ROUTES (Protected by auth and admin middleware)
+Route::middleware(['auth', 'admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {

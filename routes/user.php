@@ -24,6 +24,10 @@ Route::get('/packages/pending', [PackageController::class, 'pending'])->name('pa
 Route::get('/packages/{package}/checkout', [PackageController::class, 'checkout'])->name('packages.checkout');
 Route::post('/packages/{package}/submit-payment', [PackageController::class, 'submitPayment'])->name('packages.submitPayment');
 
+// Upgrade Routes (Fixes the Upgrade Checkout Error)
+Route::get('/packages/{package}/upgrade', [PackageController::class, 'upgradeCheckout'])->name('packages.upgradeCheckout');
+Route::post('/packages/{package}/submit-upgrade', [PackageController::class, 'submitUpgrade'])->name('packages.submitUpgrade');
+
 // Account Settings & Profile
 Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -82,21 +86,21 @@ Route::middleware(['has_active_package'])->group(function () {
     Route::get('/tasks/{task}/view', [TaskController::class, 'view'])->name('tasks.view');
     Route::post('/tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
 
-    // Withdrawals (Easypaisa / JazzCash)
+    // Withdrawals (Easypaisa)
     Route::get('/withdraw', [WithdrawalController::class, 'create'])->name('withdraw.create');
     Route::post('/withdraw', [WithdrawalController::class, 'store'])->name('withdraw.store');
 
-    // P2P Member-to-Member Balance Transfers
+    // P2P Member Transfers
     Route::get('/transfer', [TransferController::class, 'index'])->name('transfer.index');
     Route::post('/transfer', [TransferController::class, 'store'])->name('transfer.store');
 
     // Direct Referral Team
     Route::get('/team', [TeamController::class, 'index'])->name('team');
 
-    // Plan Upgrade Shortcut
+    // Plan Upgrade Catalog Shortcut
     Route::get('/upgrade', [PackageController::class, 'index'])->name('packages.upgrade');
 
-    // In routes/user.php
+    // Rejected Payment Resubmission
     Route::get('/packages/rejected', [PackageController::class, 'rejected'])->name('packages.rejected');
     Route::post('/packages/{payment}/resubmit', [PackageController::class, 'resubmit'])->name('packages.resubmit');
 });
