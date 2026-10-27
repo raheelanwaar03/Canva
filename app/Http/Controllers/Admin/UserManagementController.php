@@ -293,13 +293,37 @@ class UserManagementController extends Controller
 
     public function impersonate(User $user)
     {
+        // 1. Prevent admin from impersonating themselves
+        if ($user->id === Auth::id()) {
+            return back()->with('error', 'You cannot impersonate your own admin account.');
+        }
+
+        // 2. Preserve original Admin ID in the session
         session(['admin_impersonator_id' => Auth::id()]);
+
+        // 3. Log in as target user/applicant
         Auth::login($user);
         request()->session()->regenerate();
 
-        return redirect()->route('dashboard')->with('status', "Logged in as {$user->name}");
+        // 4. Safe Redirect Check:
+        // If the user has an active package, send to dashboard.
+        // If they are a new signup / pending applicant, send to packages or pending view
+        // to prevent the `has_active_package` middleware from throwing an error.
+        $hasActivePackage = method_exists($user, 'activePackage')
+            ? $user->activePackage()->exists()
+            : ($user->package_id !== null);
+
+        if ($hasActivePackage) {
+            return redirect()->route('dashboard')->with('status', "Logged in as {$user->name}");
+        }
+
+        // For applicants / unverified users without active package
+        return redirect()->route('packages.index')->with('status', "Viewing as Applicant: {$user->name} (No active package yet)");
     }
 
+    /**
+     * Return back to Admin account
+     */
     public function leaveImpersonation()
     {
         $adminId = session('admin_impersonator_id');
@@ -315,7 +339,7 @@ class UserManagementController extends Controller
             Auth::login($admin);
             request()->session()->regenerate();
 
-            return redirect()->route('admin.dashboard')->with('status', 'Returned to admin.');
+            return redirect()->route('admin.users.index')->with('status', 'Returned safely to Admin Dashboard.');
         }
 
         Auth::logout();

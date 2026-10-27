@@ -170,10 +170,18 @@
                     <!-- Login As User -->
                     <form method="POST" action="{{ route('admin.users.impersonate', $user->id) }}" class="inline-block">
                         @csrf
-                        <button type="submit"
-                            onclick="return confirm('Log in as {{ $user->name }}? You will be redirected to their dashboard.');"
-                            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow transition flex items-center space-x-1.5">
-                            <i class="fa-solid fa-user-secret"></i>
+                        <button type="submit" onclick="return confirm('Log in as Applicant: {{ $user->name }}?');"
+                            class="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold transition shadow-sm flex items-center space-x-1">
+                            <i class="fa-solid fa-user-clock text-xs"></i>
+                            <span>Login as Applicant</span>
+                        </button>
+                    </form>
+
+                    <form method="POST" action="{{ route('admin.users.impersonate', $user->id) }}" class="inline-block">
+                        @csrf
+                        <button type="submit" onclick="return confirm('Log in as User: {{ $user->name }}?');"
+                            class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition shadow-sm flex items-center space-x-1">
+                            <i class="fa-solid fa-user-secret text-xs"></i>
                             <span>Login as User</span>
                         </button>
                     </form>

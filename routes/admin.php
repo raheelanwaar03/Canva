@@ -40,12 +40,13 @@ Route::put('/channels/{channel}', [ChannelManagementController::class, 'update']
 Route::post('/channels/{channel}/toggle', [ChannelManagementController::class, 'toggle'])->name('channels.toggle');
 Route::delete('/channels/{channel}', [ChannelManagementController::class, 'destroy'])->name('channels.destroy');
 
-// Impersonate / Login as user
-Route::post('/users/{user}/impersonate', [UserManagementController::class, 'impersonate'])->name('users.impersonate');
-
 // User Management (Clean, single definitions)
 Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
 Route::get('/users/{user}', [UserManagementController::class, 'show'])->name('users.show');
 Route::get('/users/{user}/edit', [UserManagementController::class, 'edit'])->name('users.edit');
 Route::put('/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
 Route::post('/users/{user}/adjust-balance', [UserManagementController::class, 'adjustBalance'])->name('users.adjustBalance');
+
+// Both "Login as User" and "Login as Applicant" support:
+Route::post('/users/{user}/impersonate', [UserManagementController::class, 'impersonate'])->name('users.impersonate');
+Route::post('/users/{user}/login-as', [UserManagementController::class, 'impersonate'])->name('users.loginAs');
