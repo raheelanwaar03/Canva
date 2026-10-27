@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\PackageManagementController;
 use App\Http\Controllers\Admin\TaskManagementController;
 use App\Http\Controllers\Admin\ChannelManagementController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Admin\PlatformSettingController;
 
 // Main Admin Dashboard
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -50,3 +51,8 @@ Route::post('/users/{user}/adjust-balance', [UserManagementController::class, 'a
 // Both "Login as User" and "Login as Applicant" support:
 Route::post('/users/{user}/impersonate', [UserManagementController::class, 'impersonate'])->name('users.impersonate');
 Route::post('/users/{user}/login-as', [UserManagementController::class, 'impersonate'])->name('users.loginAs');
+
+
+// Platform Settings (Pricing, Ad rates, Commissions, Payment details)
+Route::get('/settings', [PlatformSettingController::class, 'index'])->name('settings.index');
+Route::post('/settings', [PlatformSettingController::class, 'update'])->name('settings.update');

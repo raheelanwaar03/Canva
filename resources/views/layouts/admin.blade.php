@@ -131,9 +131,16 @@
 
             <!-- Official Channels -->
             <a href="{{ route('admin.channels.index') }}"
-                class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.channels.*') ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white' }}">
-                <i class="fa-solid fa-paper-plane w-4 text-center"></i>
-                <span class="flex-1">Official Channels</span>
+                class="flex items-center space-x-3 px-4 py-3 rounded-2xl text-xs font-bold transition {{ request()->routeIs('admin.channels.*') ? 'bg-[#4f46e5] text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-800/50' }}">
+                <i class="fa-solid fa-paper-plane text-sm"></i>
+                <span>Official Channels</span>
+            </a>
+
+            <!-- Platform Settings (NEW) -->
+            <a href="{{ route('admin.settings.index') }}"
+                class="flex items-center space-x-3 px-4 py-3 rounded-2xl text-xs font-bold transition {{ request()->routeIs('admin.settings.*') ? 'bg-[#4f46e5] text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-800/50' }}">
+                <i class="fa-solid fa-gear text-sm"></i>
+                <span>Platform Settings</span>
             </a>
 
         </nav>
