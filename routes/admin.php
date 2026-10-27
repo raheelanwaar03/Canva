@@ -61,3 +61,9 @@ Route::post('/settings', [PlatformSettingController::class, 'update'])->name('se
 Route::get('/refunds', [RefundManagementController::class, 'index'])->name('refunds.index');
 Route::post('/refunds/{refund}/approve', [RefundManagementController::class, 'approve'])->name('refunds.approve');
 Route::post('/refunds/{refund}/reject', [RefundManagementController::class, 'reject'])->name('refunds.reject');
+
+// Tasks management
+Route::get('/tasks', [TaskManagementController::class, 'index'])->name('tasks.index');
+Route::post('/tasks', [TaskManagementController::class, 'store'])->name('tasks.store');
+Route::put('/tasks/{task}', [TaskManagementController::class, 'update'])->name('tasks.update');
+Route::delete('/tasks/{task}', [TaskManagementController::class, 'destroy'])->name('tasks.destroy');

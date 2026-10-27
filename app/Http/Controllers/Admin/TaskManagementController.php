@@ -10,22 +10,38 @@ class TaskManagementController extends Controller
 {
     public function index()
     {
-        $tasks = Task::latest()->get();
+        $tasks = Task::latest()->paginate(20);
         return view('admin.tasks.index', compact('tasks'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'ad_url' => ['required', 'url'],
-            'duration_seconds' => ['required', 'integer', 'min:5', 'max:120'],
+            'title'            => 'required|string|max:255',
+            'description'      => 'nullable|string',
+            'ad_url'           => 'required|url|max:500',
+            'duration_seconds' => 'required|integer|min:5',
+            'is_active'        => 'required|boolean',
         ]);
 
-        Task::create($validated + ['is_active' => true]);
+        \App\Models\Task::create($validated);
 
-        return back()->with('success', 'New ad task created successfully!');
+        return back()->with('success', 'Ad successfully added to inventory.');
+    }
+
+    public function update(Request $request, \App\Models\Task $task)
+    {
+        $validated = $request->validate([
+            'title'            => 'required|string|max:255',
+            'description'      => 'nullable|string',
+            'ad_url'           => 'required|url|max:500',
+            'duration_seconds' => 'required|integer|min:5',
+            'is_active'        => 'required|boolean',
+        ]);
+
+        $task->update($validated);
+
+        return back()->with('success', 'Ad updated successfully.');
     }
 
     public function toggle(Task $task)
@@ -38,6 +54,6 @@ class TaskManagementController extends Controller
     public function destroy(Task $task)
     {
         $task->delete();
-        return back()->with('success', 'Ad task deleted successfully!');
+        return back()->with('success', 'Ad deleted successfully.');
     }
 }
