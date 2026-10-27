@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\RefundRequest;
+use App\Models\User;
 use App\Models\UserPackage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +17,7 @@ class RefundManagementController extends Controller
 
         $query = RefundRequest::with(['user.activePackage.package'])->latest();
 
-        if (in_array($status, ['pending', 'approved', 'rejected'])) {
+        if ($status !== 'all' && in_array($status, ['pending', 'approved', 'rejected'])) {
             $query->where('status', $status);
         }
 
@@ -25,40 +26,65 @@ class RefundManagementController extends Controller
         return view('admin.refunds.index', compact('refunds', 'status'));
     }
 
+    /**
+     * APPROVE REFUND:
+     * - Marks refund as 'approved'
+     * - Deactivates package
+     * - Changes user account status to 'rejected' (Account closed/suspended)
+     */
     public function approve(Request $request, RefundRequest $refund)
     {
         if ($refund->status !== 'pending') {
-            return back()->with('error', 'This refund has already been decided.');
+            return back()->with('error', 'This refund request has already been processed.');
         }
 
         DB::transaction(function () use ($refund, $request) {
+            $remark = $request->input('admin_remark', 'Refund approved and payment refunded.');
+
             $refund->update([
-                'status'        => 'approved',
-                'admin_remark'  => $request->input('remark', 'Refund approved and dispatched.'),
-                'decided_at'    => now(),
+                'status'       => 'approved',
+                'admin_remark' => $remark,
+                'decided_at'   => now(),
             ]);
 
-            // Deactivate member's active package upon refund approval
+            // Deactivate member's active package
             UserPackage::where('user_id', $refund->user_id)
                 ->where('status', 'active')
                 ->update(['status' => 'expired']);
+
+            // Set user account status to 'rejected'
+            $refund->user->update([
+                'status' => 'rejected'
+            ]);
         });
 
-        return back()->with('success', "Refund of Rs {$refund->amount} for {$refund->user->name} has been approved.");
+        return back()->with('success', "Refund of Rs {$refund->amount} approved. {$refund->user->name}'s account has been closed.");
     }
 
+    /**
+     * REJECT REFUND:
+     * - Admin adds reason for rejection
+     * - Marks refund request as 'rejected'
+     * - User account remains completely normal & active
+     */
     public function reject(Request $request, RefundRequest $refund)
     {
         if ($refund->status !== 'pending') {
-            return back()->with('error', 'This refund has already been decided.');
+            return back()->with('error', 'This refund request has already been processed.');
         }
 
-        $refund->update([
-            'status'        => 'rejected',
-            'admin_remark'  => $request->input('remark', 'Refund request declined according to policy.'),
-            'decided_at'    => now(),
+        $request->validate([
+            'admin_remark' => 'required|string|min:3|max:1000',
+        ], [
+            'admin_remark.required' => 'Please provide a reason for rejecting this refund request.',
         ]);
 
-        return back()->with('success', "Refund request for {$refund->user->name} was rejected.");
+        $refund->update([
+            'status'       => 'rejected',
+            'admin_remark' => $request->admin_remark,
+            'decided_at'   => now(),
+        ]);
+
+        return back()->with('success', "Refund rejected with reason. User account remains active.");
     }
 }

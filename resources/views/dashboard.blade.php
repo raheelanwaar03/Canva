@@ -283,16 +283,6 @@
                 <span class="text-[11px] font-bold text-slate-800">Wallet</span>
             </a>
 
-            <!-- Wallet Card -->
-            <a href="{{ route('wallet') }}"
-                class="glass-action-card rounded-3xl p-4 flex flex-col items-center justify-center text-center group">
-                <div
-                    class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl mb-2 group-hover:scale-110 transition-transform shadow-sm">
-                    <i class="fa-solid fa-wallet text-indigo-500"></i>
-                </div>
-                <span class="text-xs font-bold text-slate-700">Wallet</span>
-            </a>
-
             <!-- Upgrade Plan Card (NEW) -->
             <a href="{{ route('packages.index') }}"
                 class="glass-action-card rounded-3xl p-4 flex flex-col items-center justify-center text-center group relative overflow-hidden">
@@ -310,15 +300,29 @@
             </a>
 
             <a href="{{ route('refund.index') }}"
-                class="flex items-center justify-between p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:bg-slate-50 transition">
-                <div class="flex items-center space-x-3">
-                    <div
-                        class="w-9 h-9 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center text-sm font-bold">
-                        <i class="fa-solid fa-rotate-left"></i>
-                    </div>
-                    <span class="text-xs font-bold text-slate-800">Apply for Refund</span>
+                class="glass-action-card rounded-2xl p-3 flex flex-col items-center text-center justify-center space-y-2 aspect-square">
+                <div class="w-12 h-12 flex items-center justify-center">
+                    <!-- 3D Rose/Pink Refund Wallet Icon -->
+                    <svg viewBox="0 0 64 64" class="w-11 h-11 drop-shadow-md">
+                        <defs>
+                            <linearGradient id="refundWalletGrad" x1="0%" y1="0%" x2="100%"
+                                y2="100%">
+                                <stop offset="0%" stop-color="#fb7185" />
+                                <stop offset="100%" stop-color="#e11d48" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Wallet Body -->
+                        <rect x="10" y="16" width="44" height="34" rx="8"
+                            fill="url(#refundWalletGrad)" />
+                        <!-- Clasp / Pocket -->
+                        <rect x="34" y="27" width="20" height="12" rx="4" fill="#ffe4e6" />
+                        <circle cx="42" cy="33" r="2.5" fill="#be123c" />
+                        <!-- Refund / Return Circular Arrow -->
+                        <path d="M22 27c-3 3-3 7 0 10l-1.5 1.5M22 27h-4M22 27v4" stroke="#ffffff" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.95" />
+                    </svg>
                 </div>
-                <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+                <span class="text-[11px] font-bold text-slate-800">Refund</span>
             </a>
 
         </div>

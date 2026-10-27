@@ -81,7 +81,7 @@
             <a href="{{ route('admin.users.index') }}"
                 class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.users.*') ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white' }}">
                 <i class="fa-regular fa-circle-check w-4 text-center"></i>
-                <span class="flex-1">All Approved Users</span>
+                <span class="flex-1">All Users</span>
             </a>
 
             <!-- New User Request (Deposit / Plan requests) -->
