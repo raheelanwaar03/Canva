@@ -49,27 +49,6 @@
                         @endif
                     </div>
                 </div>
-
-                <!-- Package Perks -->
-                <div class="grid grid-cols-2 gap-2 my-3 py-2 border-y border-slate-100 text-[11px] text-slate-600">
-                    <div class="flex items-center space-x-1.5">
-                        <i class="fa-solid fa-circle-check text-cyan-500 text-xs"></i>
-                        <span>{{ $pkg->daily_task_limit }} Ads Daily</span>
-                    </div>
-                    <div class="flex items-center space-x-1.5">
-                        <i class="fa-solid fa-circle-check text-cyan-500 text-xs"></i>
-                        <span>Rs {{ number_format($pkg->reward_per_task, 0) }} Per Ad</span>
-                    </div>
-                    <div class="flex items-center space-x-1.5">
-                        <i class="fa-solid fa-circle-check text-cyan-500 text-xs"></i>
-                        <span>Rs {{ number_format($pkg->referral_commission, 0) }} Ref Bonus</span>
-                    </div>
-                    <div class="flex items-center space-x-1.5">
-                        <i class="fa-solid fa-circle-check text-cyan-500 text-xs"></i>
-                        <span>First 15–Days Free</span>
-                    </div>
-                </div>
-
                 <!-- Action CTA Button with Explicit Linear Gradient -->
                 @if($isCurrent)
                     <button disabled class="w-full bg-slate-100 text-slate-400 font-bold py-3 rounded-xl text-xs cursor-not-allowed">

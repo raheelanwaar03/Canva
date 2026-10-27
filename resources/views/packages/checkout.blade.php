@@ -33,7 +33,7 @@
             </div>
         </div>
 
-        style="background: linear-gradient<!-- DYNAMIC WALLET DETAILS CARD -->
+    <!-- DYNAMIC WALLET DETAILS CARD -->
     <div style="background:
         linear-gradient(135deg, #059669 0%, #10b981 50%, #06b6d4 100%);"
         class="rounded-3xl p-6 text-white text-center shadow-2xl relative overflow-hidden space-y-2">
