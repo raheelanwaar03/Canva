@@ -275,4 +275,14 @@ class User extends Authenticatable
             'days_left' => 0,
         ];
     }
+
+    public function refundRequests()
+    {
+        return $this->hasMany(\App\Models\RefundRequest::class);
+    }
+
+    public function latestRefundRequest()
+    {
+        return $this->hasOne(\App\Models\RefundRequest::class)->latestOfMany();
+    }
 }

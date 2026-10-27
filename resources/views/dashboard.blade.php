@@ -309,6 +309,18 @@
                 <span class="text-xs font-bold text-slate-700">Upgrade Plan</span>
             </a>
 
+            <a href="{{ route('refund.index') }}"
+                class="flex items-center justify-between p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:bg-slate-50 transition">
+                <div class="flex items-center space-x-3">
+                    <div
+                        class="w-9 h-9 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </div>
+                    <span class="text-xs font-bold text-slate-800">Apply for Refund</span>
+                </div>
+                <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+            </a>
+
         </div>
 
         <!-- Botanical Silhouette Accents at Bottom-Right (Matches user.jpeg) -->

@@ -143,6 +143,13 @@
                 <span>Platform Settings</span>
             </a>
 
+            <!-- Refund Requests (NEW) -->
+            <a href="{{ route('admin.refunds.index') }}"
+                class="flex items-center space-x-3 px-4 py-3 rounded-2xl text-xs font-bold transition {{ request()->routeIs('admin.refunds.*') ? 'bg-[#4f46e5] text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-800/50' }}">
+                <i class="fa-solid fa-arrow-rotate-left text-sm"></i>
+                <span>Refund Requests</span>
+            </a>
+
         </nav>
 
         <!-- Footer / Version -->

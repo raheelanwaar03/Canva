@@ -11,6 +11,7 @@ use App\Models\Withdrawal;
 use App\Models\Channel;
 use App\Models\Transaction;
 use App\Models\TaskLog;
+use App\Http\Controllers\User\RefundController;
 
 /*
 |--------------------------------------------------------------------------
@@ -103,4 +104,8 @@ Route::middleware(['has_active_package'])->group(function () {
     // Rejected Payment Resubmission
     Route::get('/packages/rejected', [PackageController::class, 'rejected'])->name('packages.rejected');
     Route::post('/packages/{payment}/resubmit', [PackageController::class, 'resubmit'])->name('packages.resubmit');
+
+    // refund
+    Route::get('/refund', [RefundController::class, 'index'])->name('refund.index');
+    Route::post('/refund', [RefundController::class, 'store'])->name('refund.store');
 });

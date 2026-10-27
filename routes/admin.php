@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\TaskManagementController;
 use App\Http\Controllers\Admin\ChannelManagementController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\PlatformSettingController;
+use App\Http\Controllers\Admin\RefundManagementController;
 
 // Main Admin Dashboard
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -52,7 +53,11 @@ Route::post('/users/{user}/adjust-balance', [UserManagementController::class, 'a
 Route::post('/users/{user}/impersonate', [UserManagementController::class, 'impersonate'])->name('users.impersonate');
 Route::post('/users/{user}/login-as', [UserManagementController::class, 'impersonate'])->name('users.loginAs');
 
-
 // Platform Settings (Pricing, Ad rates, Commissions, Payment details)
 Route::get('/settings', [PlatformSettingController::class, 'index'])->name('settings.index');
 Route::post('/settings', [PlatformSettingController::class, 'update'])->name('settings.update');
+
+// Admin Refund Requests
+Route::get('/refunds', [RefundManagementController::class, 'index'])->name('refunds.index');
+Route::post('/refunds/{refund}/approve', [RefundManagementController::class, 'approve'])->name('refunds.approve');
+Route::post('/refunds/{refund}/reject', [RefundManagementController::class, 'reject'])->name('refunds.reject');
