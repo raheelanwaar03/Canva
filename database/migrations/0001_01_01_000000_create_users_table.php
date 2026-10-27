@@ -15,8 +15,22 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('phone', 30)->nullable();
+            $table->string('avatar')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            // Referral & Hierarchy Columns
+            $table->string('referral_code', 50)->nullable()->unique();
+            $table->foreignId('referred_by')->nullable()->constrained('users')->nullOnDelete();
+
+            // Role & Lifecycle Status (VARCHAR prevents 1265 truncation errors)
+            $table->string('role', 30)->default('user');
+            $table->string('status', 50)->default('active'); // Supports 'active', 'pending', 'rejected', 'suspended'
+
+            // Task / Bonus Tracking
+            $table->boolean('first_task_bonus_received')->default(false);
+
             $table->rememberToken();
             $table->timestamps();
         });
@@ -42,8 +56,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };
