@@ -30,6 +30,11 @@ Route::post('/impersonate/leave', [UserManagementController::class, 'leaveImpers
 // Receipts Serving Route
 Route::get('/receipts/{filename}', [ReceiptController::class, 'show'])->name('receipts.show');
 
+// USER ROUTES ONLY (Blocked for real Admin, allowed for members and impersonating admin)
+Route::middleware(['auth', 'is_user'])->group(function () {
+    require __DIR__ . '/user.php';
+});
+
 // ADMIN ROUTES (Uses 'is_admin' middleware alias)
 Route::middleware(['auth', 'is_admin'])
     ->prefix('admin')
