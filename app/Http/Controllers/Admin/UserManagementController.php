@@ -184,15 +184,19 @@ class UserManagementController extends Controller
     public function update(Request $request, User $user)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
-            'phone' => ['nullable', 'string', 'max:50'],
-            'referral_code' => ['required', 'string', 'max:50', 'unique:users,referral_code,' . $user->id],
-            'referred_by' => ['nullable', 'exists:users,id'],
-            'status' => ['required', 'in:active,pending,banned'],
-            'custom_level' => ['nullable', 'integer', 'min:0', 'max:8'],
-            'package_id' => ['nullable', 'exists:packages,id'],
-            'package_days' => ['nullable', 'integer', 'min:1', 'max:365'],
+            'name'             => ['required', 'string', 'max:255'],
+            'email'            => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'phone'            => ['nullable', 'string', 'max:50'],
+            'referral_code'    => ['required', 'string', 'max:50', 'unique:users,referral_code,' . $user->id],
+            'referred_by'      => ['nullable', 'exists:users,id'],
+            'status'           => ['required', 'in:active,pending,banned'],
+            'custom_level'     => ['nullable', 'integer', 'min:0', 'max:8'],
+            'package_id'       => ['nullable', 'exists:packages,id'],
+            'package_days'     => ['nullable', 'integer', 'min:1', 'max:365'],
+            'main_balance'     => ['nullable', 'numeric', 'min:0'],
+            'rewards_balance'  => ['nullable', 'numeric', 'min:0'],
+            'task_earnings'    => ['nullable', 'numeric', 'min:0'],
+            'referral_earnings' => ['nullable', 'numeric', 'min:0'],
         ]);
 
         DB::transaction(function () use ($request, $user) {
@@ -200,41 +204,54 @@ class UserManagementController extends Controller
 
             // 1. Update basic profile info & custom level
             $user->update([
-                'name' => $request->name,
-                'email' => $request->email,
-                'phone' => $request->phone,
+                'name'          => $request->name,
+                'email'         => $request->email,
+                'phone'         => $request->phone,
                 'referral_code' => strtoupper($request->referral_code),
-                'referred_by' => $request->referred_by ?: null,
-                'status' => $request->status,
-                'custom_level' => $request->filled('custom_level') ? (int) $request->custom_level : null,
+                'referred_by'   => $request->referred_by ?: null,
+                'status'        => $request->status,
+                'custom_level'  => $request->filled('custom_level') ? (int) $request->custom_level : null,
             ]);
 
-            // 2. Handle Package Change / Manual Upgrade
+            // 2. Handle Wallet Balances Update Directly
+            if ($request->has('main_balance') || $request->has('rewards_balance')) {
+                $wallet = $user->wallet ?: $user->wallet()->create([
+                    'main_balance'         => 0.00,
+                    'rewards_balance'      => 0.00,
+                    'task_earnings'        => 0.00,
+                    'referral_earnings'    => 0.00,
+                    'staff_earnings'       => 0.00,
+                    'withdrawable_balance' => 0.00,
+                ]);
+
+                $newMain = (float) $request->input('main_balance', $wallet->main_balance);
+
+                $wallet->update([
+                    'main_balance'         => $newMain,
+                    'withdrawable_balance' => $newMain,
+                    'rewards_balance'      => (float) $request->input('rewards_balance', $wallet->rewards_balance),
+                    'task_earnings'        => (float) $request->input('task_earnings', $wallet->task_earnings),
+                    'referral_earnings'    => (float) $request->input('referral_earnings', $wallet->referral_earnings),
+                ]);
+            }
+
+            // 3. Handle Package Change / Manual Upgrade
             if ($request->filled('package_id')) {
                 $newPackage = Package::findOrFail($request->package_id);
-                $durationDays = $request->input('package_days', 30) ?: 30;
+                $durationDays = (int) ($request->input('package_days', 30) ?: 30);
 
-                // Expire all other packages for this user
+                // Expire existing packages
                 UserPackage::where('user_id', $user->id)
                     ->where('status', 'active')
                     ->update(['status' => 'upgraded']);
 
                 // Create and activate new package
                 UserPackage::create([
-                    'user_id' => $user->id,
+                    'user_id'    => $user->id,
                     'package_id' => $newPackage->id,
                     'started_at' => $now,
                     'expires_at' => $now->copy()->addDays($durationDays),
-                    'status' => 'active',
-                ]);
-
-                // Create audit transaction log for transparency
-                Transaction::create([
-                    'user_id' => $user->id,
-                    'amount' => 0.00,
-                    'type' => 'plan_change',
-                    'balance_type' => 'credit',
-                    'description' => "Admin manually assigned/changed package to {$newPackage->name} ({$durationDays} days validity)",
+                    'status'     => 'active',
                 ]);
             }
         });
