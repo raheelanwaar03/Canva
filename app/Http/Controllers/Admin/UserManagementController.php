@@ -266,46 +266,41 @@ class UserManagementController extends Controller
     public function adjustBalance(Request $request, User $user)
     {
         $request->validate([
-            'amount' => ['required', 'numeric', 'min:1'],
-            'type' => ['required', 'in:add,subtract'],
-            'wallet_type' => ['required', 'in:main,rewards'],
-            'remark' => ['nullable', 'string', 'max:255'],
+            'amount' => 'required|numeric|min:0.01',
+            'type'   => 'required|in:add,subtract', // or whatever form inputs you have
+            'remark' => 'nullable|string|max:255',
         ]);
 
-        $wallet = $user->wallet ?: $user->wallet()->create();
-        $amount = (float) $request->amount;
-        $column = $request->wallet_type === 'rewards' ? 'rewards_balance' : 'main_balance';
+        $wallet = $user->wallet ?: $user->wallet()->create([
+            'main_balance'         => 0.00,
+            'rewards_balance'      => 0.00,
+            'task_earnings'        => 0.00,
+            'referral_earnings'    => 0.00,
+            'staff_earnings'       => 0.00,
+            'withdrawable_balance' => 0.00,
+        ]);
 
-        if ($request->type === 'add') {
-            $wallet->increment($column, $amount);
-            if ($request->wallet_type === 'main') {
-                $wallet->increment('withdrawable_balance', $amount);
-            }
-            $txType = 'manual_add';
-            $balanceType = 'credit';
-            $msg = "Added Rs {$amount} to {$user->name}'s {$request->wallet_type} balance.";
+        $amount = (float) $request->amount;
+        $isAdd = $request->type === 'add';
+
+        if ($isAdd) {
+            $wallet->increment('main_balance', $amount);
+            $wallet->increment('withdrawable_balance', $amount);
         } else {
-            if ($wallet->$column < $amount) {
-                return back()->with('error', 'User does not have sufficient balance for deduction.');
-            }
-            $wallet->decrement($column, $amount);
-            if ($request->wallet_type === 'main') {
-                $wallet->decrement('withdrawable_balance', $amount);
-            }
-            $txType = 'manual_deduct';
-            $balanceType = 'debit';
-            $msg = "Deducted Rs {$amount} from {$user->name}'s {$request->wallet_type} balance.";
+            $wallet->decrement('main_balance', min($wallet->main_balance, $amount));
+            $wallet->decrement('withdrawable_balance', min($wallet->withdrawable_balance, $amount));
         }
 
+        // Use 'referral_bonus' (valid ENUM value) and explain the adjustment in description:
         Transaction::create([
-            'user_id' => $user->id,
-            'amount' => $amount,
-            'type' => $txType,
-            'balance_type' => $balanceType,
-            'description' => $request->remark ?: "Admin Manual {$request->type} ({$request->wallet_type})",
+            'user_id'      => $user->id,
+            'amount'       => $amount,
+            'type'         => 'referral_bonus', // <--- Uses valid ENUM
+            'balance_type' => $isAdd ? 'credit' : 'debit',
+            'description'  => "Admin balance adjustment: " . ($request->remark ?: ($isAdd ? 'Added by admin' : 'Deducted by admin')),
         ]);
 
-        return back()->with('success', $msg);
+        return back()->with('success', 'User balance adjusted successfully!');
     }
 
     public function impersonate(User $user)
