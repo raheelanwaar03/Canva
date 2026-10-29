@@ -76,13 +76,59 @@
                 <i class="fa-solid fa-house w-4 text-center"></i>
                 <span class="flex-1">Dashboard</span>
             </a>
+            <!-- Users Dropdown Menu -->
+            <!-- Users Collapsible Menu -->
+            <div class="space-y-1">
+                <!-- Main Toggle Header (Closed by default) -->
+                <button type="button" onclick="toggleUsersMenu()"
+                    class="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-black text-slate-400 hover:text-white hover:bg-slate-800/50 transition">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-users text-sm"></i>
+                        <span>Users</span>
+                    </div>
+                    <i id="usersChevron"
+                        class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                </button>
 
-            <!-- All Approved Users -->
-            <a href="{{ route('admin.users.index') }}"
-                class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.users.*') ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white' }}">
-                <i class="fa-regular fa-circle-check w-4 text-center"></i>
-                <span class="flex-1">All Users</span>
-            </a>
+                <!-- Submenu Links (Hidden by default) -->
+                <div id="usersSubmenu" class="hidden pl-6 pr-2 space-y-1">
+                    <!-- 1. Pending Users -->
+                    <a href="{{ route('admin.users.pending') }}"
+                        class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.users.pending') ? 'bg-[#3b49df] text-white' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40' }}">
+                        <i class="fa-regular fa-clock text-[11px]"></i>
+                        <span>Pending Users</span>
+                    </a>
+
+                    <!-- 2. Approved Users -->
+                    <a href="{{ route('admin.users.approved') }}"
+                        class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.users.approved') ? 'bg-[#3b49df] text-white' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40' }}">
+                        <i class="fa-solid fa-user-check text-[11px]"></i>
+                        <span>Approved Users</span>
+                    </a>
+
+                    <!-- 3. Rejected Users -->
+                    <a href="{{ route('admin.users.rejected') }}"
+                        class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.users.rejected') ? 'bg-[#3b49df] text-white' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40' }}">
+                        <i class="fa-solid fa-user-xmark text-[11px]"></i>
+                        <span>Rejected Users</span>
+                    </a>
+                </div>
+            </div>
+
+            <script>
+                function toggleUsersMenu() {
+                    const submenu = document.getElementById('usersSubmenu');
+                    const chevron = document.getElementById('usersChevron');
+
+                    if (submenu.classList.contains('hidden')) {
+                        submenu.classList.remove('hidden');
+                        chevron.classList.add('rotate-180');
+                    } else {
+                        submenu.classList.add('hidden');
+                        chevron.classList.remove('rotate-180');
+                    }
+                }
+            </script>
 
             <!-- New User Request (Deposit / Plan requests) -->
             @php

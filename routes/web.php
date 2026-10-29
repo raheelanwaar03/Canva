@@ -17,12 +17,7 @@ Route::get('/', function () {
 // Authentication routes (Login, Register, Logout)
 require __DIR__ . '/auth.php';
 
-// USER ROUTES (For authenticated members)
-Route::middleware(['auth'])->group(function () {
-    require __DIR__ . '/user.php';
-});
-
-// Impersonation leave route (Outside admin group so users can exit impersonation)
+// Impersonation leave route
 Route::post('/impersonate/leave', [UserManagementController::class, 'leaveImpersonation'])
     ->middleware('auth')
     ->name('impersonate.leave');
@@ -30,17 +25,17 @@ Route::post('/impersonate/leave', [UserManagementController::class, 'leaveImpers
 // Receipts Serving Route
 Route::get('/receipts/{filename}', [ReceiptController::class, 'show'])->name('receipts.show');
 
-// Terms and condition
+// Terms and Conditions
 Route::get('/terms', function () {
     return view('terms');
 })->name('terms');
 
-// USER ROUTES ONLY (Blocked for real Admin, allowed for members and impersonating admin)
+// USER ROUTES ONLY
 Route::middleware(['auth', 'is_user'])->group(function () {
     require __DIR__ . '/user.php';
 });
 
-// ADMIN ROUTES (Uses 'is_admin' middleware alias)
+// ADMIN ROUTES
 Route::middleware(['auth', 'is_admin'])
     ->prefix('admin')
     ->name('admin.')

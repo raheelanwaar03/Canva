@@ -357,4 +357,49 @@ class UserManagementController extends Controller
         Auth::logout();
         return redirect()->route('login');
     }
+
+    public function pending(Request $request)
+    {
+        $users = User::where('role', 'user')
+            ->where('status', 'pending')
+            ->with(['referrer', 'activePackage.package', 'packagePayments'])
+            ->latest()
+            ->paginate(20);
+
+        return view('admin.users.index', [
+            'users' => $users,
+            'pageTitle' => 'Pending Users',
+            'status' => 'pending'
+        ]);
+    }
+
+    public function approved(Request $request)
+    {
+        $users = User::where('role', 'user')
+            ->where('status', 'active')
+            ->with(['referrer', 'activePackage.package', 'packagePayments'])
+            ->latest()
+            ->paginate(20);
+
+        return view('admin.users.index', [
+            'users' => $users,
+            'pageTitle' => 'Approved Users',
+            'status' => 'approved'
+        ]);
+    }
+
+    public function rejected(Request $request)
+    {
+        $users = User::where('role', 'user')
+            ->where('status', 'rejected')
+            ->with(['referrer', 'activePackage.package', 'packagePayments'])
+            ->latest()
+            ->paginate(20);
+
+        return view('admin.users.index', [
+            'users' => $users,
+            'pageTitle' => 'Rejected Users',
+            'status' => 'rejected'
+        ]);
+    }
 }

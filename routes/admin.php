@@ -32,6 +32,7 @@ Route::put('/packages/{package}', [PackageManagementController::class, 'update']
 // Ad Tasks Inventory
 Route::get('/tasks', [TaskManagementController::class, 'index'])->name('tasks.index');
 Route::post('/tasks', [TaskManagementController::class, 'store'])->name('tasks.store');
+Route::put('/tasks/{task}', [TaskManagementController::class, 'update'])->name('tasks.update');
 Route::post('/tasks/{task}/toggle', [TaskManagementController::class, 'toggle'])->name('tasks.toggle');
 Route::delete('/tasks/{task}', [TaskManagementController::class, 'destroy'])->name('tasks.destroy');
 
@@ -42,18 +43,25 @@ Route::put('/channels/{channel}', [ChannelManagementController::class, 'update']
 Route::post('/channels/{channel}/toggle', [ChannelManagementController::class, 'toggle'])->name('channels.toggle');
 Route::delete('/channels/{channel}', [ChannelManagementController::class, 'destroy'])->name('channels.destroy');
 
-// User Management (Clean, single definitions)
-Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
-Route::get('/users/{user}', [UserManagementController::class, 'show'])->name('users.show');
-Route::get('/users/{user}/edit', [UserManagementController::class, 'edit'])->name('users.edit');
-Route::put('/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
-Route::post('/users/{user}/adjust-balance', [UserManagementController::class, 'adjustBalance'])->name('users.adjustBalance');
+// ==========================================
+// USER MANAGEMENT (Status Sub-routes first to avoid 404 wildcard collisions)
+// ==========================================
+Route::prefix('users')->name('users.')->group(function () {
+    Route::get('/', [UserManagementController::class, 'index'])->name('index');
+    Route::get('/pending', [UserManagementController::class, 'pending'])->name('pending');
+    Route::get('/approved', [UserManagementController::class, 'approved'])->name('approved');
+    Route::get('/rejected', [UserManagementController::class, 'rejected'])->name('rejected');
 
-// Both "Login as User" and "Login as Applicant" support:
-Route::post('/users/{user}/impersonate', [UserManagementController::class, 'impersonate'])->name('users.impersonate');
-Route::post('/users/{user}/login-as', [UserManagementController::class, 'impersonate'])->name('users.loginAs');
+    // User Operations on Specific ID (Wildcards placed AFTER static paths)
+    Route::get('/{user}', [UserManagementController::class, 'show'])->name('show');
+    Route::get('/{user}/edit', [UserManagementController::class, 'edit'])->name('edit');
+    Route::put('/{user}', [UserManagementController::class, 'update'])->name('update');
+    Route::post('/{user}/adjust-balance', [UserManagementController::class, 'adjustBalance'])->name('adjustBalance');
+    Route::post('/{user}/impersonate', [UserManagementController::class, 'impersonate'])->name('impersonate');
+    Route::post('/{user}/login-as', [UserManagementController::class, 'impersonate'])->name('loginAs');
+});
 
-// Platform Settings (Pricing, Ad rates, Commissions, Payment details)
+// Platform Settings
 Route::get('/settings', [PlatformSettingController::class, 'index'])->name('settings.index');
 Route::post('/settings', [PlatformSettingController::class, 'update'])->name('settings.update');
 
@@ -61,9 +69,3 @@ Route::post('/settings', [PlatformSettingController::class, 'update'])->name('se
 Route::get('/refunds', [RefundManagementController::class, 'index'])->name('refunds.index');
 Route::post('/refunds/{refund}/approve', [RefundManagementController::class, 'approve'])->name('refunds.approve');
 Route::post('/refunds/{refund}/reject', [RefundManagementController::class, 'reject'])->name('refunds.reject');
-
-// Tasks management
-Route::get('/tasks', [TaskManagementController::class, 'index'])->name('tasks.index');
-Route::post('/tasks', [TaskManagementController::class, 'store'])->name('tasks.store');
-Route::put('/tasks/{task}', [TaskManagementController::class, 'update'])->name('tasks.update');
-Route::delete('/tasks/{task}', [TaskManagementController::class, 'destroy'])->name('tasks.destroy');
