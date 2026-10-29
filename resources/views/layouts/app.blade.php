@@ -237,14 +237,6 @@
                 <span class="text-[9px] mt-0.5">Earnings</span>
             </a>
 
-            <!-- 4. Support (Direct WhatsApp Chat with Admin) -->
-            <a href="https://wa.me/923001234567?text=Hello%20CanvaEdits%20Admin,%20I%20need%20assistance."
-                target="_blank"
-                class="flex flex-col items-center py-1 px-2.5 text-slate-400 hover:text-emerald-600 transition">
-                <i class="fa-brands fa-whatsapp text-lg text-emerald-500"></i>
-                <span class="text-[9px] mt-0.5">Support</span>
-            </a>
-
             <!-- 5. Account -->
             <a href="{{ route('profile.edit') }}"
                 class="flex flex-col items-center py-1 px-2.5 {{ request()->routeIs('profile.*') ? 'text-indigo-600 font-extrabold' : 'text-slate-400 hover:text-slate-600' }}">
