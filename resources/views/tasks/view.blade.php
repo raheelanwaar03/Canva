@@ -1,126 +1,98 @@
 @extends('layouts.app')
 
 @php
-    $headerTitle = 'Watching Ad';
+    $headerTitle = 'Watch & Earn';
 @endphp
 
 @section('content')
-    <div class="space-y-4 pt-1">
+<div class="space-y-4 pt-1 max-w-lg mx-auto">
 
-        <!-- Timer Header Card -->
-        <div class="glass-card-item rounded-2xl p-4 text-center">
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Reward Verification</span>
-            <div class="text-3xl font-black text-indigo-600 my-1 font-mono" id="countdownTimer">
-                {{ $task->duration_seconds }}
-            </div>
-            <p class="text-xs text-slate-500" id="timerStatus">Please keep this window open until the countdown finishes...
-            </p>
-
-            <!-- Claim Reward Button (Disabled until timer ends) -->
-            <button id="claimRewardBtn" onclick="claimReward()" disabled
-                class="mt-3 w-full py-3 rounded-2xl text-xs font-bold text-white shadow-md bg-slate-300 cursor-not-allowed transition">
-                Waiting for timer...
-            </button>
+    <!-- Top Info & Timer Bar -->
+    <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex items-center justify-between">
+        <div>
+            <h2 class="text-sm font-black text-slate-800">{{ $task->title }}</h2>
+            <p class="text-[11px] text-slate-400">Keep video visible until timer finishes</p>
         </div>
-
-        <!-- Ad Preview Display -->
-        <div class="glass-card-item rounded-2xl p-4 space-y-3">
-            <div class="flex items-center space-x-2.5">
-                <div
-                    class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center text-sm font-bold">
-                    <i class="fa-solid fa-bullhorn"></i>
-                </div>
-                <div>
-                    <h3 class="text-sm font-extrabold text-slate-900">{{ $task->title }}</h3>
-                    <span class="text-[10px] text-indigo-600 font-semibold">+Rs
-                        {{ number_format($activeSub->package->reward_per_task, 2) }}</span>
-                </div>
-            </div>
-
-            <p class="text-xs text-slate-600 leading-relaxed">{{ $task->description }}</p>
-
-            <!-- Simulated Ad Frame -->
-            <div
-                class="rounded-xl overflow-hidden border border-slate-200 bg-slate-900 text-white p-6 text-center shadow-inner">
-                <div
-                    class="w-16 h-16 rounded-full bg-gradient-to-tr from-cyan-400 via-indigo-500 to-fuchsia-500 mx-auto flex items-center justify-center text-xl font-black mb-3">
-                    Canva
-                </div>
-                <h4 class="font-extrabold text-sm mb-1">Empowering the world to design</h4>
-                <p class="text-[11px] text-slate-300 mb-4">Create stunning social media posts, presentations, and videos in
-                    minutes.</p>
-                <a href="{{ $task->ad_url }}" target="_blank"
-                    class="inline-block px-4 py-1.5 bg-white text-indigo-700 rounded-xl text-xs font-bold">
-                    Visit Partner Site <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ml-1"></i>
-                </a>
+        <div class="flex items-center space-x-2">
+            <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex flex-col items-center justify-center">
+                <span id="countdown" class="text-base font-black text-indigo-600">{{ $task->duration_seconds ?? 15 }}</span>
+                <span class="text-[9px] font-bold text-slate-400 -mt-1">sec</span>
             </div>
         </div>
-
     </div>
 
-    @push('scripts')
-        <script>
-            let timeLeft = {{ $task->duration_seconds }};
-            const timerElem = document.getElementById('countdownTimer');
-            const statusElem = document.getElementById('timerStatus');
-            const claimBtn = document.getElementById('claimRewardBtn');
+    <!-- Video Embed Screen -->
+    <div class="bg-black rounded-3xl overflow-hidden aspect-video shadow-lg relative border border-slate-800 flex items-center justify-center">
+        @if(str_contains($task->embed_url, 'youtube.com/embed') || str_contains($task->embed_url, 'vimeo.com'))
+            <iframe id="adFrame"
+                    class="w-full h-full"
+                    src="{{ $task->embed_url }}"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+            </iframe>
+        @elseif(str_ends_with(strtolower($task->ad_url), '.mp4'))
+            <video id="adVideo" class="w-full h-full object-cover" autoplay controls playsinline>
+                <source src="{{ $task->ad_url }}" type="video/mp4">
+                Your browser does not support HTML video.
+            </video>
+        @else
+            <!-- External Web Page fallback inside frame -->
+            <iframe id="adFrame" class="w-full h-full bg-white" src="{{ $task->ad_url }}"></iframe>
+        @endif
+    </div>
 
-            const countdown = setInterval(() => {
-                timeLeft--;
-                timerElem.innerText = timeLeft;
+    <!-- Claim Reward Form (Locked until timer hits 0) -->
+    <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 text-center space-y-3">
+        <div id="rewardStatus" class="text-xs font-bold text-slate-500">
+            <i class="fa-solid fa-spinner fa-spin text-indigo-500 mr-1.5"></i>
+            <span>Watching in progress... Reward will unlock shortly.</span>
+        </div>
 
-                if (timeLeft <= 0) {
-                    clearInterval(countdown);
-                    timerElem.innerText = "✓ Ready";
-                    timerElem.classList.remove('text-indigo-600');
-                    timerElem.classList.add('text-emerald-500');
+        <form id="completeTaskForm" action="{{ route('tasks.complete', $task->id) }}" method="POST">
+            @csrf
+            <button id="claimBtn" type="submit" disabled
+                    style="background: linear-gradient(90deg, #6366f1 0%, #4f46e5 100%);"
+                    class="w-full py-3.5 px-6 rounded-2xl text-xs font-black text-white shadow-md opacity-40 cursor-not-allowed transition duration-200">
+                Complete Task & Claim Reward
+            </button>
+        </form>
+    </div>
 
-                    statusElem.innerText = "Ad complete! Click below to collect your reward.";
-                    claimBtn.disabled = false;
-                    claimBtn.innerText = "Claim Reward Now";
-                    claimBtn.classList.remove('bg-slate-300', 'cursor-not-allowed');
-                    claimBtn.style.background = "linear-gradient(90deg, #10b981 0%, #059669 100%)";
-                }
-            }, 1000);
+</div>
 
-            function claimReward() {
-                claimBtn.disabled = true;
-                claimBtn.innerText = "Processing Reward...";
+@push('scripts')
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let timeLeft = {{ $task->duration_seconds ?? 15 }};
+        const countdownEl = document.getElementById('countdown');
+        const claimBtn = document.getElementById('claimBtn');
+        const rewardStatus = document.getElementById('rewardStatus');
 
-                fetch("{{ route('tasks.complete', $task->id) }}", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Accept": "application/json",
-                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                        }
-                    })
-                    .then(async (res) => {
-                        const data = await res.json().catch(() => null);
-                        if (!res.ok) {
-                            const errorMsg = data && data.message ? data.message : ("Server returned status " + res
-                                .status);
-                            alert(errorMsg);
-                            claimBtn.disabled = false;
-                            claimBtn.innerText = "Try Again";
-                            return;
-                        }
-
-                        if (data && data.success) {
-                            alert(data.message);
-                            window.location.href = "{{ route('tasks.index') }}";
-                        } else {
-                            alert(data ? data.message : "Failed to claim reward.");
-                            claimBtn.disabled = false;
-                            claimBtn.innerText = "Try Again";
-                        }
-                    })
-                    .catch(err => {
-                        alert("Network error: " + err.message);
-                        claimBtn.disabled = false;
-                        claimBtn.innerText = "Try Again";
-                    });
+        const timer = setInterval(() => {
+            timeLeft--;
+            if (timeLeft >= 0) {
+                countdownEl.innerText = timeLeft;
             }
-        </script>
-    @endpush
+
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                countdownEl.innerText = "0";
+
+                // Unlock Claim Button
+                claimBtn.disabled = false;
+                claimBtn.classList.remove('opacity-40', 'cursor-not-allowed');
+                claimBtn.classList.add('hover:opacity-95', 'active:scale-95');
+
+                rewardStatus.innerHTML = `
+                    <span class="text-emerald-600 font-black inline-flex items-center space-x-1">
+                        <i class="fa-solid fa-circle-check text-xs"></i>
+                        <span>Video Completed! Tap below to claim your earnings.</span>
+                    </span>
+                `;
+            }
+        }, 1000);
+    });
+</script>
+@endpush
 @endsection

@@ -5,7 +5,6 @@
 @endphp
 
 @section('admin_content')
-
     <div class="p-4 sm:p-8 space-y-6 max-w-7xl mx-auto">
         <!-- Header -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -101,6 +100,53 @@
                 </div>
             </div>
 
+            <!-- Task Earnings Per Referral Level Section (Level 0 to Level 8) -->
+            <div class="bg-white rounded-3xl p-6 sm:p-7 shadow-sm border border-slate-100 space-y-5">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <div class="flex items-center space-x-3">
+                        <div
+                            class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-base">
+                            <i class="fa-solid fa-layer-group"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-black text-slate-800 tracking-tight">Ad Reward Per Referral Level
+                                (0–8)</h3>
+                            <p class="text-xs font-semibold text-slate-400">Set PKR earnings per ad view for Level 0 up to
+                                Level 8.</p>
+                        </div>
+                    </div>
+                    <span
+                        class="px-3 py-1 rounded-xl text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                        9 Tiers Active
+                    </span>
+                </div>
+
+                <!-- Responsive Grid for all 9 tiers -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    @foreach ($levelRates as $level => $rate)
+                        <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[11px] font-black uppercase tracking-wider text-slate-500">
+                                    {{ $level == 0 ? 'Direct (Level 0)' : "Level {$level}" }}
+                                </span>
+                                <span
+                                    class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
+                                    Tier {{ $level }}
+                                </span>
+                            </div>
+
+                            <div class="relative flex items-center">
+                                <span class="absolute left-3 text-xs font-bold text-slate-400">Rs</span>
+                                <input type="number" step="0.01" min="0" name="level_rates[{{ $level }}]"
+                                    value="{{ old("level_rates.$level", $rate) }}" required
+                                    class="w-full bg-white border border-slate-200 focus:border-indigo-500 rounded-xl pl-9 pr-3 py-2 text-xs font-black text-slate-800 outline-none transition">
+                            </div>
+                            <p class="text-[10px] text-slate-400">Reward per verified view</p>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
             <!-- 3. Referral Commission Rules Card -->
             <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 space-y-5">
                 <div class="flex items-center space-x-3 border-b border-slate-100 pb-4">
@@ -135,7 +181,8 @@
 
                     <div>
                         <label class="block text-xs font-extrabold text-slate-700 mb-2">Level 3 Commission (%)</label>
-                        <input type="number" step="0.1" min="0" max="100" name="referral_level_3_percent"
+                        <input type="number" step="0.1" min="0" max="100"
+                            name="referral_level_3_percent"
                             value="{{ old('referral_level_3_percent', $settings['referral_level_3_percent'] ?? 2) }}"
                             class="w-full bg-slate-50/70 border border-slate-200 rounded-2xl px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-indigo-500 transition">
                         <span class="text-[10px] text-slate-400 mt-1.5 block">Tier 3 upline commission.</span>

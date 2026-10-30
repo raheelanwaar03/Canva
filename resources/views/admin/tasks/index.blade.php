@@ -209,6 +209,14 @@
                         class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-indigo-500">
                 </div>
 
+                <div>
+                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">Video / Ad URL (`ad_url`)</label>
+                    <input type="url" name="ad_url" required
+                        placeholder="https://www.youtube.com/watch?v=... or direct MP4 link"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-indigo-500">
+                    <p class="text-[10px] text-slate-400 mt-1">Accepts YouTube links, Vimeo, or raw .mp4 video URLs.</p>
+                </div>
+
                 <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
                     <button type="button" onclick="closeCreateModal()"
                         class="px-5 py-2.5 bg-slate-100 text-slate-600 rounded-2xl text-xs font-bold hover:bg-slate-200 transition">

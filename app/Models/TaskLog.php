@@ -11,6 +11,7 @@ class TaskLog extends Model
         'task_id',
         'user_package_id',
         'reward_earned',
+        'user_package_id',
         'completed_date',
     ];
 
@@ -18,6 +19,12 @@ class TaskLog extends Model
         'completed_date' => 'date',
     ];
 
-    public function user() { return $this->belongsTo(User::class); }
-    public function task() { return $this->belongsTo(Task::class); }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function task()
+    {
+        return $this->belongsTo(Task::class);
+    }
 }

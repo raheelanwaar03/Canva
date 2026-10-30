@@ -10,30 +10,45 @@ class PlatformSettingController extends Controller
 {
     public function index()
     {
-        $settings = Setting::all()->pluck('value', 'key');
-        return view('admin.settings.index', compact('settings'));
+        $settings = Setting::all()->pluck('value', 'key')->toArray();
+
+        // Support direct (Level 0) through Level 8
+        $levelRates = [];
+        for ($i = 0; $i <= 8; $i++) {
+            $default = match ($i) {
+                0 => '7.00',
+                1 => '2.00',
+                2 => '3.00',
+                3 => '4.00',
+                4 => '5.00',
+                5 => '6.00',
+                6 => '7.00',
+                7 => '8.00',
+                8 => '10.00',
+                default => '7.00'
+            };
+            $levelRates[$i] = $settings["ad_reward_level_{$i}"] ?? $default;
+        }
+
+        return view('admin.settings.index', compact('settings', 'levelRates'));
     }
 
     public function update(Request $request)
     {
-        $validated = $request->validate([
-            // Gateway Details
-            'payment_gateway_name'    => 'required|string|max:50',
-            'payment_account_title'   => 'required|string|max:100',
-            'payment_account_number'  => 'required|string|max:50',
-            'payment_instruction'     => 'nullable|string|max:500',
-
-            // Earning Rules
-            'default_ad_rate'         => 'required|numeric|min:0',
-            'referral_level_1_percent' => 'required|numeric|min:0|max:100',
-            'referral_level_2_percent' => 'nullable|numeric|min:0|max:100',
-            'referral_level_3_percent' => 'nullable|numeric|min:0|max:100',
-        ]);
-
-        foreach ($validated as $key => $value) {
-            Setting::set($key, $value);
+        // 1. Save standard settings if submitted
+        if ($request->has('settings')) {
+            foreach ($request->input('settings') as $key => $val) {
+                Setting::set($key, $val);
+            }
         }
 
-        return back()->with('success', 'Platform business settings and wallet details updated successfully!');
+        // 2. Save dynamic referral level task rates (Levels 0 through 8)
+        if ($request->has('level_rates')) {
+            foreach ($request->input('level_rates') as $level => $rate) {
+                Setting::set("ad_reward_level_{$level}", $rate);
+            }
+        }
+
+        return back()->with('success', 'Level reward rates (Levels 0–8) updated successfully.');
     }
 }
