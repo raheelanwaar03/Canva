@@ -361,45 +361,58 @@ class UserManagementController extends Controller
     public function pending(Request $request)
     {
         $users = User::where('role', 'user')
-            ->where('status', 'pending')
+            ->where(function ($q) {
+                $q->where('status', 'pending')
+                    ->orWhereHas('packagePayments', function ($sub) {
+                        $sub->where('status', 'pending');
+                    });
+            })
             ->with(['referrer', 'activePackage.package', 'packagePayments'])
             ->latest()
-            ->paginate(20);
+            ->get();
 
         return view('admin.users.index', [
-            'users' => $users,
+            'users'     => $users,
             'pageTitle' => 'Pending Users',
-            'status' => 'pending'
+            'status'    => 'pending'
         ]);
     }
 
     public function approved(Request $request)
     {
         $users = User::where('role', 'user')
-            ->where('status', 'active')
+            ->where(function ($q) {
+                $q->whereIn('status', ['active', 'approved'])
+                    ->orWhereHas('activePackage');
+            })
             ->with(['referrer', 'activePackage.package', 'packagePayments'])
             ->latest()
-            ->paginate(20);
+            ->get();
 
         return view('admin.users.index', [
-            'users' => $users,
+            'users'     => $users,
             'pageTitle' => 'Approved Users',
-            'status' => 'approved'
+            'status'    => 'approved'
         ]);
     }
 
     public function rejected(Request $request)
     {
         $users = User::where('role', 'user')
-            ->where('status', 'rejected')
+            ->where(function ($q) {
+                $q->where('status', 'rejected')
+                    ->orWhereHas('packagePayments', function ($sub) {
+                        $sub->where('status', 'rejected');
+                    });
+            })
             ->with(['referrer', 'activePackage.package', 'packagePayments'])
             ->latest()
-            ->paginate(20);
+            ->get();
 
         return view('admin.users.index', [
-            'users' => $users,
+            'users'     => $users,
             'pageTitle' => 'Rejected Users',
-            'status' => 'rejected'
+            'status'    => 'rejected'
         ]);
     }
 }
