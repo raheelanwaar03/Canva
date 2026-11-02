@@ -128,7 +128,6 @@
             <div class="pt-3 border-t border-slate-100">
                 <div class="flex items-center justify-between mb-2.5 px-1">
                     <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">4 Membership Packages</span>
-                    <span class="text-[9px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">30 Days Validity</span>
                 </div>
 
                 <div class="grid grid-cols-2 gap-2">

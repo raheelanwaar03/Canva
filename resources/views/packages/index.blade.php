@@ -19,7 +19,6 @@
             <div>
                 <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Current Plan</span>
                 <div class="text-sm font-bold text-slate-800">{{ $activePackage->package->name }}</div>
-                <div class="text-[11px] text-slate-500">Expires: {{ $activePackage->expires_at->format('d M, Y') }}</div>
             </div>
             <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">Active</span>
         </div>
@@ -38,7 +37,6 @@
                 <div class="flex items-center justify-between mb-2">
                     <div>
                         <h3 class="text-base font-extrabold text-slate-900">{{ $pkg->name }}</h3>
-                        <span class="text-xs text-indigo-600 font-bold">30 Days Validity</span>
                     </div>
                     <div class="text-right">
                         <div class="text-lg font-black text-slate-900">Rs {{ number_format($priceToShow, 0) }}</div>
