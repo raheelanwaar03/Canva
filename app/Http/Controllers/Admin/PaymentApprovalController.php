@@ -14,13 +14,38 @@ use Illuminate\Support\Facades\DB;
 class PaymentApprovalController extends Controller
 {
     // View pending and recent payments
-    public function index()
+    public function index(Request $request)
     {
-        $payments = PackagePayment::with(['user', 'package'])
-            ->latest()
-            ->get();
+        $status = strtolower($request->query('status', 'all'));
 
-        return view('admin.payments.index', compact('payments'));
+        $query = PackagePayment::with(['user.referrer', 'package'])->latest();
+
+        if ($status !== 'all') {
+            if ($status === 'approved') {
+                $query->where(function ($q) {
+                    $q->where('status', 'approved')
+                        ->orWhere('status', 'active')
+                        ->orWhere('status', 1)
+                        ->orWhere('status', '1');
+                });
+            } elseif ($status === 'rejected') {
+                $query->where(function ($q) {
+                    $q->where('status', 'rejected')
+                        ->orWhere('status', 2)
+                        ->orWhere('status', '2');
+                });
+            } elseif ($status === 'pending') {
+                $query->where(function ($q) {
+                    $q->where('status', 'pending')
+                        ->orWhere('status', 0)
+                        ->orWhere('status', '0');
+                });
+            }
+        }
+
+        $payments = $query->get();
+
+        return view('admin.payments.index', compact('payments', 'status'));
     }
 
     // Approve payment & distribute commissions

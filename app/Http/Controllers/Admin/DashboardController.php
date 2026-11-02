@@ -13,41 +13,48 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Set timezone to Pakistan (PKT) for daily stats
-        $startOfToday = Carbon::now('Asia/Karachi')->startOfDay();
-        $endOfToday   = Carbon::now('Asia/Karachi')->endOfDay();
+        // 1. Define exact Pakistan Time boundaries for Today
+        $todayStart = Carbon::now('Asia/Karachi')->startOfDay();
+        $todayEnd   = Carbon::now('Asia/Karachi')->endOfDay();
 
-        // 1. Overall / Lifetime Totals (Never resets)
-        $totalApprovedRevenue = PackagePayment::where('status', 'approved')->sum('amount');
-        $lifetimeWithdrawals  = Withdrawal::where('status', 'approved')->sum('amount');
-        $totalUsers           = User::where('role', 'user')->count();
-
-        // 2. Daily Totals (Automatically starts fresh at 12:00 AM PKT)
-        $todayApprovedRevenue = PackagePayment::where('status', 'approved')
-            ->whereBetween('updated_at', [$startOfToday, $endOfToday])
+        // 2. Total Deposited (All-time approved package payments)
+        $totalDeposited = PackagePayment::whereIn('status', ['approved', 'active', 1])
             ->sum('amount');
 
-        $todayApprovedCount = PackagePayment::where('status', 'approved')
-            ->whereBetween('updated_at', [$startOfToday, $endOfToday])
+        // 3. Today Approved Users (Count payments approved within today's window)
+        $todayApprovedUsers = PackagePayment::whereIn('status', ['approved', 'active', 1])
+            ->whereBetween('updated_at', [$todayStart, $todayEnd])
+            ->distinct('user_id')
+            ->count('user_id');
+
+        // 4. Today Received Balance (Total money approved/collected today)
+        $todayReceivedBalance = PackagePayment::whereIn('status', ['approved', 'active', 1])
+            ->whereBetween('updated_at', [$todayStart, $todayEnd])
+            ->sum('amount');
+
+        // 5. Total Withdrawn
+        $totalWithdrawn = Withdrawal::whereIn('status', ['approved', 1])
+            ->sum('amount');
+
+        // 6. Pending User Requests
+        $pendingUserRequests = PackagePayment::whereIn('status', ['pending', 0])
             ->count();
 
-        $todayWithdrawals = Withdrawal::where('status', 'approved')
-            ->whereBetween('updated_at', [$startOfToday, $endOfToday])
+        // 7. Pending User Requests Amount Queued
+        $pendingUserAmount = PackagePayment::whereIn('status', ['pending', 0])
             ->sum('amount');
 
-        // 3. Pending counters
-        $pendingPaymentsCount    = PackagePayment::where('status', 'pending')->count();
-        $pendingWithdrawalsCount = Withdrawal::where('status', 'pending')->count();
+        // 8. Total Registered Users
+        $totalUsers = User::where('role', 'user')->count();
 
         return view('admin.dashboard', compact(
-            'totalApprovedRevenue',
-            'lifetimeWithdrawals',
             'totalUsers',
-            'todayApprovedRevenue',
-            'todayApprovedCount',
-            'todayWithdrawals',
-            'pendingPaymentsCount',
-            'pendingWithdrawalsCount'
+            'totalDeposited',
+            'todayApprovedUsers',
+            'todayReceivedBalance',
+            'totalWithdrawn',
+            'pendingUserRequests',
+            'pendingUserAmount'
         ));
     }
 
