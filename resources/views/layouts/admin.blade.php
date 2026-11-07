@@ -145,16 +145,65 @@
                 @endif
             </a>
 
-            <!-- Withdrawal Requests -->
-            <a href="{{ route('admin.withdrawals.index') }}"
-                class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.withdrawals.*') ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white' }}">
-                <i class="fa-solid fa-money-bill-transfer w-4 text-center"></i>
-                <span class="flex-1">Withdrawal Request</span>
-                @if ($pendingWithdrawalsCount > 0)
-                    <span
-                        class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-white">{{ $pendingWithdrawalsCount }}</span>
-                @endif
-            </a>
+            <!-- Withdrawals Collapsible Menu -->
+            @php
+                $pendingWithdrawalsCount = \App\Models\Withdrawal::whereIn('status', ['pending', 0, '0'])->count();
+                $isWithdrawalsActive = request()->routeIs('admin.withdrawals.*');
+            @endphp
+            <div class="space-y-1">
+                <button type="button" onclick="toggleWithdrawalsMenu()"
+                    class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold {{ $isWithdrawalsActive ? 'bg-slate-800/80 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800/50' }} transition">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-money-bill-transfer w-4 text-center"></i>
+                        <span>Withdrawals</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        @if ($pendingWithdrawalsCount > 0)
+                            <span
+                                class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-white">{{ $pendingWithdrawalsCount }}</span>
+                        @endif
+                        <i id="withdrawalsChevron"
+                            class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200 {{ $isWithdrawalsActive ? 'rotate-180' : '' }}"></i>
+                    </div>
+                </button>
+
+                <!-- Submenu Links -->
+                <div id="withdrawalsSubmenu" class="{{ $isWithdrawalsActive ? '' : 'hidden' }} pl-6 pr-2 space-y-1">
+                    <!-- 1. All Withdrawals -->
+                    <a href="{{ route('admin.withdrawals.index') }}"
+                        class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.withdrawals.index') ? 'bg-[#3b49df] text-white' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40' }}">
+                        <i class="fa-solid fa-list text-[11px]"></i>
+                        <span>All Requests</span>
+                    </a>
+
+                    <!-- 2. Pending Withdrawals -->
+                    <a href="{{ route('admin.withdrawals.pending') }}"
+                        class="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.withdrawals.pending') ? 'bg-[#3b49df] text-white' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40' }}">
+                        <div class="flex items-center space-x-2.5">
+                            <i class="fa-regular fa-clock text-[11px]"></i>
+                            <span>Pending</span>
+                        </div>
+                        @if ($pendingWithdrawalsCount > 0)
+                            <span
+                                class="px-1.5 py-0.2 rounded-full text-[9px] font-extrabold bg-amber-500 text-white">{{ $pendingWithdrawalsCount }}</span>
+                        @endif
+                    </a>
+
+                    <!-- 3. Approved Withdrawals -->
+                    <a href="{{ route('admin.withdrawals.approved') }}"
+                        class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.withdrawals.approved') ? 'bg-[#3b49df] text-white' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40' }}">
+                        <i class="fa-solid fa-circle-check text-[11px]"></i>
+                        <span>Approved</span>
+                    </a>
+
+                    <!-- 4. Rejected Withdrawals -->
+                    <a href="{{ route('admin.withdrawals.rejected') }}"
+                        class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.withdrawals.rejected') ? 'bg-[#3b49df] text-white' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40' }}">
+                        <i class="fa-solid fa-circle-xmark text-[11px]"></i>
+                        <span>Rejected</span>
+                    </a>
+                </div>
+            </div>
 
             <!-- Plan Upgrades -->
             <a href="{{ route('admin.packages.index') }}"
@@ -289,6 +338,22 @@
     </script>
 
     @stack('scripts')
+
+    <script>
+        function toggleWithdrawalsMenu() {
+            const submenu = document.getElementById('withdrawalsSubmenu');
+            const chevron = document.getElementById('withdrawalsChevron');
+
+            if (submenu.classList.contains('hidden')) {
+                submenu.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+            } else {
+                submenu.classList.add('hidden');
+                chevron.classList.remove('rotate-180');
+            }
+        }
+    </script>
+
 </body>
 
 </html>

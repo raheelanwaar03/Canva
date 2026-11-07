@@ -22,10 +22,16 @@ Route::get('/payments', [PaymentApprovalController::class, 'index'])->name('paym
 Route::post('/payments/{payment}/approve', [PaymentApprovalController::class, 'approve'])->name('payments.approve');
 Route::post('/payments/{payment}/reject', [PaymentApprovalController::class, 'reject'])->name('payments.reject');
 
-// Withdrawal Requests
-Route::get('/withdrawals', [WithdrawalApprovalController::class, 'index'])->name('withdrawals.index');
-Route::post('/withdrawals/{withdrawal}/approve', [WithdrawalApprovalController::class, 'approve'])->name('withdrawals.approve');
-Route::post('/withdrawals/{withdrawal}/reject', [WithdrawalApprovalController::class, 'reject'])->name('withdrawals.reject');
+// Withdrawal Requests Section
+Route::prefix('withdrawals')->name('withdrawals.')->group(function () {
+    Route::get('/', [WithdrawalApprovalController::class, 'index'])->name('index');
+    Route::get('/pending', [WithdrawalApprovalController::class, 'pending'])->name('pending');
+    Route::get('/approved', [WithdrawalApprovalController::class, 'approved'])->name('approved');
+    Route::get('/rejected', [WithdrawalApprovalController::class, 'rejected'])->name('rejected');
+
+    Route::post('/{withdrawal}/approve', [WithdrawalApprovalController::class, 'approve'])->name('approve');
+    Route::post('/{withdrawal}/reject', [WithdrawalApprovalController::class, 'reject'])->name('reject');
+});
 
 // Packages & Task Limits Config
 Route::get('/packages', [PackageManagementController::class, 'index'])->name('packages.index');
