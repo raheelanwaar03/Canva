@@ -152,7 +152,7 @@
                                 queued</span>
                         </div>
                     </div>
-                    <a href="{{ route('admin.payments.index', ['status' => 'pending']) }}"
+                    <a href="{{ route('admin.users.pending') }}"
                         class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-amber-600 border border-amber-300 hover:bg-amber-50 shadow-sm transition">
                         View All
                     </a>

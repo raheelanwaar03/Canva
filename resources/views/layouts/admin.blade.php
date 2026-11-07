@@ -76,7 +76,6 @@
                 <i class="fa-solid fa-house w-4 text-center"></i>
                 <span class="flex-1">Dashboard</span>
             </a>
-            <!-- Users Dropdown Menu -->
             <!-- Users Collapsible Menu -->
             <div class="space-y-1">
                 <!-- Main Toggle Header (Closed by default) -->
