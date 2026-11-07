@@ -7,6 +7,7 @@ use App\Http\Controllers\WithdrawalController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\User\LeaderboardController;
 use App\Models\Withdrawal;
 use App\Models\Channel;
 use App\Models\Transaction;
@@ -108,4 +109,12 @@ Route::middleware(['has_active_package'])->group(function () {
     // refund
     Route::get('/refund', [RefundController::class, 'index'])->name('refund.index');
     Route::post('/refund', [RefundController::class, 'store'])->name('refund.store');
+
+    // Leaderboard
+    Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard');
+
+    // Complaint Box
+    Route::get('/complaints', [LeaderboardController::class, 'index'])->name('complaints.index');
+    Route::post('/complaints', [LeaderboardController::class, 'store'])->name('complaints.store');
+
 });

@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\ChannelManagementController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\PlatformSettingController;
 use App\Http\Controllers\Admin\RefundManagementController;
+use App\Http\Controllers\Admin\LeaderboardController;
+use App\Http\Controllers\Admin\ComplaintManagementController;
 
 // Main Admin Dashboard
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -69,3 +71,12 @@ Route::post('/settings', [PlatformSettingController::class, 'update'])->name('se
 Route::get('/refunds', [RefundManagementController::class, 'index'])->name('refunds.index');
 Route::post('/refunds/{refund}/approve', [RefundManagementController::class, 'approve'])->name('refunds.approve');
 Route::post('/refunds/{refund}/reject', [RefundManagementController::class, 'reject'])->name('refunds.reject');
+
+Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard.index');
+
+// Admin Complaints Management
+Route::prefix('complaints')->name('complaints.')->group(function () {
+    Route::get('/', [ComplaintManagementController::class, 'index'])->name('index');
+    Route::put('/{complaint}/status', [ComplaintManagementController::class, 'updateStatus'])->name('updateStatus');
+    Route::delete('/{complaint}', [ComplaintManagementController::class, 'destroy'])->name('destroy');
+});

@@ -285,4 +285,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(\App\Models\RefundRequest::class)->latestOfMany();
     }
+
+    public function complaints()
+    {
+        return $this->hasMany(\App\Models\Complaint::class);
+    }
+
 }

@@ -168,6 +168,13 @@
                 Settings
             </div>
 
+            <!-- Leaderboard -->
+            <a href="{{ route('admin.leaderboard.index') }}"
+                class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.leaderboard.*') ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white' }}">
+                <i class="fa-solid fa-trophy w-4 text-center"></i>
+                <span class="flex-1">Leaderboard</span>
+            </a>
+
             <!-- Ad Tasks -->
             <a href="{{ route('admin.tasks.index') }}"
                 class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.tasks.*') ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white' }}">
@@ -187,6 +194,20 @@
                 class="flex items-center space-x-3 px-4 py-3 rounded-2xl text-xs font-bold transition {{ request()->routeIs('admin.settings.*') ? 'bg-[#4f46e5] text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-800/50' }}">
                 <i class="fa-solid fa-gear text-sm"></i>
                 <span>Platform Settings</span>
+            </a>
+
+            <!-- Complaints Management -->
+            @php
+                $pendingComplaintsCount = \App\Models\Complaint::where('status', 'pending')->count();
+            @endphp
+            <a href="{{ route('admin.complaints.index') }}"
+                class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.complaints.*') ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white' }}">
+                <i class="fa-solid fa-comments w-4 text-center"></i>
+                <span class="flex-1">Complaint Box</span>
+                @if ($pendingComplaintsCount > 0)
+                    <span
+                        class="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-500 text-white">{{ $pendingComplaintsCount }}</span>
+                @endif
             </a>
 
             <!-- Refund Requests (NEW) -->
@@ -213,7 +234,8 @@
 
             <div class="flex items-center space-x-3 flex-1 max-w-lg">
                 <!-- Hamburger Button (Mobile) -->
-                <button type="button" onclick="toggleSidebar()" class="lg:hidden p-2 text-white hover:text-indigo-200">
+                <button type="button" onclick="toggleSidebar()"
+                    class="lg:hidden p-2 text-white hover:text-indigo-200">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
 
