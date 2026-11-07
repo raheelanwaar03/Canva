@@ -7,6 +7,7 @@ use App\Http\Controllers\WithdrawalController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\User\ComplaintController;
 use App\Http\Controllers\User\LeaderboardController;
 use App\Models\Withdrawal;
 use App\Models\Channel;
@@ -114,7 +115,7 @@ Route::middleware(['has_active_package'])->group(function () {
     Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard');
 
     // Complaint Box
-    Route::get('/complaints', [LeaderboardController::class, 'index'])->name('complaints.index');
-    Route::post('/complaints', [LeaderboardController::class, 'store'])->name('complaints.store');
+    Route::get('/complaints', [ComplaintController::class, 'index'])->name('complaints.index');
+    Route::post('/complaints', [ComplaintController::class, 'store'])->name('complaints.store');
 
 });
