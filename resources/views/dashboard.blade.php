@@ -1,680 +1,284 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
-@section('content')
-    <div class="space-y-3.5 pt-1 relative">
+@section('admin_content')
+    <div class="space-y-6">
 
-        <!-- 1. HERO LIQUID GLASS PROFILE CARD (Exact Match to user.jpeg) -->
-        <div class="hero-fluid-card p-6 text-white text-center relative overflow-hidden">
-            <!-- Ambient Glowing Core -->
-            <div class="absolute -top-12 -right-12 w-36 h-36 bg-cyan-300/30 rounded-full blur-2xl pointer-events-none"></div>
-            <div class="absolute -bottom-12 -left-12 w-36 h-36 bg-fuchsia-400/30 rounded-full blur-2xl pointer-events-none">
-            </div>
-
-            <!-- Centered Cavaearn Token Icon -->
-            <div
-                class="w-16 h-16 rounded-2xl overflow-hidden shadow-2xl border-2 border-white/40 mx-auto mb-3.5 flex items-center justify-center bg-slate-900">
-                <img src="{{ asset('images/logo-icon.png') }}" alt="Cavaearn" class="w-full h-full object-cover">
-            </div>
-
-            <!-- User Name -->
-            <h2 class="text-2xl font-black tracking-tight text-white drop-shadow">{{ auth()->user()->name }}</h2>
-
-            <!-- Action Links: Show Wallet & Copy Refer Link -->
-            <div class="mt-4 flex flex-col items-center space-y-2.5">
-                <!-- Show Wallet Action -->
-                <button type="button" onclick="openModal('walletModal')"
-                    class="inline-flex items-center space-x-2 text-white/95 text-xs font-bold bg-white/20 hover:bg-white/30 px-5 py-2 rounded-full backdrop-blur-md transition border border-white/30 shadow-sm active:scale-95">
-                    <span>Show Wallet</span>
-                    <i class="fa-regular fa-eye text-xs"></i>
-                </button>
-
-                <!-- Copy Refer Link Action (Reliable on HTTP & HTTPS) -->
-                <button type="button"
-                    onclick="copyReferralLinkUniversal('{{ url('/register?ref=' . auth()->user()->referral_code) }}')"
-                    class="inline-flex items-center space-x-2 text-white/95 text-xs font-bold bg-white/20 hover:bg-white/30 px-5 py-2 rounded-full backdrop-blur-md transition border border-white/30 shadow-sm active:scale-95">
-                    <span>Copy Refer Link</span>
-                    <i class="fa-regular fa-copy text-xs"></i>
-                </button>
-            </div>
+        <!-- Page Title -->
+        <div>
+            <h1 class="text-xl font-black text-slate-900 tracking-tight">Dashboard</h1>
+            <p class="text-xs text-slate-500">Welcome to Canva ADS Administration Command Center</p>
         </div>
 
-        <!-- 2. DASHBOARD TITLE RIBBON -->
-        <div class="rounded-2xl px-4 py-2.5 flex items-center space-x-2.5 text-white shadow-md"
-            style="background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);">
-            <div class="w-6 h-6 rounded-lg bg-white/25 flex items-center justify-center text-xs shadow-inner">
-                <i class="fa-solid fa-table-cells-large"></i>
-            </div>
-            <span class="text-xs font-black tracking-wider uppercase">Dashboard</span>
-        </div>
+        <!-- MAIN METRIC CARDS -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
 
-        <!-- 3. ACTION GRID WITH 3D CUSTOM ILLUSTRATIONS -->
-        <div class="grid grid-cols-3 gap-2.5 relative">
-
-            <!-- 1. Withdraw -->
-            <a href="{{ route('withdraw.create') }}"
-                class="glass-action-card rounded-2xl p-3 flex flex-col items-center text-center justify-center space-y-2 aspect-square">
-                <div class="w-12 h-12 flex items-center justify-center">
-                    <svg viewBox="0 0 64 64" class="w-11 h-11 drop-shadow-md">
-                        <defs>
-                            <linearGradient id="wGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#8b5cf6" />
-                                <stop offset="100%" stop-color="#4f46e5" />
-                            </linearGradient>
-                        </defs>
-                        <rect x="8" y="16" width="48" height="36" rx="8" fill="url(#wGrad)" />
-                        <path d="M14 16 L22 8 L42 8 L50 16 Z" fill="#a78bfa" opacity="0.6" />
-                        <rect x="36" y="28" width="20" height="12" rx="4" fill="#c4b5fd" />
-                        <circle cx="44" cy="34" r="2.5" fill="#ffffff" />
-                        <path d="M26 40 L26 26 M20 32 L26 26 L32 32" stroke="#ffffff" stroke-width="3"
-                            stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </div>
-                <span class="text-[11px] font-bold text-slate-800">Withdraw</span>
-            </a>
-
-            <!-- 2. Team -->
-            <a href="{{ route('team') }}"
-                class="glass-action-card rounded-2xl p-3 flex flex-col items-center text-center justify-center space-y-2 aspect-square">
-                <div class="w-12 h-12 flex items-center justify-center">
-                    <svg viewBox="0 0 64 64" class="w-11 h-11 drop-shadow-md">
-                        <defs>
-                            <linearGradient id="teamGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#6366f1" />
-                                <stop offset="100%" stop-color="#3b82f6" />
-                            </linearGradient>
-                        </defs>
-                        <circle cx="32" cy="22" r="9" fill="url(#teamGrad)" />
-                        <path d="M16 46 C16 37, 23 35, 32 35 C41 35, 48 37, 48 46 Z" fill="url(#teamGrad)" />
-                        <circle cx="16" cy="26" r="6" fill="#818cf8" opacity="0.75" />
-                        <path d="M6 46 C6 40, 11 39, 18 39" stroke="#818cf8" stroke-width="3" stroke-linecap="round"
-                            fill="none" />
-                        <circle cx="48" cy="26" r="6" fill="#818cf8" opacity="0.75" />
-                        <path d="M58 46 C58 40, 53 39, 46 39" stroke="#818cf8" stroke-width="3" stroke-linecap="round"
-                            fill="none" />
-                    </svg>
-                </div>
-                <span class="text-[11px] font-bold text-slate-800">Team</span>
-            </a>
-
-            {{-- Upgrade Plan --}}
-            <a href="{{ route('packages.index') }}"
-                class="glass-action-card rounded-2xl p-3 flex flex-col items-center justify-center text-center group aspect-square">
-                <div
-                    class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-400/20 to-indigo-500/20 text-cyan-600 flex items-center justify-center text-xl group-hover:scale-110 transition-transform shadow-sm">
-                    <i class="fa-solid fa-circle-arrow-up text-[#00c4cc]"></i>
-                </div>
-                <span class="text-[11px] font-bold text-slate-800">Upgrade Plan</span>
-            </a>
-
-            <!-- 10. Wallet -->
-            <a href="{{ route('wallet') }}"
-                class="glass-action-card rounded-2xl p-3 flex flex-col items-center text-center justify-center space-y-2 aspect-square">
-                <div class="w-12 h-12 flex items-center justify-center">
-                    <svg viewBox="0 0 64 64" class="w-11 h-11 drop-shadow-md">
-                        <defs>
-                            <linearGradient id="walletGrad2" x1="0%" y1="0%" x2="100%"
-                                y2="100%">
-                                <stop offset="0%" stop-color="#6366f1" />
-                                <stop offset="100%" stop-color="#8b5cf6" />
-                            </linearGradient>
-                        </defs>
-                        <rect x="10" y="16" width="44" height="34" rx="8" fill="url(#walletGrad2)" />
-                        <rect x="34" y="27" width="20" height="12" rx="4" fill="#e0e7ff" />
-                        <circle cx="42" cy="33" r="2.5" fill="#4338ca" />
-                    </svg>
-                </div>
-                <span class="text-[11px] font-bold text-slate-800">Wallet</span>
-            </a>
-
-            <!-- 5. Rewards -->
-            <a href="{{ route('rewards') }}"
-                class="glass-action-card rounded-2xl p-3 flex flex-col items-center text-center justify-center space-y-2 aspect-square">
-                <div class="w-12 h-12 flex items-center justify-center">
-                    <svg viewBox="0 0 64 64" class="w-11 h-11 drop-shadow-md">
-                        <defs>
-                            <linearGradient id="giftGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#ec4899" />
-                                <stop offset="100%" stop-color="#a855f7" />
-                            </linearGradient>
-                        </defs>
-                        <rect x="12" y="24" width="40" height="28" rx="5" fill="url(#giftGrad)" />
-                        <rect x="9" y="17" width="46" height="9" rx="3" fill="#f472b6" />
-                        <rect x="28" y="17" width="8" height="35" fill="#fef08a" />
-                        <circle cx="27" cy="14" r="5" fill="#facc15" stroke="#eab308"
-                            stroke-width="1.5" />
-                        <circle cx="37" cy="14" r="5" fill="#facc15" stroke="#eab308"
-                            stroke-width="1.5" />
-                    </svg>
-                </div>
-                <span class="text-[11px] font-bold text-slate-800">Rewards</span>
-            </a>
-
-            <!-- 6. Work (Daily Ads Tasks) -->
-            <a href="{{ route('tasks.index') }}"
-                class="glass-action-card rounded-2xl p-3 flex flex-col items-center text-center justify-center space-y-2 aspect-square">
-                <div class="w-12 h-12 flex items-center justify-center">
-                    <svg viewBox="0 0 64 64" class="w-11 h-11 drop-shadow-md">
-                        <defs>
-                            <linearGradient id="clipGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#8b5cf6" />
-                                <stop offset="100%" stop-color="#6366f1" />
-                            </linearGradient>
-                        </defs>
-                        <rect x="12" y="12" width="40" height="44" rx="8" fill="url(#clipGrad)" />
-                        <rect x="23" y="7" width="18" height="8" rx="3" fill="#c4b5fd" />
-                        <line x1="22" y1="26" x2="42" y2="26" stroke="#ffffff"
-                            stroke-width="3" stroke-linecap="round" />
-                        <line x1="22" y1="34" x2="42" y2="34" stroke="#ffffff"
-                            stroke-width="3" stroke-linecap="round" />
-                        <line x1="22" y1="42" x2="36" y2="42" stroke="#ffffff"
-                            stroke-width="3" stroke-linecap="round" />
-                    </svg>
-                </div>
-                <span class="text-[11px] font-bold text-slate-800">Work</span>
-            </a>
-
-            <!-- Leaderboard -->
-            <a href="{{ route('leaderboard') }}"
-                class="glass-action-card rounded-2xl p-3 flex flex-col items-center text-center justify-center space-y-2 aspect-square">
-                <div class="w-12 h-12 flex items-center justify-center">
-                    <svg viewBox="0 0 64 64" class="w-11 h-11 drop-shadow-md">
-                        <defs>
-                            <linearGradient id="leadGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#f59e0b" />
-                                <stop offset="100%" stop-color="#d97706" />
-                            </linearGradient>
-                        </defs>
-                        <path d="M18 16 L46 16 L46 32 C46 40 38 46 32 46 C26 46 18 40 18 32 Z" fill="url(#leadGrad)" />
-                        <path d="M18 20 L10 20 C10 30 18 34 20 34" stroke="#f59e0b" stroke-width="3" fill="none"
-                            stroke-linecap="round" />
-                        <path d="M46 20 L54 20 C54 30 46 34 44 34" stroke="#f59e0b" stroke-width="3" fill="none"
-                            stroke-linecap="round" />
-                        <rect x="28" y="46" width="8" height="8" fill="#d97706" />
-                        <rect x="22" y="54" width="20" height="4" rx="2" fill="#b45309" />
-                    </svg>
-                </div>
-                <span class="text-[11px] font-bold text-slate-800">Leaderboard</span>
-            </a>
-
-            <!-- 7. About Us -->
-            <button type="button" onclick="openModal('aboutModal')"
-                class="glass-action-card rounded-2xl p-3 flex flex-col items-center text-center justify-center space-y-2 aspect-square">
-                <div class="w-12 h-12 flex items-center justify-center">
-                    <svg viewBox="0 0 64 64" class="w-11 h-11 drop-shadow-md">
-                        <defs>
-                            <linearGradient id="infoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#a855f7" />
-                                <stop offset="100%" stop-color="#4f46e5" />
-                            </linearGradient>
-                        </defs>
-                        <circle cx="32" cy="32" r="22" fill="url(#infoGrad)" />
-                        <circle cx="32" cy="22" r="3.5" fill="#ffffff" />
-                        <rect x="29" y="29" width="6" height="15" rx="3" fill="#ffffff" />
-                    </svg>
-                </div>
-                <span class="text-[11px] font-bold text-slate-800">About Us</span>
-            </button>
-
-            <!-- 8. Contact Us (WITH BLINKING INDICATOR AS REQUESTED) -->
-            <button type="button" onclick="openModal('supportModal')"
-                class="glass-action-card rounded-2xl p-3 flex flex-col items-center text-center justify-center space-y-2 aspect-square relative">
-                <!-- Blinking Pulsing Indicator on Contact Us -->
-                <span class="absolute top-2 right-2 flex h-2.5 w-2.5">
-                    <span
-                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-500"></span>
-                </span>
-                <div class="w-12 h-12 flex items-center justify-center">
-                    <svg viewBox="0 0 64 64" class="w-11 h-11 drop-shadow-md">
-                        <defs>
-                            <linearGradient id="headsetGrad" x1="0%" y1="0%" x2="100%"
-                                y2="100%">
-                                <stop offset="0%" stop-color="#38bdf8" />
-                                <stop offset="100%" stop-color="#6366f1" />
-                            </linearGradient>
-                        </defs>
-                        <path d="M12 34 A20 20 0 0 1 52 34" fill="none" stroke="url(#headsetGrad)" stroke-width="5"
-                            stroke-linecap="round" />
-                        <rect x="8" y="32" width="9" height="15" rx="4.5" fill="#38bdf8" />
-                        <rect x="47" y="32" width="9" height="15" rx="4.5" fill="#6366f1" />
-                        <path d="M50 42 C50 49, 44 52, 38 52 L34 52" fill="none" stroke="#6366f1" stroke-width="3"
-                            stroke-linecap="round" />
-                        <circle cx="33" cy="52" r="2.5" fill="#38bdf8" />
-                    </svg>
-                </div>
-                <span class="text-[11px] font-bold text-slate-800">Contact Us</span>
-            </button>
-
-            <!-- Complaint Box -->
-            <a href="{{ route('complaints.index') }}"
-                class="glass-action-card rounded-2xl p-3 flex flex-col items-center text-center justify-center space-y-2 aspect-square">
-                <div class="w-12 h-12 flex items-center justify-center">
-                    <svg viewBox="0 0 64 64" class="w-11 h-11 drop-shadow-md">
-                        <defs>
-                            <linearGradient id="compGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#06b6d4" />
-                                <stop offset="100%" stop-color="#3b82f6" />
-                            </linearGradient>
-                        </defs>
-                        <rect x="10" y="14" width="44" height="36" rx="8" fill="url(#compGrad)" />
-                        <path d="M10 22 L32 36 L54 22" stroke="#ffffff" stroke-width="3" fill="none"
-                            stroke-linecap="round" />
-                        <circle cx="48" cy="42" r="5" fill="#f43f5e" />
-                        <line x1="48" y1="39" x2="48" y2="42" stroke="#ffffff"
-                            stroke-width="1.5" stroke-linecap="round" />
-                        <circle cx="48" cy="44.5" r="0.8" fill="#ffffff" />
-                    </svg>
-                </div>
-                <span class="text-[11px] font-bold text-slate-800">Complaint Box</span>
-            </a>
-            <!-- 9. FBR Registration -->
-            <button type="button" onclick="openModal('fbrModal')"
-                class="glass-action-card rounded-2xl p-3 flex flex-col items-center text-center justify-center space-y-2 aspect-square">
-                <div class="w-12 h-12 flex items-center justify-center">
-                    <svg viewBox="0 0 64 64" class="w-11 h-11 drop-shadow-md">
-                        <defs>
-                            <linearGradient id="fbrGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#3730a3" />
-                                <stop offset="100%" stop-color="#1e1b4b" />
-                            </linearGradient>
-                        </defs>
-                        <path d="M32 10 L8 24 L56 24 Z" fill="url(#fbrGrad)" />
-                        <text x="32" y="21" fill="#ffffff" font-size="7" font-weight="900" font-family="Arial"
-                            text-anchor="middle" letter-spacing="1">FBR</text>
-                        <rect x="8" y="24" width="48" height="4" fill="#4338ca" />
-                        <rect x="13" y="28" width="5" height="18" rx="1" fill="#4f46e5" />
-                        <rect x="23" y="28" width="5" height="18" rx="1" fill="#4f46e5" />
-                        <rect x="36" y="28" width="5" height="18" rx="1" fill="#4f46e5" />
-                        <rect x="46" y="28" width="5" height="18" rx="1" fill="#4f46e5" />
-                        <rect x="6" y="46" width="52" height="6" rx="2" fill="url(#fbrGrad)" />
-                    </svg>
-                </div>
-                <span class="text-[11px] font-bold text-slate-800">FBR</span>
-            </button>
-
-            <!-- 4. Official Channel -->
-            <button type="button" onclick="openModal('channelModal')"
-                class="glass-action-card rounded-2xl p-3 flex flex-col items-center text-center justify-center space-y-2 aspect-square">
-                <div class="w-12 h-12 flex items-center justify-center">
-                    <svg viewBox="0 0 64 64" class="w-11 h-11 drop-shadow-md">
-                        <defs>
-                            <linearGradient id="planeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#00c6ff" />
-                                <stop offset="100%" stop-color="#0072ff" />
-                            </linearGradient>
-                        </defs>
-                        <path d="M10 32 L54 12 L38 52 L28 38 Z" fill="url(#planeGrad)" />
-                        <path d="M28 38 L38 52 L36 34 Z" fill="#0052cc" />
-                        <path d="M54 12 L28 38" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
-                    </svg>
-                </div>
-                <span class="text-[11px] font-bold text-slate-800 leading-tight">Official Channel</span>
-            </button>
-
-            <!-- 3. Guide -->
-            <button type="button" onclick="openModal('guideModal')"
-                class="glass-action-card rounded-2xl p-3 flex flex-col items-center text-center justify-center space-y-2 aspect-square">
-                <div class="w-12 h-12 flex items-center justify-center">
-                    <svg viewBox="0 0 64 64" class="w-11 h-11 drop-shadow-md">
-                        <defs>
-                            <linearGradient id="bookGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#3b82f6" />
-                                <stop offset="100%" stop-color="#4f46e5" />
-                            </linearGradient>
-                        </defs>
-                        <path d="M32 46 C24 40, 10 40, 8 42 L8 16 C10 14, 24 14, 32 20 Z" fill="url(#bookGrad)" />
-                        <path d="M32 46 C40 40, 54 40, 56 42 L56 16 C54 14, 40 14, 32 20 Z" fill="#60a5fa" />
-                        <path d="M32 20 L32 46" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" />
-                    </svg>
-                </div>
-                <span class="text-[11px] font-bold text-slate-800">Guide</span>
-            </button>
-
-            <!-- 12. Refund -->
-            <a href="{{ route('refund.index') }}"
-                class="glass-action-card rounded-2xl p-3 flex flex-col items-center text-center justify-center space-y-2 aspect-square">
-                <div class="w-12 h-12 flex items-center justify-center">
-                    <svg viewBox="0 0 64 64" class="w-11 h-11 drop-shadow-md">
-                        <defs>
-                            <linearGradient id="refundWalletGrad" x1="0%" y1="0%" x2="100%"
-                                y2="100%">
-                                <stop offset="0%" stop-color="#fb7185" />
-                                <stop offset="100%" stop-color="#e11d48" />
-                            </linearGradient>
-                        </defs>
-                        <rect x="10" y="16" width="44" height="34" rx="8"
-                            fill="url(#refundWalletGrad)" />
-                        <rect x="34" y="27" width="20" height="12" rx="4" fill="#ffe4e6" />
-                        <circle cx="42" cy="33" r="2.5" fill="#be123c" />
-                        <path d="M22 27c-3 3-3 7 0 10l-1.5 1.5M22 27h-4M22 27v4" stroke="#ffffff" stroke-width="2.5"
-                            stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.95" />
-                    </svg>
-                </div>
-                <span class="text-[11px] font-bold text-slate-800">Refund</span>
-            </a>
-
-            <!-- 13. Terms & Conditions (NEW CARD AS REQUESTED) -->
-            <a href="{{ route('terms') }}"
-                class="glass-action-card rounded-2xl p-3 flex flex-col items-center text-center justify-center space-y-2 aspect-square">
-                <div class="w-12 h-12 flex items-center justify-center">
-                    <svg viewBox="0 0 64 64" class="w-11 h-11 drop-shadow-md">
-                        <defs>
-                            <linearGradient id="termsGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#0284c7" />
-                                <stop offset="100%" stop-color="#4f46e5" />
-                            </linearGradient>
-                        </defs>
-                        <!-- Paper Document Outline -->
-                        <path
-                            d="M16 10 L40 10 L50 20 L50 54 C50 56, 48 58, 46 58 L16 58 C14 58, 12 56, 12 54 L12 14 C12 12, 14 10, 16 10 Z"
-                            fill="url(#termsGrad)" />
-                        <!-- Folded corner -->
-                        <path d="M40 10 L40 20 L50 20 Z" fill="#93c5fd" />
-                        <!-- Clean text lines -->
-                        <line x1="20" y1="26" x2="36" y2="26" stroke="#ffffff"
-                            stroke-width="2.5" stroke-linecap="round" />
-                        <line x1="20" y1="33" x2="42" y2="33" stroke="#ffffff"
-                            stroke-width="2.5" stroke-linecap="round" />
-                        <line x1="20" y1="40" x2="42" y2="40" stroke="#ffffff"
-                            stroke-width="2.5" stroke-linecap="round" />
-                        <line x1="20" y1="47" x2="32" y2="47" stroke="#ffffff"
-                            stroke-width="2.5" stroke-linecap="round" />
-                        <!-- Shield verification seal -->
-                        <circle cx="41" cy="47" r="4.5" fill="#38bdf8" />
-                        <path d="M39.5 47 L40.5 48.2 L42.5 45.8" stroke="#ffffff" stroke-width="1.3"
-                            stroke-linecap="round" stroke-linejoin="round" fill="none" />
-                    </svg>
-                </div>
-                <span class="text-[11px] font-bold text-slate-800">Terms</span>
-            </a>
-
-        </div>
-
-        <!-- Botanical Silhouette Accents -->
-        <div class="pt-4 flex justify-end pr-2 pointer-events-none opacity-40">
-            <svg viewBox="0 0 100 80" class="w-24 h-20 text-indigo-400 fill-current">
-                <path d="M90 75 C70 65, 50 40, 60 10 C68 25, 78 40, 90 75 Z" />
-                <path d="M85 75 C60 55, 30 50, 20 30 C35 35, 55 50, 85 75 Z" />
-                <path d="M88 75 C80 50, 70 30, 80 5 C88 20, 92 45, 88 75 Z" />
-            </svg>
-        </div>
-
-    </div>
-
-    <!-- ================= MODALS ================= -->
-
-    <!-- 1. Quick Wallet Modal -->
-    <div id="walletModal"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-        <div
-            class="glass-action-card bg-white rounded-3xl p-5 w-full max-w-sm shadow-2xl space-y-3.5 relative border border-white">
-            <button type="button" onclick="closeModal('walletModal')"
-                class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <h3 class="text-sm font-black text-slate-900 flex items-center">
-                <i class="fa-solid fa-wallet mr-2 text-indigo-600"></i> My Quick Balances
-            </h3>
-            <div class="space-y-2 text-xs">
-                <div class="p-3 bg-indigo-50/80 rounded-2xl border border-indigo-100 flex justify-between items-center">
-                    <span class="text-slate-600 font-semibold">Main Balance (Withdrawable):</span>
-                    <strong class="text-indigo-700 text-sm font-black">Rs
-                        {{ number_format(auth()->user()->wallet?->withdrawable_balance ?? 0, 2) }}</strong>
-                </div>
-                <div class="p-3 bg-purple-50/80 rounded-2xl border border-purple-100 flex justify-between items-center">
-                    <span class="text-slate-600 font-semibold">Rewards Balance:</span>
-                    <strong class="text-purple-700 text-sm font-black">Rs
-                        {{ number_format(auth()->user()->wallet?->rewards_balance ?? 0, 2) }}</strong>
-                </div>
-            </div>
-            <a href="{{ route('wallet') }}"
-                class="block text-center py-2.5 bg-gradient-to-r from-cyan-500 to-indigo-600 text-white rounded-xl text-xs font-bold shadow-md">
-                View Full Wallet & Withdraw →
-            </a>
-        </div>
-    </div>
-
-    <!-- 2. FBR Registration Certificate Modal -->
-    <div id="fbrModal" onclick="if(event.target === this) closeModal('fbrModal')"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/75 backdrop-blur-sm transition-all duration-200">
-
-        <div
-            class="glass-action-card bg-white rounded-3xl p-4 sm:p-5 w-full max-w-sm sm:max-w-md shadow-2xl relative border border-white max-h-[92vh] flex flex-col space-y-3">
-
-            <div class="flex items-center justify-between pb-1 border-b border-slate-100">
-                <div class="flex items-center space-x-2">
-                    <div
-                        class="w-8 h-8 rounded-xl bg-indigo-900 text-white flex items-center justify-center text-sm shadow">
-                        <i class="fa-solid fa-building-columns"></i>
-                    </div>
+            <!-- 1. Total Users (Blue Box) -->
+            <div class="bg-[#3b49df] text-white rounded-2xl p-5 shadow-lg shadow-indigo-500/10 relative overflow-hidden flex flex-col justify-between min-h-[140px]">
+                <div class="flex items-start justify-between z-10">
                     <div>
-                        <h3 class="text-sm font-black text-slate-900 leading-tight">FBR Registration</h3>
-                        <span class="text-[10px] text-emerald-600 font-bold flex items-center space-x-1">
-                            <i class="fa-solid fa-circle-check text-[9px]"></i>
-                            <span>Government Verified Entity</span>
-                        </span>
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-100">Total Users</span>
+                        <div class="text-2xl font-black mt-1">{{ number_format($totalUsers ?? 0) }}</div>
                     </div>
-                </div>
-
-                <button type="button" onclick="closeModal('fbrModal')" aria-label="Close modal"
-                    class="w-8 h-8 rounded-full bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-600 flex items-center justify-center text-sm font-bold transition shadow-sm active:scale-90">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <div
-                class="flex-1 overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50 p-1.5 shadow-inner text-center">
-                <a href="{{ asset('images/fbr.jpeg') }}" target="_blank" class="block group relative">
-                    <img src="{{ asset('images/fbr.jpeg') }}" alt="FBR Taxpayer Registration Certificate"
-                        class="w-full h-auto rounded-xl shadow-sm object-contain mx-auto transition group-hover:opacity-95"
-                        loading="lazy">
-                    <span class="block text-center text-[10px] text-indigo-600 font-bold py-1 hover:underline">
-                        <i class="fa-solid fa-magnifying-glass-plus mr-1"></i> Tap to view full size
-                    </span>
-                </a>
-            </div>
-
-            <div class="p-2.5 bg-slate-50/90 rounded-2xl border border-slate-100 text-center">
-                <p class="text-[11px] text-slate-700 leading-snug font-medium">
-                    Cavaearn ADS is a registered and active taxpayer under the Federal Board of Revenue (FBR). All digital
-                    advertisement and payout operations comply with national tax regulations.
-                </p>
-            </div>
-
-            <button type="button" onclick="closeModal('fbrModal')"
-                style="background: linear-gradient(90deg, #6366f1 0%, #4f46e5 100%);"
-                class="w-full text-white font-bold py-2.5 rounded-xl text-xs shadow-md hover:opacity-95 transition">
-                Close
-            </button>
-        </div>
-    </div>
-
-    <!-- 3. Guide Modal -->
-    <div id="guideModal"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-        <div
-            class="glass-action-card bg-white rounded-3xl p-5 w-full max-w-sm shadow-2xl space-y-3 relative border border-white">
-            <button type="button" onclick="closeModal('guideModal')"
-                class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <h3 class="text-sm font-black text-slate-900 flex items-center">
-                <i class="fa-solid fa-book-open mr-2 text-indigo-600"></i> Canva ADS User Guide
-            </h3>
-            <div class="space-y-2 text-xs text-slate-600 leading-relaxed bg-slate-50 p-3.5 rounded-2xl">
-                <p><strong>1. First 15 Days:</strong> Watch daily ads and earn rewards without any referral requirement.</p>
-                <p><strong>2. After Day 15:</strong> Bring 1 approved direct referral every 7 days to keep tasks unlocked.
-                </p>
-                <p><strong>3. Rewards:</strong> Earn Rs 7 to Main Balance and Rs 200 to Rewards Balance on every verified
-                    ad.</p>
-                <p><strong>4. Withdrawals:</strong> 1st and 2nd withdrawals minimum is Rs 30 each; 3rd withdrawal onwards
-                    minimum is Rs 500.</p>
-            </div>
-            <button type="button" onclick="closeModal('guideModal')"
-                class="w-full py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow">
-                Got It
-            </button>
-        </div>
-    </div>
-
-    <!-- 4. Official Channels Modal -->
-    <div id="channelModal"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-        <div
-            class="glass-action-card bg-white rounded-3xl p-5 w-full max-w-sm shadow-2xl space-y-3 relative border border-white">
-            <button type="button" onclick="closeModal('channelModal')"
-                class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <h3 class="text-sm font-black text-slate-900 flex items-center">
-                <i class="fa-solid fa-paper-plane mr-2 text-cyan-500"></i> Official Channels
-            </h3>
-            <p class="text-xs text-slate-500">Join our official verified channels for daily payment proofs and
-                announcements:</p>
-
-            <div class="space-y-2.5 pt-1">
-                @forelse($channels ?? [] as $channel)
-                    <a href="{{ $channel->url }}" target="_blank"
-                        class="flex items-center justify-between w-full py-3 px-3.5 bg-gradient-to-r from-slate-50 to-indigo-50/50 hover:bg-indigo-50 border border-slate-200/80 rounded-2xl transition shadow-sm">
-                        <div class="flex items-center space-x-2.5">
-                            <div
-                                class="w-8 h-8 rounded-xl bg-white shadow-sm flex items-center justify-center text-base text-indigo-600">
-                                <i class="{{ $channel->icon }}"></i>
-                            </div>
-                            <span class="text-xs font-bold text-slate-800">{{ $channel->title }}</span>
-                        </div>
-                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
+                    <a href="{{ route('admin.users.index') }}"
+                        class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-white/20 hover:bg-white text-white hover:text-indigo-700 border border-white/30 shadow-sm transition">
+                        View All
                     </a>
-                @empty
-                    <div class="p-3 bg-slate-100 rounded-xl text-center text-xs text-slate-400">
-                        Official channels will be posted shortly.
+                </div>
+                <div class="absolute -bottom-2 -right-2 text-white/10 text-6xl pointer-events-none">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+            </div>
+
+            <!-- 2. Total Deposited (Green Box) -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 relative overflow-hidden flex flex-col justify-between min-h-[140px]">
+                <div class="flex items-start justify-between z-10">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0">
+                            <i class="fa-solid fa-hand-holding-dollar"></i>
+                        </div>
+                        <div>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Deposited</span>
+                            <div class="text-lg font-black text-slate-800 mt-0.5">
+                                Rs {{ number_format($totalDeposited ?? 0, 2) }}
+                            </div>
+                        </div>
                     </div>
-                @endforelse
-            </div>
-        </div>
-    </div>
-
-    <!-- 5. About Us Modal -->
-    <div id="aboutModal"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-        <div
-            class="glass-action-card bg-white rounded-3xl p-5 w-full max-w-sm shadow-2xl space-y-3.5 relative border border-white">
-            <button type="button" onclick="closeModal('aboutModal')"
-                class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div class="flex items-center space-x-2.5">
-                <div
-                    class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center text-white shadow-sm">
-                    <i class="fa-solid fa-circle-info text-base"></i>
+                    <a href="{{ route('admin.payments.index') }}"
+                        class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-emerald-600 border border-emerald-300 hover:bg-emerald-50 shadow-sm transition">
+                        View All
+                    </a>
                 </div>
+                <div class="absolute -bottom-2 -right-2 text-emerald-500/5 text-6xl pointer-events-none">
+                    <i class="fa-solid fa-hand-holding-dollar"></i>
+                </div>
+            </div>
+
+            <!-- 3. Today Approved Users (Orange Box - Daily PKT Reset) -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 relative overflow-hidden flex flex-col justify-between min-h-[140px]">
+                <div class="flex items-start justify-between z-10">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center text-lg flex-shrink-0">
+                            <i class="fa-solid fa-user-check"></i>
+                        </div>
+                        <div>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Today Approved Users</span>
+                            <div class="text-2xl font-black text-slate-800 mt-0.5">{{ number_format($todayApprovedUsers ?? 0) }}</div>
+                        </div>
+                    </div>
+                    <a href="{{ route('admin.users.approved') }}"
+                        class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-amber-600 border border-amber-300 hover:bg-amber-50 shadow-sm transition">
+                        View All
+                    </a>
+                </div>
+                <div class="absolute -bottom-2 -right-2 text-amber-500/5 text-6xl pointer-events-none">
+                    <i class="fa-solid fa-user-check"></i>
+                </div>
+            </div>
+
+            <!-- 4. Today Received Balance (Teal Box - Daily PKT Reset) -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 relative overflow-hidden flex flex-col justify-between min-h-[140px]">
+                <div class="flex items-start justify-between z-10">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-lg flex-shrink-0">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                        <div>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Today Received Balance</span>
+                            <div class="text-lg font-black text-slate-800 mt-0.5">Rs {{ number_format($todayReceivedBalance ?? 0, 2) }}</div>
+                        </div>
+                    </div>
+                    <a href="{{ route('admin.payments.index') }}"
+                        class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-teal-600 border border-teal-300 hover:bg-teal-50 shadow-sm transition">
+                        View All
+                    </a>
+                </div>
+                <div class="absolute -bottom-2 -right-2 text-teal-500/5 text-6xl pointer-events-none">
+                    <i class="fa-solid fa-receipt"></i>
+                </div>
+            </div>
+
+            <!-- 5. Total Withdrawn (Slate Box) -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 relative overflow-hidden flex flex-col justify-between min-h-[140px]">
+                <div class="flex items-start justify-between z-10">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-lg flex-shrink-0">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                        <div>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Withdrawn</span>
+                            <div class="text-lg font-black text-slate-800 mt-0.5">Rs {{ number_format($totalWithdrawn ?? 0, 2) }}</div>
+                        </div>
+                    </div>
+                    <a href="{{ route('admin.withdrawals.approved') }}"
+                        class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-slate-600 border border-slate-300 hover:bg-slate-50 shadow-sm transition">
+                        View All
+                    </a>
+                </div>
+                <div class="absolute -bottom-2 -right-2 text-slate-500/5 text-6xl pointer-events-none">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+            </div>
+
+            <!-- 6. Pending User Requests (Amber Badge Card) -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-amber-200 relative overflow-hidden flex flex-col justify-between min-h-[140px]">
+                <div class="flex items-start justify-between z-10">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center text-lg flex-shrink-0">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </div>
+                        <div>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-amber-600">Pending User Requests</span>
+                            <div class="text-2xl font-black text-amber-600 mt-0.5">{{ $pendingPaymentsCount ?? 0 }}</div>
+                            <span class="text-[10px] text-slate-400">Rs {{ number_format($pendingPaymentsAmount ?? 0, 2) }} queued</span>
+                        </div>
+                    </div>
+                    <a href="{{ route('admin.payments.index', ['status' => 'pending']) }}"
+                        class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-amber-600 border border-amber-300 hover:bg-amber-50 shadow-sm transition">
+                        View All
+                    </a>
+                </div>
+                <div class="absolute -bottom-2 -right-2 text-amber-500/5 text-6xl pointer-events-none">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </div>
+            </div>
+
+            <!-- 7. Pending Withdrawals (Rose Badge Card) -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-rose-200 relative overflow-hidden flex flex-col justify-between min-h-[140px]">
+                <div class="flex items-start justify-between z-10">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center text-lg flex-shrink-0">
+                            <i class="fa-solid fa-money-bill-transfer"></i>
+                        </div>
+                        <div>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-rose-600">Pending Withdrawals</span>
+                            <div class="text-2xl font-black text-rose-600 mt-0.5">{{ $pendingWithdrawCount ?? 0 }}</div>
+                            <span class="text-[10px] text-slate-400">Rs {{ number_format($pendingWithdrawAmount ?? 0, 2) }} queued</span>
+                        </div>
+                    </div>
+                    <a href="{{ route('admin.withdrawals.pending') }}"
+                        class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-rose-600 border border-rose-300 hover:bg-rose-50 shadow-sm transition">
+                        View All
+                    </a>
+                </div>
+                <div class="absolute -bottom-2 -right-2 text-rose-500/5 text-6xl pointer-events-none">
+                    <i class="fa-solid fa-money-bill-transfer"></i>
+                </div>
+            </div>
+
+            <!-- 8. Net Balance Manual -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 relative overflow-hidden flex flex-col justify-between min-h-[140px]">
+                <div class="flex items-start justify-between z-10">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg flex-shrink-0">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                        </div>
+                        <div>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Net Platform Balance</span>
+                            <div class="text-lg font-black text-indigo-600 mt-0.5">
+                                Rs {{ number_format($netBalance ?? 0, 2) }}
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{{ route('admin.payments.index') }}"
+                        class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-indigo-600 border border-indigo-300 hover:bg-indigo-50 shadow-sm transition">
+                        View All
+                    </a>
+                </div>
+                <div class="absolute -bottom-2 -right-2 text-indigo-500/5 text-6xl pointer-events-none">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SECTION: EARNINGS BREAKDOWN -->
+        <div class="space-y-4 pt-2">
+            <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="text-sm font-black text-slate-900">About Us</h3>
-                    <span class="text-[10px] text-slate-400 font-semibold">Cavaearn Platform</span>
+                    <h2 class="text-base font-black text-slate-800">Earnings Breakdown</h2>
+                    <p class="text-xs text-slate-400">Individual metrics broken down by origin.</p>
                 </div>
             </div>
-            <div
-                class="space-y-2.5 text-xs text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100 max-h-72 overflow-y-auto">
-                <p class="font-bold text-slate-900 text-xs">About Us — Cavaearn</p>
-                <p>
-                    Cavaearn is a modern digital advertising and rewards platform designed to provide members with a
-                    transparent online earning experience. Our platform connects advertisers with active viewers through
-                    daily task activities, verified rewards, team building, and an intuitive dashboard.
-                </p>
-                <p>
-                    Members can explore available tasks, track their daily progress, manage their dual-wallet earnings, and
-                    invite others through the referral tier structure. Our mission is to keep the platform fast, secure, and
-                    rewarding for our community.
-                </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                <!-- 1. Task Earnings Card -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 relative overflow-hidden flex flex-col justify-between min-h-[130px]">
+                    <div class="flex items-start justify-between z-10">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-xl flex-shrink-0 shadow-sm">
+                                <i class="fa-solid fa-list-check"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Today's Task Earnings</span>
+                                <div class="text-lg font-black text-slate-800 mt-0.5">
+                                    Rs {{ number_format($taskEarningsToday ?? 0, 2) }}
+                                </div>
+                                <span class="text-[10px] font-bold text-indigo-600">{{ $tasksCompletedToday ?? 0 }} verified watches today</span>
+                            </div>
+                        </div>
+                        <a href="{{ route('admin.tasks.index') }}"
+                            class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-indigo-600 border border-indigo-200 hover:bg-indigo-50 shadow-sm transition">
+                            View Details
+                        </a>
+                    </div>
+                    <div class="absolute -bottom-2 -right-2 text-indigo-500/5 text-6xl pointer-events-none">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                </div>
+
+                <!-- 2. Lifetime Deposited Funds -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 relative overflow-hidden flex flex-col justify-between min-h-[130px]">
+                    <div class="flex items-start justify-between z-10">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-xl flex-shrink-0 shadow-sm">
+                                <i class="fa-solid fa-circle-plus"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Approved Deposits</span>
+                                <div class="text-lg font-black text-slate-800 mt-0.5">
+                                    Rs {{ number_format($totalDeposited ?? 0, 2) }}
+                                </div>
+                                <span class="text-[10px] font-bold text-emerald-600">Active Membership Revenue</span>
+                            </div>
+                        </div>
+                        <a href="{{ route('admin.payments.index', ['status' => 'approved']) }}"
+                            class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-emerald-600 border border-emerald-200 hover:bg-emerald-50 shadow-sm transition">
+                            View Details
+                        </a>
+                    </div>
+                    <div class="absolute -bottom-2 -right-2 text-emerald-500/5 text-6xl pointer-events-none">
+                        <i class="fa-solid fa-circle-plus"></i>
+                    </div>
+                </div>
+
+                <!-- 3. Disbursed Withdrawals -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 relative overflow-hidden flex flex-col justify-between min-h-[130px]">
+                    <div class="flex items-start justify-between z-10">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-12 h-12 rounded-2xl bg-rose-500 text-white flex items-center justify-center text-xl flex-shrink-0 shadow-sm">
+                                <i class="fa-solid fa-circle-minus"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Disbursed Payouts</span>
+                                <div class="text-lg font-black text-slate-800 mt-0.5">
+                                    Rs {{ number_format($totalWithdrawn ?? 0, 2) }}
+                                </div>
+                                <span class="text-[10px] font-bold text-rose-600">Disbursed to Users</span>
+                            </div>
+                        </div>
+                        <a href="{{ route('admin.withdrawals.approved') }}"
+                            class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-rose-600 border border-rose-200 hover:bg-rose-50 shadow-sm transition">
+                            View Details
+                        </a>
+                    </div>
+                    <div class="absolute -bottom-2 -right-2 text-rose-500/5 text-6xl pointer-events-none">
+                        <i class="fa-solid fa-circle-minus"></i>
+                    </div>
+                </div>
+
             </div>
-            <button type="button" onclick="closeModal('aboutModal')"
-                class="w-full py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow">
-                Close
-            </button>
         </div>
+
     </div>
-
-    <!-- 6. Support Modal (UPDATED WITH DIRECT WHATSAPP NUMBER: +92 347 0479376) -->
-    <div id="supportModal"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-        <div
-            class="glass-action-card bg-white rounded-3xl p-5 w-full max-w-sm shadow-2xl space-y-3 relative border border-white">
-            <button type="button" onclick="closeModal('supportModal')"
-                class="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <h3 class="text-sm font-black text-slate-900 flex items-center">
-                <i class="fa-solid fa-headset mr-2 text-rose-500"></i> Contact Us & Support
-            </h3>
-            <p class="text-xs text-slate-500">Need help with package activation, tasks, or withdrawals?</p>
-            <div class="space-y-1.5 text-xs text-slate-700 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
-                <div><span class="text-slate-400">Support Hours:</span> <strong>24/7 Available</strong></div>
-                <div><span class="text-slate-400">WhatsApp Support:</span> <strong class="font-mono text-emerald-600">+92
-                        347 0479376</strong></div>
-            </div>
-            <a href="https://wa.me/923470479376" target="_blank"
-                class="block w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold text-center shadow transition active:scale-95 flex items-center justify-center space-x-2">
-                <i class="fa-brands fa-whatsapp text-sm"></i>
-                <span>Chat on WhatsApp →</span>
-            </a>
-        </div>
-    </div>
-
-    @push('scripts')
-        <script>
-            function copyReferralLinkUniversal(text) {
-                if (navigator.clipboard && window.isSecureContext) {
-                    navigator.clipboard.writeText(text).then(() => {
-                        showToast("Referral link copied to clipboard!");
-                    }).catch(() => {
-                        fallbackCopy(text);
-                    });
-                } else {
-                    fallbackCopy(text);
-                }
-            }
-
-            function fallbackCopy(text) {
-                const textArea = document.createElement("textarea");
-                textArea.value = text;
-                textArea.style.position = "fixed";
-                textArea.style.left = "-999999px";
-                textArea.style.top = "-999999px";
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    showToast("Referral link copied to clipboard!");
-                } catch (err) {
-                    prompt("Copy your referral link below:", text);
-                }
-                document.body.removeChild(textArea);
-            }
-
-            function showToast(msg) {
-                const toast = document.getElementById('copyToast');
-                if (toast) {
-                    document.getElementById('toastMessage').innerText = msg;
-                    toast.classList.remove('-translate-y-20', 'opacity-0');
-                    toast.classList.add('translate-y-0', 'opacity-100');
-
-                    setTimeout(() => {
-                        toast.classList.remove('translate-y-0', 'opacity-100');
-                        toast.classList.add('-translate-y-20', 'opacity-0');
-                    }, 2200);
-                } else {
-                    alert(msg);
-                }
-            }
-
-            function openModal(modalId) {
-                document.getElementById(modalId).classList.remove('hidden');
-            }
-
-            function closeModal(modalId) {
-                document.getElementById(modalId).classList.add('hidden');
-            }
-        </script>
-    @endpush
 @endsection
