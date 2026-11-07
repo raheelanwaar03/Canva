@@ -4,6 +4,68 @@
     $title = 'Complaint Management';
 @endphp
 
+@push('scripts')
+    <!-- jQuery & DataTables CDN -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
+    <style>
+        .dataTables_wrapper .dataTables_length select {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 4px 8px;
+            font-size: 11px;
+            outline: none;
+            margin: 0 4px;
+        }
+
+        .dataTables_wrapper .dataTables_filter input {
+            background: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 7px 14px;
+            font-size: 12px;
+            width: 260px;
+            outline: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            transition: all 0.2s;
+        }
+
+        .dataTables_wrapper .dataTables_filter input:focus {
+            border-color: #3b49df;
+            box-shadow: 0 0 0 3px rgba(59, 73, 223, 0.15);
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: #3b49df !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 8px !important;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function() {
+            $('#complaintsDataTable').DataTable({
+                responsive: true,
+                pageLength: 15,
+                order: [[0, 'desc']], // Order by complaint #ID descending
+                columnDefs: [
+                    { orderable: false, targets: [5] } // Disable sorting on Action column
+                ],
+                language: {
+                    search: "",
+                    searchPlaceholder: "🔍 Search user, email, subject, issue..."
+                }
+            });
+        });
+    </script>
+@endpush
+
 @section('admin_content')
 <div class="space-y-6">
 
@@ -14,7 +76,7 @@
             <p class="text-xs font-semibold text-slate-400 mt-1">Review user issues, update status, and respond directly.</p>
         </div>
         <span class="px-4 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-black rounded-2xl shadow-sm">
-            {{ $complaints->total() }} Total Complaints
+            {{ count($complaints) }} Total In Queue
         </span>
     </div>
 
@@ -27,7 +89,7 @@
 
     <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 space-y-6">
 
-        <!-- Tabs -->
+        <!-- Status Filter Tabs -->
         <div class="flex flex-wrap items-center gap-2 border-b border-slate-100 pb-4">
             @php $currentStatus = request('status', 'all'); @endphp
             <a href="{{ route('admin.complaints.index', ['status' => 'all']) }}"
@@ -48,8 +110,9 @@
             </a>
         </div>
 
+        <!-- DataTable -->
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs text-slate-600">
+            <table id="complaintsDataTable" class="w-full text-left text-xs text-slate-600" style="width:100%">
                 <thead class="bg-slate-50 border-b border-slate-100 text-slate-400 uppercase text-[10px] font-black tracking-wider">
                     <tr>
                         <th class="px-5 py-3.5">#ID</th>
@@ -61,34 +124,44 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
-                    @forelse($complaints as $c)
+                    @foreach($complaints as $c)
                         <tr class="hover:bg-slate-50/70 transition">
                             <td class="px-5 py-4 font-mono font-bold text-slate-400">#{{ $c->id }}</td>
                             <td class="px-5 py-4">
-                                <div class="font-extrabold text-slate-900">{{ $c->user->name ?? 'User #' . $c->user_id }}</div>
-                                <div class="text-[11px] text-indigo-600">{{ $c->user->email ?? '' }}</div>
-                                <div class="text-[10px] text-slate-400">{{ $c->user->phone ?? 'No phone' }}</div>
+                                <div class="font-extrabold text-slate-900 text-sm">{{ $c->user->name ?? 'User #' . $c->user_id }}</div>
+                                <div class="text-[11px] text-indigo-600 font-semibold">{{ $c->user->email ?? 'No email' }}</div>
+                                <div class="text-[10px] text-slate-400 mt-0.5 font-mono">{{ $c->user->phone ?? 'No phone' }}</div>
                             </td>
                             <td class="px-5 py-4 max-w-sm">
-                                <div class="font-bold text-slate-800 text-xs">{{ $c->subject }}</div>
+                                <div class="font-extrabold text-slate-800 text-xs">{{ $c->subject }}</div>
                                 <p class="text-xs text-slate-600 mt-1 line-clamp-2">{{ $c->message }}</p>
                                 @if($c->admin_reply)
-                                    <div class="mt-1 text-[11px] text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-100 font-semibold">
-                                        Reply: "{{ $c->admin_reply }}"
+                                    <div class="mt-1.5 text-[11px] text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-100 font-medium">
+                                        <i class="fa-solid fa-reply text-[9px] mr-1"></i> {{ $c->admin_reply }}
                                     </div>
                                 @endif
                             </td>
                             <td class="px-5 py-4">
                                 @if($c->status === 'resolved')
-                                    <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-xl text-[10px] font-black border border-emerald-100">Resolved</span>
+                                    <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-xl text-[10px] font-black border border-emerald-100 inline-flex items-center space-x-1">
+                                        <i class="fa-solid fa-circle-check text-[9px]"></i>
+                                        <span>Resolved</span>
+                                    </span>
                                 @elseif($c->status === 'in_progress')
-                                    <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-xl text-[10px] font-black border border-indigo-100">In Progress</span>
+                                    <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-xl text-[10px] font-black border border-indigo-100 inline-flex items-center space-x-1">
+                                        <i class="fa-solid fa-spinner text-[9px]"></i>
+                                        <span>In Progress</span>
+                                    </span>
                                 @else
-                                    <span class="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-xl text-[10px] font-black border border-amber-200">Pending</span>
+                                    <span class="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-xl text-[10px] font-black border border-amber-200 inline-flex items-center space-x-1">
+                                        <i class="fa-regular fa-clock text-[9px]"></i>
+                                        <span>Pending</span>
+                                    </span>
                                 @endif
                             </td>
-                            <td class="px-5 py-4 text-slate-400 font-semibold text-[11px]">
-                                {{ $c->created_at->format('d M, Y h:i A') }}
+                            <td class="px-5 py-4 text-slate-400 font-semibold text-[11px] whitespace-nowrap">
+                                {{ $c->created_at->format('d M, Y') }}<br>
+                                <span class="text-[10px] text-slate-400">{{ $c->created_at->format('h:i A') }}</span>
                             </td>
                             <td class="px-5 py-4 text-right space-x-1.5 whitespace-nowrap">
                                 <button type="button"
@@ -102,51 +175,44 @@
                                         'admin_reply' => $c->admin_reply ?? '',
                                         'update_url' => route('admin.complaints.updateStatus', $c->id)
                                     ]) }})"
-                                    class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl font-bold text-xs transition">
-                                    Manage
+                                    class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl font-bold text-xs transition inline-flex items-center space-x-1">
+                                    <i class="fa-solid fa-pen-to-square text-[10px]"></i>
+                                    <span>Manage</span>
                                 </button>
 
-                                <form method="POST" action="{{ route('admin.users.impersonate', $c->user_id) }}" class="inline-block">
-                                    @csrf
-                                    <button type="submit" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold text-xs transition">
-                                        Login
-                                    </button>
-                                </form>
+                                @if($c->user_id)
+                                    <form method="POST" action="{{ route('admin.users.impersonate', $c->user_id) }}" class="inline-block">
+                                        @csrf
+                                        <button type="submit" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold text-xs transition shadow-sm inline-flex items-center space-x-1">
+                                            <i class="fa-solid fa-right-to-bracket text-[10px]"></i>
+                                            <span>Login</span>
+                                        </button>
+                                    </form>
+                                @endif
                             </td>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="px-5 py-12 text-center text-slate-400 font-bold">
-                                No complaints found.
-                            </td>
-                        </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>
 
-        @if($complaints->hasPages())
-            <div class="pt-4 border-t border-slate-100">
-                {{ $complaints->links() }}
-            </div>
-        @endif
     </div>
-
 </div>
 
-<!-- Manage Complaint Modal -->
+<!-- Manage / Resolve Complaint Modal -->
 <div id="complaintModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-4">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h3 class="text-base font-black text-slate-800">Resolve Complaint #<span id="mCompId"></span></h3>
+            <h3 class="text-base font-black text-slate-800">Manage Complaint #<span id="mCompId"></span></h3>
             <button type="button" onclick="closeComplaintModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">×</button>
         </div>
 
         <div class="space-y-2 text-xs bg-slate-50 p-4 rounded-2xl border border-slate-100">
             <div><span class="text-slate-400 font-bold">User:</span> <strong id="mCompUser" class="text-slate-800"></strong> (<span id="mCompEmail" class="text-indigo-600"></span>)</div>
             <div><span class="text-slate-400 font-bold">Subject:</span> <strong id="mCompSubject" class="text-slate-800"></strong></div>
-            <div class="pt-1"><span class="text-slate-400 font-bold block mb-1">Message:</span>
-                <p id="mCompMessage" class="text-slate-700 font-medium whitespace-pre-wrap"></p>
+            <div class="pt-1">
+                <span class="text-slate-400 font-bold block mb-1">User Message:</span>
+                <p id="mCompMessage" class="text-slate-700 font-medium whitespace-pre-wrap bg-white p-3 rounded-xl border border-slate-200/60"></p>
             </div>
         </div>
 
@@ -155,7 +221,7 @@
             @method('PUT')
 
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Update Status</label>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Status</label>
                 <select id="mCompStatus" name="status" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 focus:outline-none focus:border-indigo-500">
                     <option value="pending">Pending</option>
                     <option value="in_progress">In Progress</option>
@@ -164,13 +230,13 @@
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Reply / Note to User</label>
-                <textarea id="mCompReply" name="admin_reply" rows="3" placeholder="Provide feedback or solution to the user..."
+                <label class="block text-xs font-bold text-slate-700 mb-1">Admin Response Note (Visible to User)</label>
+                <textarea id="mCompReply" name="admin_reply" rows="3" placeholder="Provide feedback or update on their complaint..."
                     class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-slate-800 focus:outline-none focus:border-indigo-500"></textarea>
             </div>
 
             <div class="flex justify-end space-x-2 pt-2 border-t border-slate-100">
-                <button type="button" onclick="closeComplaintModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">Cancel</button>
+                <button type="button" onclick="closeComplaintModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">Cancel</button>
                 <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-black shadow transition">
                     Save Changes
                 </button>
