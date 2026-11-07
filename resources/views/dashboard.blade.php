@@ -196,29 +196,6 @@
                 <span class="text-[11px] font-bold text-slate-800">Leaderboard</span>
             </a>
 
-            <!-- Complaint Box -->
-            <a href="{{ route('complaints.index') }}"
-                class="glass-action-card rounded-2xl p-3 flex flex-col items-center text-center justify-center space-y-2 aspect-square">
-                <div class="w-12 h-12 flex items-center justify-center">
-                    <svg viewBox="0 0 64 64" class="w-11 h-11 drop-shadow-md">
-                        <defs>
-                            <linearGradient id="compGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#06b6d4" />
-                                <stop offset="100%" stop-color="#3b82f6" />
-                            </linearGradient>
-                        </defs>
-                        <rect x="10" y="14" width="44" height="36" rx="8" fill="url(#compGrad)" />
-                        <path d="M10 22 L32 36 L54 22" stroke="#ffffff" stroke-width="3" fill="none"
-                            stroke-linecap="round" />
-                        <circle cx="48" cy="42" r="5" fill="#f43f5e" />
-                        <line x1="48" y1="39" x2="48" y2="42" stroke="#ffffff"
-                            stroke-width="1.5" stroke-linecap="round" />
-                        <circle cx="48" cy="44.5" r="0.8" fill="#ffffff" />
-                    </svg>
-                </div>
-                <span class="text-[11px] font-bold text-slate-800">Complaint Box</span>
-            </a>
-
             <!-- 7. About Us -->
             <button type="button" onclick="openModal('aboutModal')"
                 class="glass-action-card rounded-2xl p-3 flex flex-col items-center text-center justify-center space-y-2 aspect-square">
@@ -268,6 +245,28 @@
                 <span class="text-[11px] font-bold text-slate-800">Contact Us</span>
             </button>
 
+            <!-- Complaint Box -->
+            <a href="{{ route('complaints.index') }}"
+                class="glass-action-card rounded-2xl p-3 flex flex-col items-center text-center justify-center space-y-2 aspect-square">
+                <div class="w-12 h-12 flex items-center justify-center">
+                    <svg viewBox="0 0 64 64" class="w-11 h-11 drop-shadow-md">
+                        <defs>
+                            <linearGradient id="compGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#06b6d4" />
+                                <stop offset="100%" stop-color="#3b82f6" />
+                            </linearGradient>
+                        </defs>
+                        <rect x="10" y="14" width="44" height="36" rx="8" fill="url(#compGrad)" />
+                        <path d="M10 22 L32 36 L54 22" stroke="#ffffff" stroke-width="3" fill="none"
+                            stroke-linecap="round" />
+                        <circle cx="48" cy="42" r="5" fill="#f43f5e" />
+                        <line x1="48" y1="39" x2="48" y2="42" stroke="#ffffff"
+                            stroke-width="1.5" stroke-linecap="round" />
+                        <circle cx="48" cy="44.5" r="0.8" fill="#ffffff" />
+                    </svg>
+                </div>
+                <span class="text-[11px] font-bold text-slate-800">Complaint Box</span>
+            </a>
             <!-- 9. FBR Registration -->
             <button type="button" onclick="openModal('fbrModal')"
                 class="glass-action-card rounded-2xl p-3 flex flex-col items-center text-center justify-center space-y-2 aspect-square">
