@@ -35,20 +35,38 @@ class PlatformSettingController extends Controller
 
     public function update(Request $request)
     {
-        // 1. Save standard settings if submitted
-        if ($request->has('settings')) {
+        // 1. Process nested 'settings' array if passed
+        if ($request->has('settings') && is_array($request->input('settings'))) {
             foreach ($request->input('settings') as $key => $val) {
                 Setting::set($key, $val);
             }
         }
 
-        // 2. Save dynamic referral level task rates (Levels 0 through 8)
-        if ($request->has('level_rates')) {
+        // 2. Process flat platform fields submitted directly
+        $flatKeys = [
+            'payment_gateway_name',
+            'payment_account_title',
+            'payment_account_number',
+            'payment_instruction',
+            'default_ad_rate',
+            'referral_level_1_percent',
+            'referral_level_2_percent',
+            'referral_level_3_percent',
+        ];
+
+        foreach ($flatKeys as $key) {
+            if ($request->has($key)) {
+                Setting::set($key, $request->input($key));
+            }
+        }
+
+        // 3. Save dynamic referral level task rates (Levels 0 through 8)
+        if ($request->has('level_rates') && is_array($request->input('level_rates'))) {
             foreach ($request->input('level_rates') as $level => $rate) {
                 Setting::set("ad_reward_level_{$level}", $rate);
             }
         }
 
-        return back()->with('success', 'Level reward rates (Levels 0–8) updated successfully.');
+        return back()->with('success', 'Platform settings and reward rates updated successfully.');
     }
 }

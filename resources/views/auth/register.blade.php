@@ -33,7 +33,7 @@
                 </div>
                 <input type="text" name="referral_code" required
                        value="{{ old('referral_code', request('ref')) }}"
-                       placeholder="Enter Referral Code"
+                       placeholder="Enter Referral Code" readonly
                        class="w-full bg-transparent border-0 text-xs text-slate-800 font-bold focus:outline-none p-0 uppercase">
             </div>
         </div>

@@ -33,139 +33,139 @@
             </div>
         </div>
 
-    <!-- DYNAMIC WALLET DETAILS CARD -->
-    <div style="background:
+        <!-- DYNAMIC WALLET DETAILS CARD -->
+        <div style="background:
         linear-gradient(135deg, #059669 0%, #10b981 50%, #06b6d4 100%);"
-        class="rounded-3xl p-6 text-white text-center shadow-2xl relative overflow-hidden space-y-2">
+            class="rounded-3xl p-6 text-white text-center shadow-2xl relative overflow-hidden space-y-2">
 
-        <h3 class="text-3xl font-black tracking-tight text-white drop-shadow-sm">
-            {{ \App\Models\Setting::get('payment_gateway_name', 'EasyPaisa') }}
-        </h3>
+            <h3 class="text-3xl font-black tracking-tight text-white drop-shadow-sm">
+                {{ \App\Models\Setting::get('payment_gateway_name', 'EasyPaisa') }}
+            </h3>
 
-        <div class="text-sm font-bold text-white/95">
-            Name: <span>{{ \App\Models\Setting::get('payment_account_title', 'Shama') }}</span>
-        </div>
-
-        <div class="text-lg font-mono font-black text-white pt-1 flex items-center justify-center space-x-2">
-            <span>Number:</span>
-            <span id="accountNumberDisplay" class="underline underline-offset-4 select-all cursor-pointer">
-                {{ \App\Models\Setting::get('payment_account_number', '03714780429') }}
-            </span>
-            <button type="button" onclick="copyAccountNumber()"
-                class="ml-1 w-8 h-8 rounded-xl bg-white/25 hover:bg-white/35 active:scale-90 transition flex items-center justify-center text-sm shadow">
-                <i id="copyIcon" class="fa-regular fa-copy"></i>
-            </button>
-        </div>
-
-        <span id="copyFeedback" class="text-[11px] text-emerald-100 font-semibold block transition-all">
-            Tap button or number to copy
-        </span>
-    </div>
-
-    <!-- Dynamic Instruction Notice -->
-    <div
-        class="p-3.5 bg-slate-800 text-amber-300 rounded-2xl text-xs font-bold shadow flex items-center space-x-2 border border-slate-700">
-        <i class="fa-solid fa-triangle-exclamation text-amber-400 text-sm flex-shrink-0"></i>
-        <span>{{ \App\Models\Setting::get('payment_instruction', 'After sending payment, upload receipt screenshot to proceed.') }}</span>
-    </div>
-
-    <!-- Validation Errors -->
-    @if ($errors->any())
-        <div
-            class="p-3.5
-        bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs font-semibold shadow-sm">
-            <ul class="list-disc pl-4 space-y-0.5">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <!-- 3. PAYMENT SUBMISSION FORM -->
-    <form id="paymentForm"
-        action="{{ isset($isUpgrade) && $isUpgrade ? route('packages.submitUpgrade', $package->id) : route('packages.submitPayment', $package->id) }}"
-        method="POST" enctype="multipart/form-data" class="space-y-4">
-        @csrf
-
-        <input type="hidden" name="payment_method" value="EasyPaisa">
-        <input type="hidden" name="amount" value="{{ $finalPrice }}">
-
-        <!-- Transaction ID Field -->
-        <div>
-            <label class="block text-xs font-extrabold text-slate-800 mb-1.5">
-                Transaction ID <span class="text-rose-500">*</span>
-            </label>
-            <div
-                class="flex items-center bg-white border-2 border-slate-200 rounded-2xl px-4 py-3 focus-within:border-indigo-500 shadow-sm transition">
-                <input type="text" name="trx_id" value="{{ old('trx_id') }}" required
-                    placeholder="Enter Transaction ID"
-                    class="w-full bg-transparent border-0 text-xs text-slate-800 font-bold focus:outline-none p-0 placeholder:text-slate-400">
+            <div class="text-sm font-bold text-white/95">
+                Name: <span>{{ \App\Models\Setting::get('payment_account_title', 'Shama') }}</span>
             </div>
-        </div>
 
-        <!-- Sender Number Field -->
-        <div>
-            <label class="block text-xs font-extrabold text-slate-800 mb-1.5">
-                Sender Number <span class="text-rose-500">*</span>
-            </label>
-            <div
-                class="flex items-center bg-white border-2 border-slate-200 rounded-2xl px-4 py-3 focus-within:border-indigo-500 shadow-sm transition">
-                <input type="text" name="sender_number" value="{{ old('sender_number') }}" required
-                    placeholder="Enter Your Mobile Number"
-                    class="w-full bg-transparent border-0 text-xs text-slate-800 font-bold focus:outline-none p-0 placeholder:text-slate-400">
-            </div>
-        </div>
-
-        <!-- Mandatory Payment Screenshot Field -->
-        <div>
-            <div class="flex items-center justify-between mb-1.5">
-                <label class="block text-xs font-extrabold text-slate-800">
-                    Upload Payment Screenshot <span class="text-rose-500">* (Mandatory)</span>
-                </label>
-                <span id="fileBadge"
-                    class="text-[10px] font-bold text-rose-500 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
-                    Required
+            <div class="text-lg font-mono font-black text-white pt-1 flex items-center justify-center space-x-2">
+                <span>Number:</span>
+                <span id="accountNumberDisplay" class="underline underline-offset-4 select-all cursor-pointer">
+                    {{ \App\Models\Setting::get('payment_account_number', '03714780429') }}
                 </span>
+                <button type="button" onclick="copyAccountNumber()"
+                    class="ml-1 w-8 h-8 rounded-xl bg-white/25 hover:bg-white/35 active:scale-90 transition flex items-center justify-center text-sm shadow">
+                    <i id="copyIcon" class="fa-regular fa-copy"></i>
+                </button>
             </div>
 
-            <div class="bg-white border-2 border-dashed border-slate-300 rounded-2xl p-4 text-center hover:border-indigo-400 transition"
-                id="dropArea">
-                <input type="file" name="screenshot" id="screenshotInput"
-                    accept="image/png, image/jpeg, image/jpg, image/webp" required class="hidden">
-
-                <label for="screenshotInput" class="cursor-pointer flex flex-col items-center">
-                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl mb-2"
-                        id="previewIcon">
-                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                    </div>
-                    <span id="fileLabel" class="text-xs font-bold text-slate-700">Choose receipt screenshot</span>
-                    <span class="text-[10px] text-slate-400 mt-0.5">JPG, JPEG, PNG up to 5MB</span>
-                </label>
-            </div>
+            <span id="copyFeedback" class="text-[11px] text-emerald-100 font-semibold block transition-all">
+                Tap button or number to copy
+            </span>
         </div>
 
-        <!-- Notice Box -->
+        <!-- Dynamic Instruction Notice -->
         <div
             class="p-3.5 bg-slate-800 text-amber-300 rounded-2xl text-xs font-bold shadow flex items-center space-x-2 border border-slate-700">
             <i class="fa-solid fa-triangle-exclamation text-amber-400 text-sm flex-shrink-0"></i>
-            <span>After sending payment, upload receipt screenshot to proceed.</span>
+            <span>{{ \App\Models\Setting::get('payment_instruction', 'After sending payment, upload receipt screenshot to proceed.') }}</span>
         </div>
 
-        <!-- Submit Button -->
-        <button type="submit" id="submitBtn"
-            style="background: linear-gradient(90deg, #00c6ff 0%, #0072ff 50%, #9b51e0 100%);"
-            class="w-full text-white font-black py-4 px-6 rounded-2xl shadow-xl hover:opacity-95 active:scale-95 transition-all text-sm tracking-wide text-center block">
-            {{ isset($isUpgrade) && $isUpgrade ? 'Submit Upgrade Payment' : 'Submit Payment' }}
-        </button>
-    </form>
+        <!-- Validation Errors -->
+        @if ($errors->any())
+            <div
+                class="p-3.5
+        bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs font-semibold shadow-sm">
+                <ul class="list-disc pl-4 space-y-0.5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <!-- 3. PAYMENT SUBMISSION FORM -->
+        <form id="paymentForm"
+            action="{{ isset($isUpgrade) && $isUpgrade ? route('packages.submitUpgrade', $package->id) : route('packages.submitPayment', $package->id) }}"
+            method="POST" enctype="multipart/form-data" class="space-y-4">
+            @csrf
+
+            <input type="hidden" name="payment_method" value="EasyPaisa">
+            <input type="hidden" name="amount" value="{{ $finalPrice }}">
+
+            <!-- Transaction ID Field -->
+            <div>
+                <label class="block text-xs font-extrabold text-slate-800 mb-1.5">
+                    Transaction ID <span class="text-rose-500">*</span>
+                </label>
+                <div
+                    class="flex items-center bg-white border-2 border-slate-200 rounded-2xl px-4 py-3 focus-within:border-indigo-500 shadow-sm transition">
+                    <input type="text" name="trx_id" value="{{ old('trx_id') }}" required
+                        placeholder="Enter Transaction ID"
+                        class="w-full bg-transparent border-0 text-xs text-slate-800 font-bold focus:outline-none p-0 placeholder:text-slate-400">
+                </div>
+            </div>
+
+            <!-- Sender Number Field -->
+            <div>
+                <label class="block text-xs font-extrabold text-slate-800 mb-1.5">
+                    Sender Number <span class="text-rose-500">*</span>
+                </label>
+                <div
+                    class="flex items-center bg-white border-2 border-slate-200 rounded-2xl px-4 py-3 focus-within:border-indigo-500 shadow-sm transition">
+                    <input type="text" name="sender_number" value="{{ old('sender_number') }}" required
+                        placeholder="Enter Your Mobile Number"
+                        class="w-full bg-transparent border-0 text-xs text-slate-800 font-bold focus:outline-none p-0 placeholder:text-slate-400">
+                </div>
+            </div>
+
+            <!-- Mandatory Payment Screenshot Field -->
+            <div>
+                <div class="flex items-center justify-between mb-1.5">
+                    <label class="block text-xs font-extrabold text-slate-800">
+                        Upload Payment Screenshot <span class="text-rose-500">* (Mandatory)</span>
+                    </label>
+                    <span id="fileBadge"
+                        class="text-[10px] font-bold text-rose-500 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
+                        Required
+                    </span>
+                </div>
+
+                <div class="bg-white border-2 border-dashed border-slate-300 rounded-2xl p-4 text-center hover:border-indigo-400 transition"
+                    id="dropArea">
+                    <input type="file" name="screenshot" id="screenshotInput"
+                        accept="image/png, image/jpeg, image/jpg, image/webp" required class="hidden">
+
+                    <label for="screenshotInput" class="cursor-pointer flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl mb-2"
+                            id="previewIcon">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+                        <span id="fileLabel" class="text-xs font-bold text-slate-700">Choose receipt screenshot</span>
+                        <span class="text-[10px] text-slate-400 mt-0.5">JPG, JPEG, PNG up to 5MB</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Notice Box -->
+            <div
+                class="p-3.5 bg-slate-800 text-amber-300 rounded-2xl text-xs font-bold shadow flex items-center space-x-2 border border-slate-700">
+                <i class="fa-solid fa-triangle-exclamation text-amber-400 text-sm flex-shrink-0"></i>
+                <span>After sending payment, upload receipt screenshot to proceed.</span>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="submitBtn"
+                style="background: linear-gradient(90deg, #00c6ff 0%, #0072ff 50%, #9b51e0 100%);"
+                class="w-full text-white font-black py-4 px-6 rounded-2xl shadow-xl hover:opacity-95 active:scale-95 transition-all text-sm tracking-wide text-center block">
+                {{ isset($isUpgrade) && $isUpgrade ? 'Submit Upgrade Payment' : 'Submit Payment' }}
+            </button>
+        </form>
 
     </div>
 
     @push('scripts')
         <script>
             function copyAccountNumber() {
-                const textToCopy = '03714780429';
+                const textToCopy = '{{ \App\Models\Setting::get('payment_account_number', '03714780429') }}';
                 const feedback = document.getElementById('copyFeedback');
                 const icon = document.getElementById('copyIcon');
 
