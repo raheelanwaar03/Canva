@@ -18,7 +18,7 @@ class ComplaintManagementController extends Controller
             $query->where('status', $status);
         }
 
-        $complaints = $query->paginate(20)->withQueryString();
+        $complaints = $query->get();
 
         return view('admin.complaints.index', compact('complaints', 'status'));
     }
