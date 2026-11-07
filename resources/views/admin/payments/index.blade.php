@@ -249,16 +249,12 @@
                                         </form>
 
                                         <!-- Reject Form -->
-                                        <form method="POST" action="{{ route('admin.payments.reject', $payment->id) }}"
-                                            class="inline-block">
-                                            @csrf
-                                            <button type="submit"
-                                                onclick="return confirm('Reject this deposit payment proof?');"
-                                                class="px-3.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl font-bold text-xs border border-rose-200 transition inline-flex items-center space-x-1">
-                                                <i class="fa-solid fa-xmark text-[10px]"></i>
-                                                <span>Reject</span>
-                                            </button>
-                                        </form>
+                                        <button type="button"
+                                            onclick="openPaymentRejectModal({{ $payment->id }}, '{{ addslashes($payment->user->name ?? 'User') }}')"
+                                            class="px-3.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl font-bold text-xs border border-rose-200 transition inline-flex items-center space-x-1">
+                                            <i class="fa-solid fa-xmark text-[10px]"></i>
+                                            <span>Reject</span>
+                                        </button>
                                     @else
                                         <span class="text-slate-400 italic text-[11px]">Settled</span>
                                     @endif
@@ -268,7 +264,56 @@
                     </tbody>
                 </table>
             </div>
-
         </div>
     </div>
+
+    <!-- Reject Payment Modal -->
+    <div id="paymentRejectModal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="text-base font-black text-slate-800">Reject Deposit Payment</h3>
+                <button type="button" onclick="closePaymentRejectModal()"
+                    class="text-slate-400 hover:text-slate-600 text-xl font-bold">×</button>
+            </div>
+
+            <p class="text-xs text-slate-500">
+                Specify the rejection reason for <strong id="rejectUserName" class="text-slate-800"></strong>. This message
+                will be displayed on their resubmission screen.
+            </p>
+
+            <form id="paymentRejectForm" method="POST" action="" class="space-y-4">
+                @csrf
+                <div>
+                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">Reason for Rejection</label>
+                    <textarea name="admin_note" rows="3" required
+                        placeholder="e.g. Invalid Transaction ID, receipt screenshot unclear, amount mismatch..."
+                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-rose-500"></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closePaymentRejectModal()"
+                        class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-black shadow transition">
+                        Confirm Rejection
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openPaymentRejectModal(paymentId, userName) {
+            document.getElementById('rejectUserName').innerText = userName;
+            document.getElementById('paymentRejectForm').action = "/admin/payments/" + paymentId + "/reject";
+            document.getElementById('paymentRejectModal').classList.remove('hidden');
+        }
+
+        function closePaymentRejectModal() {
+            document.getElementById('paymentRejectModal').classList.add('hidden');
+        }
+    </script>
 @endsection
