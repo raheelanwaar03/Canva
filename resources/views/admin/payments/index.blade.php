@@ -22,6 +22,7 @@
             outline: none;
             margin: 0 4px;
         }
+
         .dataTables_wrapper .dataTables_filter input {
             background: #ffffff;
             border: 1.5px solid #cbd5e1;
@@ -30,13 +31,15 @@
             font-size: 12px;
             width: 260px;
             outline: none;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
             transition: all 0.2s;
         }
+
         .dataTables_wrapper .dataTables_filter input:focus {
             border-color: #3b49df;
             box-shadow: 0 0 0 3px rgba(59, 73, 223, 0.15);
         }
+
         .dataTables_wrapper .dataTables_paginate .paginate_button.current {
             background: #3b49df !important;
             color: white !important;
@@ -50,9 +53,13 @@
             $('#paymentsDataTable').DataTable({
                 responsive: true,
                 pageLength: 15,
-                order: [[0, 'desc']],
-                columnDefs: [
-                    { orderable: false, targets: [6] } // Disable sorting on action buttons
+                order: [
+                    [0, 'desc']
+                ],
+                columnDefs: [{
+                        orderable: false,
+                        targets: [6]
+                    } // Disable sorting on action buttons
                 ],
                 language: {
                     search: "",
@@ -70,24 +77,28 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h1 class="text-2xl font-black text-slate-800 tracking-tight">Payment Verification</h1>
-                <p class="text-xs font-semibold text-slate-400 mt-1">Review user package payments, deposit proofs, and commission hierarchy.</p>
+                <p class="text-xs font-semibold text-slate-400 mt-1">Review user package payments, deposit proofs, and
+                    commission hierarchy.</p>
             </div>
             <div class="flex items-center space-x-3">
-                <span class="px-4 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-black rounded-2xl shadow-sm">
+                <span
+                    class="px-4 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-black rounded-2xl shadow-sm">
                     {{ count($payments) }} Total Records
                 </span>
             </div>
         </div>
 
         @if (session('success'))
-            <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-2xl text-xs font-bold flex items-center space-x-2 shadow-sm">
+            <div
+                class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-2xl text-xs font-bold flex items-center space-x-2 shadow-sm">
                 <i class="fa-solid fa-circle-check text-emerald-500 text-sm"></i>
                 <span>{{ session('success') }}</span>
             </div>
         @endif
 
         @if (session('error'))
-            <div class="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs font-bold flex items-center space-x-2 shadow-sm">
+            <div
+                class="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs font-bold flex items-center space-x-2 shadow-sm">
                 <i class="fa-solid fa-circle-exclamation text-rose-500 text-sm"></i>
                 <span>{{ session('error') }}</span>
             </div>
@@ -99,12 +110,14 @@
             <!-- Card Header & Status Filters -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-5">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm font-black shadow-inner">
+                    <div
+                        class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm font-black shadow-inner">
                         <i class="fa-solid fa-receipt"></i>
                     </div>
                     <div>
                         <h3 class="text-sm font-black text-slate-800">Deposit Invoices</h3>
-                        <p class="text-[11px] font-semibold text-slate-400">Verify transaction IDs and receipt attachments before activating memberships.</p>
+                        <p class="text-[11px] font-semibold text-slate-400">Verify transaction IDs and receipt attachments
+                            before activating memberships.</p>
                     </div>
                 </div>
 
@@ -131,8 +144,10 @@
 
             <!-- Payments DataTable -->
             <div class="overflow-x-auto">
-                <table id="paymentsDataTable" class="w-full text-left display responsive nowrap text-xs text-slate-600" style="width:100%">
-                    <thead class="bg-slate-50 border-b border-slate-100 text-slate-400 uppercase text-[10px] font-black tracking-wider">
+                <table id="paymentsDataTable" class="w-full text-left display responsive nowrap text-xs text-slate-600"
+                    style="width:100%">
+                    <thead
+                        class="bg-slate-50 border-b border-slate-100 text-slate-400 uppercase text-[10px] font-black tracking-wider">
                         <tr>
                             <th class="px-5 py-3.5">#ID</th>
                             <th class="px-5 py-3.5">User Details</th>
@@ -144,7 +159,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
-                        @foreach($payments as $payment)
+                        @foreach ($payments as $payment)
                             <tr class="hover:bg-slate-50/70 transition">
                                 <td class="px-5 py-4 font-mono font-black text-slate-400">
                                     #{{ $payment->id }}
@@ -169,7 +184,8 @@
                                     @endif
                                 </td>
                                 <td class="px-5 py-4">
-                                    <span class="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-xl text-[11px] font-extrabold border border-indigo-100 inline-block mb-1">
+                                    <span
+                                        class="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-xl text-[11px] font-extrabold border border-indigo-100 inline-block mb-1">
                                         {{ $payment->package->name ?? 'Package' }}
                                     </span>
                                     <div class="font-black text-slate-800 text-sm">
@@ -178,7 +194,8 @@
                                 </td>
                                 <td class="px-5 py-4">
                                     <div class="font-bold text-slate-700 flex items-center space-x-1.5">
-                                        <span class="px-2 py-0.5 bg-slate-100 rounded text-[10px] uppercase font-black text-slate-600">
+                                        <span
+                                            class="px-2 py-0.5 bg-slate-100 rounded text-[10px] uppercase font-black text-slate-600">
                                             {{ $payment->gateway ?? ($payment->payment_method ?? 'EasyPaisa') }}
                                         </span>
                                     </div>
@@ -198,17 +215,20 @@
                                 </td>
                                 <td class="px-5 py-4">
                                     @if ($payment->status === 'approved' || $payment->status === 'active' || $payment->status === 1)
-                                        <span class="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-xl text-[11px] font-extrabold border border-emerald-100 inline-flex items-center space-x-1">
+                                        <span
+                                            class="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-xl text-[11px] font-extrabold border border-emerald-100 inline-flex items-center space-x-1">
                                             <i class="fa-solid fa-circle-check text-[10px] text-emerald-500"></i>
                                             <span>Approved</span>
                                         </span>
                                     @elseif($payment->status === 'rejected' || $payment->status === 2)
-                                        <span class="px-3 py-1 bg-rose-50 text-rose-700 rounded-xl text-[11px] font-extrabold border border-rose-100 inline-flex items-center space-x-1">
+                                        <span
+                                            class="px-3 py-1 bg-rose-50 text-rose-700 rounded-xl text-[11px] font-extrabold border border-rose-100 inline-flex items-center space-x-1">
                                             <i class="fa-solid fa-circle-xmark text-[10px] text-rose-500"></i>
                                             <span>Rejected</span>
                                         </span>
                                     @else
-                                        <span class="px-3 py-1 bg-amber-50 text-amber-700 rounded-xl text-[11px] font-extrabold border border-amber-200 inline-flex items-center space-x-1">
+                                        <span
+                                            class="px-3 py-1 bg-amber-50 text-amber-700 rounded-xl text-[11px] font-extrabold border border-amber-200 inline-flex items-center space-x-1">
                                             <i class="fa-solid fa-clock text-[10px] text-amber-500"></i>
                                             <span>Pending</span>
                                         </span>
@@ -217,7 +237,8 @@
                                 <td class="px-5 py-4 text-right space-x-2 whitespace-nowrap">
                                     @if ($payment->status === 'pending' || $payment->status === 0)
                                         <!-- Approve Form -->
-                                        <form method="POST" action="{{ route('admin.payments.approve', $payment->id) }}" class="inline-block">
+                                        <form method="POST" action="{{ route('admin.payments.approve', $payment->id) }}"
+                                            class="inline-block">
                                             @csrf
                                             <button type="submit"
                                                 onclick="return confirm('Approve package payment of Rs {{ number_format($payment->amount, 2) }} for {{ $payment->user->name ?? 'User' }}?');"
@@ -228,7 +249,8 @@
                                         </form>
 
                                         <!-- Reject Form -->
-                                        <form method="POST" action="{{ route('admin.payments.reject', $payment->id) }}" class="inline-block">
+                                        <form method="POST" action="{{ route('admin.payments.reject', $payment->id) }}"
+                                            class="inline-block">
                                             @csrf
                                             <button type="submit"
                                                 onclick="return confirm('Reject this deposit payment proof?');"

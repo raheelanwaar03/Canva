@@ -184,21 +184,25 @@ class PaymentApprovalController extends Controller
     // Reject payment
     public function reject(Request $request, PackagePayment $payment)
     {
-        if ($payment->status !== 'pending') {
-            return back()->with('error', 'Payment has already been processed.');
-        }
-
+        // Make admin_note nullable so quick rejection never fails validation
         $request->validate([
-            'admin_note' => ['required', 'string', 'max:500'],
+            'admin_note' => 'nullable|string|max:500',
         ]);
+
+        $note = $request->filled('admin_note')
+            ? $request->input('admin_note')
+            : 'Payment proof could not be verified. Please provide valid transaction credentials.';
 
         $payment->update([
-            'status' => 'rejected',
-            'admin_note' => $request->admin_note,
-            'reviewed_by' => auth()->id(),
-            'reviewed_at' => now(),
+            'status'     => 'rejected',
+            'admin_note' => $note,
         ]);
 
-        return back()->with('success', "Payment for {$payment->user->name} has been rejected with the provided reason.");
+        // Update user status if your system tracks account review status
+        if ($payment->user && $payment->user->status === 'pending') {
+            $payment->user->update(['status' => 'rejected']);
+        }
+
+        return back()->with('success', 'Deposit payment request has been rejected.');
     }
 }
