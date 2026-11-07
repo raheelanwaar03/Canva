@@ -18,7 +18,11 @@ class LeaderboardController extends Controller
                 $q->whereIn('status', ['active', 'upgraded']);
             })
             ->leftJoin('wallets', 'wallets.user_id', '=', 'users.id')
-            ->select('users.*', DB::raw('COALESCE(wallets.task_earnings + wallets.referral_earnings, 0) as total_earnings'))
+            ->select(
+                'users.*',
+                DB::raw('COALESCE(wallets.withdrawable_balance, 0) as account_balance'),
+                DB::raw('COALESCE(wallets.task_earnings + wallets.referral_earnings, 0) as total_earnings')
+            )
             ->withCount('referrals as team_count')
             ->withSum(['withdrawals as total_withdrawn' => function ($q) {
                 $q->where('status', 'approved');
@@ -27,15 +31,11 @@ class LeaderboardController extends Controller
                 $q->where('completed_date', $today);
             }], 'reward_earned')
             ->with(['activePackage.package'])
-            ->get()
-            ->sortByDesc(function ($u) {
-                return [
-                    $u->referral_level,
-                    (float) ($u->total_earnings ?? 0),
-                    (float) ($u->total_withdrawn ?? 0),
-                ];
-            })
-            ->values();
+            ->orderByDesc('team_count')
+            ->orderByDesc('account_balance')
+            ->orderByDesc('total_withdrawn')
+            ->take(10)
+            ->get();
 
         return view('admin.leaderboard.index', compact('leaderboard'));
     }
