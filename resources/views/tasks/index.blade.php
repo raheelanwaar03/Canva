@@ -28,13 +28,6 @@
             @endif
         </div>
     @else
-        <!-- Daily Progress Counter Bar -->
-        <div class="flex justify-between items-center px-1 text-xs">
-            <span class="font-bold text-slate-700">Today: <strong class="text-indigo-600">{{ $completedTodayCount }} / {{ $dailyLimit }} Completed</strong></span>
-            <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">
-                Level {{ auth()->user()->referral_level }}
-            </span>
-        </div>
     @endif
 
     <!-- TASKS LIST (Exact Match to task.jpeg: Rounded Card, Illustration, Title, Gradient Play Button) -->
