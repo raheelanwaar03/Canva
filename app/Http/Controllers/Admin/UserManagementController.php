@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-// <-- MUST BE IMPORTED
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -15,6 +14,8 @@ use App\Models\UserPackage;
 use App\Models\Package;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\AdminActivityLog;
+use Illuminate\Support\Facades\Hash;
 
 class UserManagementController extends Controller
 {
@@ -414,5 +415,32 @@ class UserManagementController extends Controller
             'pageTitle' => 'Rejected Users',
             'status'    => 'rejected'
         ]);
+    }
+
+    public function updatePassword(Request $request, User $user)
+    {
+        $request->validate([
+            'new_password' => 'required|string|min:6|confirmed',
+        ], [
+            'new_password.required'  => 'Please enter a new password.',
+            'new_password.min'       => 'Password must be at least 6 characters long.',
+            'new_password.confirmed' => 'Password confirmation does not match.',
+        ]);
+
+        // Securely hash and update password (never store or display plain text)
+        $user->update([
+            'password' => Hash::make($request->new_password),
+        ]);
+
+        // Record in Admin Activity Log
+        AdminActivityLog::create([
+            'admin_id'       => auth()->id(),
+            'target_user_id' => $user->id,
+            'action'         => 'password_reset',
+            'description'    => "Admin (" . auth()->user()->name . ") changed password for user {$user->name} ({$user->email}).",
+            'ip_address'     => $request->ip(),
+        ]);
+
+        return back()->with('success', "Password for {$user->name} has been securely updated.");
     }
 }

@@ -197,7 +197,6 @@
                         </button>
                     @endif
                 </div>
-
             </div>
         </div>
 
@@ -249,7 +248,8 @@
             <!-- Task Lock Status -->
             <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Task Eligibility</span>
-                <div class="text-sm font-black mt-1 {{ $eligibility['unlocked'] ? 'text-emerald-600' : 'text-rose-600' }}">
+                <div
+                    class="text-sm font-black mt-1 {{ $eligibility['unlocked'] ? 'text-emerald-600' : 'text-rose-600' }}">
                     {{ $eligibility['unlocked'] ? 'Unlocked' : 'Locked' }}
                 </div>
             </div>
@@ -429,6 +429,80 @@
                 @endforelse
             </div>
         </div>
+
+        <!-- Reset / Change User Password Card -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 space-y-4">
+                <div class="flex items-center space-x-3 border-b border-slate-100 pb-3">
+                    <div
+                        class="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-base font-black">
+                        <i class="fa-solid fa-key"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-black text-slate-800">Change / Reset User Password</h3>
+                        <p class="text-[11px] text-slate-400">Set a new password manually. Existing passwords are encrypted
+                            and hidden.</p>
+                    </div>
+                </div>
+
+                <form action="{{ route('admin.users.updatePassword', $user->id) }}" method="POST"
+                    onsubmit="return confirm('Are you sure you want to change the password for {{ addslashes($user->name) }}? They will need to use this new password to log in.');"
+                    class="space-y-3.5">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                            <label class="block text-xs font-extrabold text-slate-700 mb-1">New Password</label>
+                            <div class="relative">
+                                <input type="password" id="adminNewPassword" name="new_password" required minlength="6"
+                                    placeholder="Enter new password (min 6 chars)"
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-2.5 pr-10 text-xs font-bold text-slate-800 focus:outline-none focus:border-indigo-500">
+                                <button type="button" onclick="toggleAdminPwd('adminNewPassword', this)"
+                                    class="absolute inset-y-0 right-3 flex items-center text-slate-400 hover:text-slate-600 text-xs">
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-extrabold text-slate-700 mb-1">Confirm New Password</label>
+                            <div class="relative">
+                                <input type="password" id="adminConfirmPassword" name="new_password_confirmation" required
+                                    minlength="6" placeholder="Re-enter new password"
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-2.5 pr-10 text-xs font-bold text-slate-800 focus:outline-none focus:border-indigo-500">
+                                <button type="button" onclick="toggleAdminPwd('adminConfirmPassword', this)"
+                                    class="absolute inset-y-0 right-3 flex items-center text-slate-400 hover:text-slate-600 text-xs">
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-1">
+                        <button type="submit"
+                            class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl text-xs font-black shadow-sm transition active:scale-95 flex items-center space-x-2">
+                            <i class="fa-solid fa-shield-halved text-xs"></i>
+                            <span>Update User Password</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <script>
+                function toggleAdminPwd(inputId, btn) {
+                    const input = document.getElementById(inputId);
+                    const icon = btn.querySelector('i');
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
+                }
+            </script>
 
         <!-- ================= TAB 2: TEAM MEMBERS ================= -->
         <div id="tab-team" class="tab-content hidden space-y-4">

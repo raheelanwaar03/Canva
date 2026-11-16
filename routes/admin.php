@@ -80,6 +80,9 @@ Route::post('/refunds/{refund}/reject', [RefundManagementController::class, 'rej
 
 Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard.index');
 
+// password update
+Route::put('/users/{user}/password', [UserManagementController::class, 'updatePassword'])->name('users.updatePassword');
+
 // Admin Complaints Management
 Route::prefix('complaints')->name('complaints.')->group(function () {
     Route::get('/', [ComplaintManagementController::class, 'index'])->name('index');
