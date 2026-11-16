@@ -17,11 +17,6 @@ Route::get('/', function () {
 // Authentication routes (Login, Register, Logout)
 require __DIR__ . '/auth.php';
 
-// Impersonation leave route
-Route::post('/impersonate/leave', [UserManagementController::class, 'leaveImpersonation'])
-    ->middleware('auth')
-    ->name('impersonate.leave');
-
 // Receipts Serving Route
 Route::get('/receipts/{filename}', [ReceiptController::class, 'show'])->name('receipts.show');
 
