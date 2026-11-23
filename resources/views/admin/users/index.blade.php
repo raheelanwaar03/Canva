@@ -136,26 +136,23 @@
                                 </span>
                             </td>
                             <td>
-                                @if ($hasActive)
+                                @if ($user->activePackage && $user->activePackage->package)
+                                    @php
+                                        $isExpired =
+                                            $user->activePackage->expires_at &&
+                                            now()->greaterThanOrEqualTo($user->activePackage->expires_at);
+                                    @endphp
                                     <span
-                                        class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
-                                        {{ $hasActive->package->name }}
-                                    </span>
-                                @elseif($hasPending)
-                                    <span
-                                        class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700 border border-amber-200">
-                                        Pending ({{ $hasPending->package->name }})
-                                    </span>
-                                @elseif($hasRejected)
-                                    <span
-                                        class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700 border border-rose-200">
-                                        Rejected
+                                        class="px-2.5 py-1 rounded-lg font-black text-[10px] {{ $isExpired ? 'bg-rose-50 text-rose-600 border border-rose-200' : 'bg-indigo-50 text-indigo-700' }}">
+                                        {{ $user->activePackage->package->name }}
+                                        @if ($isExpired)
+                                            (Expired)
+                                        @endif
                                     </span>
                                 @else
                                     <span
-                                        class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-400">
-                                        No Plan
-                                    </span>
+                                        class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-400 font-bold text-[10px]">No
+                                        Plan</span>
                                 @endif
                             </td>
                             <td class="font-extrabold text-slate-900">

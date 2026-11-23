@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @php
-    $title = 'Approved Users';
+    {{ $pageTitle ?? 'Approved Users' }}
 @endphp
 
 @section('admin_content')

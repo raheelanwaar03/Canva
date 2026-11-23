@@ -89,3 +89,9 @@ Route::prefix('complaints')->name('complaints.')->group(function () {
     Route::put('/{complaint}/status', [ComplaintManagementController::class, 'updateStatus'])->name('updateStatus');
     Route::delete('/{complaint}', [ComplaintManagementController::class, 'destroy'])->name('destroy');
 });
+
+// Today-Only Filtered Pages
+Route::get('/users/today-approved', [UserManagementController::class, 'todayApproved'])->name('users.todayApproved');
+Route::get('/payments/today-approved', [PaymentApprovalController::class, 'todayApproved'])->name('payments.todayApproved');
+Route::get('/payments/today-pending', [PaymentApprovalController::class, 'todayPending'])->name('payments.todayPending');
+Route::get('/withdrawals/today-pending', [WithdrawalApprovalController::class, 'todayPending'])->name('withdrawals.todayPending');

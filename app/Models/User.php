@@ -56,13 +56,6 @@ class User extends Authenticatable
         return $this->hasMany(UserPackage::class);
     }
 
-    public function activePackage()
-    {
-        return $this->hasOne(UserPackage::class)
-            ->where('status', 'active')
-            ->where('expires_at', '>', now());
-    }
-
     public function packagePayments()
     {
         return $this->hasMany(PackagePayment::class);
@@ -290,5 +283,50 @@ class User extends Authenticatable
     {
         return $this->hasMany(\App\Models\Complaint::class);
     }
+
+    /**
+ * Returns the user's current/latest purchased plan (even if expired)
+ * so it stays visible on their profile and in the Admin Panel.
+ */
+public function activePackage()
+{
+    return $this->hasOne(\App\Models\UserPackage::class)
+        ->whereIn('status', ['active', 'upgraded', 'expired'])
+        ->latest();
+}
+
+/**
+ * Check if the user has ANY purchased plan record (active or expired)
+ * so they are allowed past the login/dashboard gate.
+ */
+public function hasPurchasedPlan(): bool
+{
+    return $this->packages()
+        ->whereIn('status', ['active', 'upgraded', 'expired'])
+        ->exists();
+}
+
+/**
+ * Check if their current plan is still within its active validity period
+ * (used to allow/block daily ad tasks and plan benefits).
+ */
+public function hasValidUnexpiredPlan(): bool
+{
+    $plan = $this->activePackage;
+
+    if (!$plan) {
+        return false;
+    }
+
+    if ($plan->status === 'expired') {
+        return false;
+    }
+
+    if ($plan->expires_at && now()->greaterThanOrEqualTo($plan->expires_at)) {
+        return false;
+    }
+
+    return true;
+}
 
 }

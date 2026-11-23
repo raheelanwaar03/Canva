@@ -19,7 +19,9 @@ class TaskController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $today = now()->toDateString();
+        $today = \Carbon\Carbon::now('Asia/Karachi')->toDateString();
+        $isPlanExpired = !$user->hasValidUnexpiredPlan();
+
 
         $eligibility = $user->getTaskEligibilityStatus();
         $activeSub = $user->activePackage;
@@ -50,7 +52,8 @@ class TaskController extends Controller
             'dailyLimit',
             'rewardPerTask',
             'remainingTasks',
-            'completedTaskIds'
+            'completedTaskIds',
+            'isPlanExpired'
         ));
     }
 
@@ -94,6 +97,10 @@ class TaskController extends Controller
     public function complete(Request $request, Task $task)
     {
         $user = auth()->user();
+
+        if (!auth()->user()->hasValidUnexpiredPlan()) {
+            return back()->with('error', 'Your package has expired. Please renew or upgrade your plan to continue completing daily tasks.');
+        }
 
         // 1. Verify user has not already completed this specific ad today
         $todayStart = Carbon::now('Asia/Karachi')->startOfDay();

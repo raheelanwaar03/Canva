@@ -121,4 +121,25 @@ class WithdrawalApprovalController extends Controller
 
         return back()->with('success', 'Withdrawal rejected and funds refunded to user.');
     }
+    // today withdrawals
+    public function todayPending()
+    {
+        $todayStart = \Carbon\Carbon::now('Asia/Karachi')->startOfDay();
+        $todayEnd   = \Carbon\Carbon::now('Asia/Karachi')->endOfDay();
+
+        $withdrawals = Withdrawal::with('user')
+            ->where(function ($q) {
+                $q->where('status', 'pending')
+                    ->orWhere('status', 0)
+                    ->orWhere('status', '0');
+            })
+            ->whereBetween('created_at', [$todayStart, $todayEnd])
+            ->latest()
+            ->get();
+
+        $pageTitle  = "Today's Pending Withdrawals";
+        $currentTab = 'today_pending';
+
+        return view('admin.withdrawals.index', compact('withdrawals', 'pageTitle', 'currentTab'));
+    }
 }

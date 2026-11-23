@@ -429,4 +429,28 @@ class UserManagementController extends Controller
 
         return back()->with('success', "Password for {$user->name} has been securely updated.");
     }
+
+    // Today
+
+    public function todayApproved()
+    {
+        $todayStart = \Carbon\Carbon::now('Asia/Karachi')->startOfDay();
+        $todayEnd   = \Carbon\Carbon::now('Asia/Karachi')->endOfDay();
+
+        $approvedUserIds = \App\Models\PackagePayment::whereIn('status', ['approved', 'active', 1, '1'])
+            ->whereBetween('updated_at', [$todayStart, $todayEnd])
+            ->pluck('user_id')
+            ->unique();
+
+        $users = User::where('role', 'user')
+            ->whereIn('id', $approvedUserIds)
+            ->with(['wallet', 'referrer', 'activePackage.package'])
+            ->withCount('referrals')
+            ->latest()
+            ->get();
+
+        $pageTitle = "Today's Approved Users";
+
+        return view('admin.users.approved', compact('users', 'pageTitle'));
+    }
 }

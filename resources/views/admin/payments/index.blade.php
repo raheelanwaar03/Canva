@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @php
-    $title = 'Payment Verification';
+     $pageTitle ?? 'Payment Verification';
 @endphp
 
 @push('scripts')

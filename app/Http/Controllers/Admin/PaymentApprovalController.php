@@ -205,4 +205,40 @@ class PaymentApprovalController extends Controller
 
         return back()->with('success', 'Deposit payment request has been rejected.');
     }
+
+    // today
+
+    public function todayApproved()
+    {
+        $todayStart = \Carbon\Carbon::now('Asia/Karachi')->startOfDay();
+        $todayEnd   = \Carbon\Carbon::now('Asia/Karachi')->endOfDay();
+
+        $payments = PackagePayment::with(['user.referrer', 'package'])
+            ->whereIn('status', ['approved', 'active', 1, '1'])
+            ->whereBetween('updated_at', [$todayStart, $todayEnd])
+            ->latest()
+            ->get();
+
+        $pageTitle  = "Today's Received Balance (Approved Deposits)";
+        $currentTab = 'today_approved';
+
+        return view('admin.payments.index', compact('payments', 'pageTitle', 'currentTab'));
+    }
+
+    public function todayPending()
+    {
+        $todayStart = \Carbon\Carbon::now('Asia/Karachi')->startOfDay();
+        $todayEnd   = \Carbon\Carbon::now('Asia/Karachi')->endOfDay();
+
+        $payments = PackagePayment::with(['user.referrer', 'package'])
+            ->whereIn('status', ['pending', 0, '0'])
+            ->whereBetween('created_at', [$todayStart, $todayEnd])
+            ->latest()
+            ->get();
+
+        $pageTitle  = "Today's Pending User Requests";
+        $currentTab = 'today_pending';
+
+        return view('admin.payments.index', compact('payments', 'pageTitle', 'currentTab'));
+    }
 }
