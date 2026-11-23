@@ -136,15 +136,15 @@
                                 </span>
                             </td>
                             <td>
-                                @if ($user->activePackage && $user->activePackage->package)
+                                @if ($u->activePackage && $u->activePackage->package)
                                     @php
                                         $isExpired =
-                                            $user->activePackage->expires_at &&
-                                            now()->greaterThanOrEqualTo($user->activePackage->expires_at);
+                                            $u->activePackage->expires_at &&
+                                            now()->greaterThanOrEqualTo($u->activePackage->expires_at);
                                     @endphp
                                     <span
                                         class="px-2.5 py-1 rounded-lg font-black text-[10px] {{ $isExpired ? 'bg-rose-50 text-rose-600 border border-rose-200' : 'bg-indigo-50 text-indigo-700' }}">
-                                        {{ $user->activePackage->package->name }}
+                                        {{ $u->activePackage->package->name }}
                                         @if ($isExpired)
                                             (Expired)
                                         @endif
