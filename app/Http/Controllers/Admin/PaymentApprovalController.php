@@ -178,6 +178,8 @@ class PaymentApprovalController extends Controller
             }
         });
 
+        \Illuminate\Support\Facades\Cache::forget('admin_dashboard_metrics');
+
         return back()->with('success', "Payment approved and {$payment->package->name} plan activated!");
     }
 

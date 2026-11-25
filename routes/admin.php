@@ -19,6 +19,8 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 
 // Payment Approvals
 Route::get('/payments', [PaymentApprovalController::class, 'index'])->name('payments.index');
+Route::get('/payments/today-approved', [PaymentApprovalController::class, 'todayApproved'])->name('payments.todayApproved');
+Route::get('/payments/today-pending', [PaymentApprovalController::class, 'todayPending'])->name('payments.todayPending');
 Route::post('/payments/{payment}/approve', [PaymentApprovalController::class, 'approve'])->name('payments.approve');
 Route::post('/payments/{payment}/reject', [PaymentApprovalController::class, 'reject'])->name('payments.reject');
 
@@ -28,6 +30,8 @@ Route::prefix('withdrawals')->name('withdrawals.')->group(function () {
     Route::get('/pending', [WithdrawalApprovalController::class, 'pending'])->name('pending');
     Route::get('/approved', [WithdrawalApprovalController::class, 'approved'])->name('approved');
     Route::get('/rejected', [WithdrawalApprovalController::class, 'rejected'])->name('rejected');
+    Route::get('/today-pending', [WithdrawalApprovalController::class, 'todayPending'])->name('todayPending');
+    Route::get('/today-approved', [WithdrawalApprovalController::class, 'todayApproved'])->name('todayApproved');
 
     Route::post('/{withdrawal}/approve', [WithdrawalApprovalController::class, 'approve'])->name('approve');
     Route::post('/{withdrawal}/reject', [WithdrawalApprovalController::class, 'reject'])->name('reject');
@@ -52,18 +56,20 @@ Route::post('/channels/{channel}/toggle', [ChannelManagementController::class, '
 Route::delete('/channels/{channel}', [ChannelManagementController::class, 'destroy'])->name('channels.destroy');
 
 // ==========================================
-// USER MANAGEMENT (Status Sub-routes first to avoid 404 wildcard collisions)
+// USER MANAGEMENT (Static sub-routes first to avoid /{user} wildcard collision)
 // ==========================================
 Route::prefix('users')->name('users.')->group(function () {
     Route::get('/', [UserManagementController::class, 'index'])->name('index');
     Route::get('/pending', [UserManagementController::class, 'pending'])->name('pending');
     Route::get('/approved', [UserManagementController::class, 'approved'])->name('approved');
     Route::get('/rejected', [UserManagementController::class, 'rejected'])->name('rejected');
+    Route::get('/today-approved', [UserManagementController::class, 'todayApproved'])->name('todayApproved');
 
     // User Operations on Specific ID (Wildcards placed AFTER static paths)
     Route::get('/{user}', [UserManagementController::class, 'show'])->name('show');
     Route::get('/{user}/edit', [UserManagementController::class, 'edit'])->name('edit');
     Route::put('/{user}', [UserManagementController::class, 'update'])->name('update');
+    Route::put('/{user}/password', [UserManagementController::class, 'updatePassword'])->name('updatePassword');
     Route::post('/{user}/adjust-balance', [UserManagementController::class, 'adjustBalance'])->name('adjustBalance');
     Route::post('/{user}/impersonate', [UserManagementController::class, 'impersonate'])->name('impersonate');
     Route::post('/{user}/login-as', [UserManagementController::class, 'impersonate'])->name('loginAs');
@@ -78,10 +84,8 @@ Route::get('/refunds', [RefundManagementController::class, 'index'])->name('refu
 Route::post('/refunds/{refund}/approve', [RefundManagementController::class, 'approve'])->name('refunds.approve');
 Route::post('/refunds/{refund}/reject', [RefundManagementController::class, 'reject'])->name('refunds.reject');
 
+// Leaderboard
 Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard.index');
-
-// password update
-Route::put('/users/{user}/password', [UserManagementController::class, 'updatePassword'])->name('users.updatePassword');
 
 // Admin Complaints Management
 Route::prefix('complaints')->name('complaints.')->group(function () {
@@ -89,9 +93,3 @@ Route::prefix('complaints')->name('complaints.')->group(function () {
     Route::put('/{complaint}/status', [ComplaintManagementController::class, 'updateStatus'])->name('updateStatus');
     Route::delete('/{complaint}', [ComplaintManagementController::class, 'destroy'])->name('destroy');
 });
-
-// Today-Only Filtered Pages
-Route::get('/users/today-approved', [UserManagementController::class, 'todayApproved'])->name('users.todayApproved');
-Route::get('/payments/today-approved', [PaymentApprovalController::class, 'todayApproved'])->name('payments.todayApproved');
-Route::get('/payments/today-pending', [PaymentApprovalController::class, 'todayPending'])->name('payments.todayPending');
-Route::get('/withdrawals/today-pending', [WithdrawalApprovalController::class, 'todayPending'])->name('withdrawals.todayPending');

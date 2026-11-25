@@ -9,118 +9,6 @@
             <p class="text-xs text-slate-500">Welcome to Canva ADS Administration Command Center</p>
         </div>
 
-        <!-- SECTION 1: TODAY'S LIVE ACTIVITY (PKT) -->
-        <div class="space-y-3">
-            <div class="flex items-center justify-between">
-                <h2 class="text-xs font-black uppercase tracking-wider text-indigo-600 flex items-center space-x-1.5">
-                    <i class="fa-solid fa-calendar-day"></i>
-                    <span>Today's Activity (PKT)</span>
-                </h2>
-                <span
-                    class="text-[11px] font-bold text-slate-400">{{ \Carbon\Carbon::now('Asia/Karachi')->format('d M, Y') }}</span>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
-                <!-- 1. Today Approved Users -->
-                <div
-                    class="bg-white rounded-2xl p-5 shadow-sm border border-amber-200/80 relative overflow-hidden flex flex-col justify-between min-h-[135px]">
-                    <div class="flex items-start justify-between z-10">
-                        <div class="flex items-start space-x-3">
-                            <div
-                                class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center text-lg flex-shrink-0">
-                                <i class="fa-solid fa-user-check"></i>
-                            </div>
-                            <div>
-                                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Today Approved
-                                    Users</span>
-                                <div class="text-2xl font-black text-slate-800 mt-0.5">
-                                    {{ number_format($todayApprovedUsers ?? 0) }}</div>
-                            </div>
-                        </div>
-                        <a href="{{ route('admin.users.todayApproved') }}"
-                            class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-amber-600 border border-amber-300 hover:bg-amber-50 shadow-sm transition">
-                            View All
-                        </a>
-                    </div>
-                </div>
-
-                <!-- 2. Today Received Balance -->
-                <div
-                    class="bg-white rounded-2xl p-5 shadow-sm border border-teal-200/80 relative overflow-hidden flex flex-col justify-between min-h-[135px]">
-                    <div class="flex items-start justify-between z-10">
-                        <div class="flex items-start space-x-3">
-                            <div
-                                class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-lg flex-shrink-0">
-                                <i class="fa-solid fa-receipt"></i>
-                            </div>
-                            <div>
-                                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Today Received
-                                    Balance</span>
-                                <div class="text-lg font-black text-slate-800 mt-0.5">Rs
-                                    {{ number_format($todayReceivedBalance ?? 0, 2) }}</div>
-                            </div>
-                        </div>
-                        <a href="{{ route('admin.payments.todayApproved') }}"
-                            class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-teal-600 border border-teal-300 hover:bg-teal-50 shadow-sm transition">
-                            View All
-                        </a>
-                    </div>
-                </div>
-
-                <!-- 3. Today Pending User Requests -->
-                <div
-                    class="bg-white rounded-2xl p-5 shadow-sm border border-orange-200 relative overflow-hidden flex flex-col justify-between min-h-[135px]">
-                    <div class="flex items-start justify-between z-10">
-                        <div class="flex items-start space-x-3">
-                            <div
-                                class="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center text-lg flex-shrink-0">
-                                <i class="fa-solid fa-hourglass-half"></i>
-                            </div>
-                            <div>
-                                <span class="text-[11px] font-bold uppercase tracking-wider text-orange-600">Today Pending
-                                    Requests</span>
-                                <div class="text-2xl font-black text-orange-600 mt-0.5">
-                                    {{ $todayPendingPaymentsCount ?? 0 }}</div>
-                                <span class="text-[10px] text-slate-400">Rs
-                                    {{ number_format($todayPendingPaymentsAmount ?? 0, 2) }} today</span>
-                            </div>
-                        </div>
-                        <a href="{{ route('admin.payments.todayPending') }}"
-                            class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-orange-600 border border-orange-300 hover:bg-orange-50 shadow-sm transition">
-                            View All
-                        </a>
-                    </div>
-                </div>
-
-                <!-- 4. Today Pending Withdrawals -->
-                <div
-                    class="bg-white rounded-2xl p-5 shadow-sm border border-rose-200 relative overflow-hidden flex flex-col justify-between min-h-[135px]">
-                    <div class="flex items-start justify-between z-10">
-                        <div class="flex items-start space-x-3">
-                            <div
-                                class="w-10 h-10 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center text-lg flex-shrink-0">
-                                <i class="fa-solid fa-money-bill-transfer"></i>
-                            </div>
-                            <div>
-                                <span class="text-[11px] font-bold uppercase tracking-wider text-rose-600">Today Pending
-                                    Withdrawals</span>
-                                <div class="text-2xl font-black text-rose-600 mt-0.5">{{ $todayPendingWithdrawCount ?? 0 }}
-                                </div>
-                                <span class="text-[10px] text-slate-400">Rs
-                                    {{ number_format($todayPendingWithdrawAmount ?? 0, 2) }} today</span>
-                            </div>
-                        </div>
-                        <a href="{{ route('admin.withdrawals.todayPending') }}"
-                            class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-rose-600 border border-rose-300 hover:bg-rose-50 shadow-sm transition">
-                            View All
-                        </a>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
         <!-- SECTION 2: ALL-TIME PLATFORM OVERVIEW -->
         <div class="space-y-3 pt-2">
             <h2 class="text-xs font-black uppercase tracking-wider text-slate-500 flex items-center space-x-1.5">
@@ -259,6 +147,146 @@
                         </div>
                         <a href="{{ route('admin.payments.index') }}"
                             class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-indigo-600 border border-indigo-300 hover:bg-indigo-50 shadow-sm transition">
+                            View All
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- SECTION 1: TODAY'S LIVE ACTIVITY (PKT) -->
+        <div class="space-y-3">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xs font-black uppercase tracking-wider text-indigo-600 flex items-center space-x-1.5">
+                    <i class="fa-solid fa-calendar-day"></i>
+                    <span>Today's Activity (PKT)</span>
+                </h2>
+                <span
+                    class="text-[11px] font-bold text-slate-400">{{ \Carbon\Carbon::now('Asia/Karachi')->format('d M, Y') }}</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+                <!-- 1. Today Approved Users -->
+                <div
+                    class="bg-white rounded-2xl p-5 shadow-sm border border-amber-200/80 relative overflow-hidden flex flex-col justify-between min-h-[135px]">
+                    <div class="flex items-start justify-between z-10">
+                        <div class="flex items-start space-x-3">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center text-lg flex-shrink-0">
+                                <i class="fa-solid fa-user-check"></i>
+                            </div>
+                            <div>
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Today Approved
+                                    Users</span>
+                                <div class="text-2xl font-black text-slate-800 mt-0.5">
+                                    {{ number_format($todayApprovedUsers ?? 0) }}</div>
+                            </div>
+                        </div>
+                        <a href="{{ route('admin.users.todayApproved') }}"
+                            class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-amber-600 border border-amber-300 hover:bg-amber-50 shadow-sm transition">
+                            View All
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 2. Today Received Balance -->
+                <div
+                    class="bg-white rounded-2xl p-5 shadow-sm border border-teal-200/80 relative overflow-hidden flex flex-col justify-between min-h-[135px]">
+                    <div class="flex items-start justify-between z-10">
+                        <div class="flex items-start space-x-3">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-lg flex-shrink-0">
+                                <i class="fa-solid fa-receipt"></i>
+                            </div>
+                            <div>
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Today Received
+                                    Balance</span>
+                                <div class="text-lg font-black text-slate-800 mt-0.5">Rs
+                                    {{ number_format($todayReceivedBalance ?? 0, 2) }}</div>
+                            </div>
+                        </div>
+                        <a href="{{ route('admin.payments.todayApproved') }}"
+                            class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-teal-600 border border-teal-300 hover:bg-teal-50 shadow-sm transition">
+                            View All
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 3. Today Pending User Requests -->
+                <div
+                    class="bg-white rounded-2xl p-5 shadow-sm border border-orange-200 relative overflow-hidden flex flex-col justify-between min-h-[135px]">
+                    <div class="flex items-start justify-between z-10">
+                        <div class="flex items-start space-x-3">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center text-lg flex-shrink-0">
+                                <i class="fa-solid fa-hourglass-half"></i>
+                            </div>
+                            <div>
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-orange-600">Today Pending
+                                    Requests</span>
+                                <div class="text-2xl font-black text-orange-600 mt-0.5">
+                                    {{ $todayPendingPaymentsCount ?? 0 }}</div>
+                                <span class="text-[10px] text-slate-400">Rs
+                                    {{ number_format($todayPendingPaymentsAmount ?? 0, 2) }} today</span>
+                            </div>
+                        </div>
+                        <a href="{{ route('admin.payments.todayPending') }}"
+                            class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-orange-600 border border-orange-300 hover:bg-orange-50 shadow-sm transition">
+                            View All
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 4. Today Pending Withdrawals -->
+                <div
+                    class="bg-white rounded-2xl p-5 shadow-sm border border-rose-200 relative overflow-hidden flex flex-col justify-between min-h-[135px]">
+                    <div class="flex items-start justify-between z-10">
+                        <div class="flex items-start space-x-3">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center text-lg flex-shrink-0">
+                                <i class="fa-solid fa-money-bill-transfer"></i>
+                            </div>
+                            <div>
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-rose-600">Today Pending
+                                    Withdrawals</span>
+                                <div class="text-2xl font-black text-rose-600 mt-0.5">
+                                    {{ $todayPendingWithdrawCount ?? 0 }}
+                                </div>
+                                <span class="text-[10px] text-slate-400">Rs
+                                    {{ number_format($todayPendingWithdrawAmount ?? 0, 2) }} today</span>
+                            </div>
+                        </div>
+                        <a href="{{ route('admin.withdrawals.todayPending') }}"
+                            class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-rose-600 border border-rose-300 hover:bg-rose-50 shadow-sm transition">
+                            View All
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 5. Today Approved Withdrawals -->
+                <div
+                    class="bg-white rounded-2xl p-5 shadow-sm border border-emerald-200 relative overflow-hidden flex flex-col justify-between min-h-[135px]">
+                    <div class="flex items-start justify-between z-10">
+                        <div class="flex items-start space-x-3">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                            <div>
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-600">Today
+                                    Approved
+                                    Withdrawals</span>
+                                <div class="text-2xl font-black text-emerald-600 mt-0.5">
+                                    {{ $todayApprovedWithdrawCount ?? 0 }}
+                                </div>
+                                <span class="text-[10px] text-slate-400">Rs
+                                    {{ number_format($todayApprovedWithdrawAmount ?? 0, 2) }} approved today</span>
+                            </div>
+                        </div>
+                        <a href="{{ route('admin.withdrawals.todayApproved') }}"
+                            class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold text-emerald-600 border border-emerald-300 hover:bg-emerald-50 shadow-sm transition">
                             View All
                         </a>
                     </div>

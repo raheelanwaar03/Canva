@@ -82,10 +82,12 @@ class WithdrawalApprovalController extends Controller
         }
 
         $withdrawal->update([
-            'status' => 'approved',
+            'status'      => 'approved',
             'reviewed_by' => auth()->id(),
             'reviewed_at' => now(),
         ]);
+
+        \Illuminate\Support\Facades\Cache::forget('admin_dashboard_metrics');
 
         return back()->with('success', 'Withdrawal approved.');
     }
@@ -139,6 +141,33 @@ class WithdrawalApprovalController extends Controller
 
         $pageTitle  = "Today's Pending Withdrawals";
         $currentTab = 'today_pending';
+
+        return view('admin.withdrawals.index', compact('withdrawals', 'pageTitle', 'currentTab'));
+    }
+
+    public function todayApproved()
+    {
+        $todayStart = \Carbon\Carbon::now('Asia/Karachi')->startOfDay();
+        $todayEnd   = \Carbon\Carbon::now('Asia/Karachi')->endOfDay();
+
+        $withdrawals = Withdrawal::with('user')
+            ->where(function ($q) {
+                $q->where('status', 'approved')
+                    ->orWhere('status', 1)
+                    ->orWhere('status', '1');
+            })
+            ->where(function ($q) use ($todayStart, $todayEnd) {
+                $q->whereBetween('reviewed_at', [$todayStart, $todayEnd])
+                    ->orWhere(function ($sub) use ($todayStart, $todayEnd) {
+                        $sub->whereNull('reviewed_at')
+                            ->whereBetween('updated_at', [$todayStart, $todayEnd]);
+                    });
+            })
+            ->latest('reviewed_at')
+            ->get();
+
+        $pageTitle  = "Today's Approved Withdrawals";
+        $currentTab = 'today_approved';
 
         return view('admin.withdrawals.index', compact('withdrawals', 'pageTitle', 'currentTab'));
     }

@@ -443,14 +443,20 @@ class UserManagementController extends Controller
             ->unique();
 
         $users = User::where('role', 'user')
-            ->whereIn('id', $approvedUserIds)
-            ->with(['wallet', 'referrer', 'activePackage.package'])
-            ->withCount('referrals')
-            ->latest()
+            ->where(function ($q) use ($approvedUserIds, $todayStart, $todayEnd) {
+                $q->whereIn('id', $approvedUserIds)
+                    ->orWhere(function ($sub) use ($todayStart, $todayEnd) {
+                        $sub->whereIn('status', ['active', 'approved'])
+                            ->whereBetween('updated_at', [$todayStart, $todayEnd]);
+                    });
+            })
+            ->with(['wallet', 'referrer', 'activePackage.package', 'packagePayments'])
+            ->latest('updated_at')
             ->get();
 
         $pageTitle = "Today's Approved Users";
+        $status    = 'approved';
 
-        return view('admin.users.approved', compact('users', 'pageTitle'));
+        return view('admin.users.index', compact('users', 'pageTitle', 'status'));
     }
 }

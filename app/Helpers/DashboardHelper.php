@@ -62,6 +62,37 @@ class DashboardHelper
 
     // ==================== TODAY-ONLY METRICS (PKT) ====================
 
+
+    public static function getTodayApprovedWithdrawalsCount(): int
+    {
+        [$todayStart, $todayEnd] = self::getTodayTimeRange();
+
+        return Withdrawal::whereIn('status', ['approved', 1, '1'])
+            ->where(function ($q) use ($todayStart, $todayEnd) {
+                $q->whereBetween('reviewed_at', [$todayStart, $todayEnd])
+                    ->orWhere(function ($sub) use ($todayStart, $todayEnd) {
+                        $sub->whereNull('reviewed_at')
+                            ->whereBetween('updated_at', [$todayStart, $todayEnd]);
+                    });
+            })
+            ->count();
+    }
+
+    public static function getTodayApprovedWithdrawalsAmount(): float
+    {
+        [$todayStart, $todayEnd] = self::getTodayTimeRange();
+
+        return (float) Withdrawal::whereIn('status', ['approved', 1, '1'])
+            ->where(function ($q) use ($todayStart, $todayEnd) {
+                $q->whereBetween('reviewed_at', [$todayStart, $todayEnd])
+                    ->orWhere(function ($sub) use ($todayStart, $todayEnd) {
+                        $sub->whereNull('reviewed_at')
+                            ->whereBetween('updated_at', [$todayStart, $todayEnd]);
+                    });
+            })
+            ->sum('amount');
+    }
+
     public static function getTodayApprovedUsers(): int
     {
         [$todayStart, $todayEnd] = self::getTodayTimeRange();
@@ -153,6 +184,8 @@ class DashboardHelper
                 'todayPendingWithdrawAmount' => self::getTodayPendingWithdrawalsAmount(),
                 'tasksCompletedToday'        => self::getTodayCompletedTasksCount(),
                 'taskEarningsToday'          => (float) TaskLog::where('completed_date', $todayDate)->sum('reward_earned'),
+                'todayApprovedWithdrawCount'  => self::getTodayApprovedWithdrawalsCount(),
+                'todayApprovedWithdrawAmount' => self::getTodayApprovedWithdrawalsAmount(),
             ];
         });
     }
