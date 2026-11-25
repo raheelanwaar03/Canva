@@ -23,6 +23,8 @@ class User extends Authenticatable
         'status',
         'first_task_bonus_received',
         'custom_level',
+        'joining_bonus_eligible',
+        'joining_bonus_claimed',
     ];
 
     protected $hidden = [
@@ -37,6 +39,8 @@ class User extends Authenticatable
             'password' => 'hashed',
             'first_task_bonus_received' => 'boolean',
             'custom_level' => 'integer',
+            'joining_bonus_eligible' => 'boolean',
+            'joining_bonus_claimed'  => 'boolean',
         ];
     }
 
@@ -45,6 +49,13 @@ class User extends Authenticatable
     | Relationships
     |--------------------------------------------------------------------------
     */
+
+    public function isEligibleForJoiningBonus(): bool
+    {
+        return (bool) $this->joining_bonus_eligible
+            && !(bool) $this->joining_bonus_claimed
+            && !$this->taskLogs()->exists();
+    }
 
     public function wallet()
     {
@@ -285,48 +296,47 @@ class User extends Authenticatable
     }
 
     /**
- * Returns the user's current/latest purchased plan (even if expired)
- * so it stays visible on their profile and in the Admin Panel.
- */
-public function activePackage()
-{
-    return $this->hasOne(\App\Models\UserPackage::class)
-        ->whereIn('status', ['active', 'upgraded', 'expired'])
-        ->latest();
-}
-
-/**
- * Check if the user has ANY purchased plan record (active or expired)
- * so they are allowed past the login/dashboard gate.
- */
-public function hasPurchasedPlan(): bool
-{
-    return $this->packages()
-        ->whereIn('status', ['active', 'upgraded', 'expired'])
-        ->exists();
-}
-
-/**
- * Check if their current plan is still within its active validity period
- * (used to allow/block daily ad tasks and plan benefits).
- */
-public function hasValidUnexpiredPlan(): bool
-{
-    $plan = $this->activePackage;
-
-    if (!$plan) {
-        return false;
+     * Returns the user's current/latest purchased plan (even if expired)
+     * so it stays visible on their profile and in the Admin Panel.
+     */
+    public function activePackage()
+    {
+        return $this->hasOne(\App\Models\UserPackage::class)
+            ->whereIn('status', ['active', 'upgraded', 'expired'])
+            ->latest();
     }
 
-    if ($plan->status === 'expired') {
-        return false;
+    /**
+     * Check if the user has ANY purchased plan record (active or expired)
+     * so they are allowed past the login/dashboard gate.
+     */
+    public function hasPurchasedPlan(): bool
+    {
+        return $this->packages()
+            ->whereIn('status', ['active', 'upgraded', 'expired'])
+            ->exists();
     }
 
-    if ($plan->expires_at && now()->greaterThanOrEqualTo($plan->expires_at)) {
-        return false;
+    /**
+     * Check if their current plan is still within its active validity period
+     * (used to allow/block daily ad tasks and plan benefits).
+     */
+    public function hasValidUnexpiredPlan(): bool
+    {
+        $plan = $this->activePackage;
+
+        if (!$plan) {
+            return false;
+        }
+
+        if ($plan->status === 'expired') {
+            return false;
+        }
+
+        if ($plan->expires_at && now()->greaterThanOrEqualTo($plan->expires_at)) {
+            return false;
+        }
+
+        return true;
     }
-
-    return true;
-}
-
 }

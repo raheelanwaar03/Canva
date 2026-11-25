@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use App\Models\TaskLog;
 use App\Models\Transaction;
+use App\Models\User;
 use Carbon\Carbon;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller
 {
@@ -28,10 +30,19 @@ class TaskController extends Controller
         $dailyLimit = $user->effective_daily_task_limit;
         $remainingTasks = max(0, $dailyLimit - $completedTodayCount);
 
-        // Reward per task (respects referral level / package setting, fallback Rs 7)
-        $level = $user->referral_level ?? 0;
-        $packageReward = optional(optional($user->activePackage)->package)->reward_per_task ?? 7.00;
-        $rewardPerTask = (float) Setting::get("ad_reward_level_{$level}", $packageReward);
+        // Check if this user is on their very first task with the Rs. 50 Joining Bonus
+        $isFirstTaskBonus = $user->isEligibleForJoiningBonus();
+
+        if ($isFirstTaskBonus) {
+            $rewardPerTask = 5.00; // First task earning is Rs. 5
+            $joiningBonusAmount = 50.00;
+        } else {
+            // Normal 2nd+ task rate
+            $level = $user->referral_level ?? 0;
+            $packageReward = optional(optional($user->activePackage)->package)->reward_per_task ?? 7.00;
+            $rewardPerTask = (float) Setting::get("ad_reward_level_{$level}", $packageReward);
+            $joiningBonusAmount = 0.00;
+        }
 
         $completedTaskIds = TaskLog::where('user_id', $user->id)
             ->where('completed_date', $today)
@@ -49,7 +60,9 @@ class TaskController extends Controller
             'rewardPerTask',
             'remainingTasks',
             'completedTaskIds',
-            'isPlanExpired'
+            'isPlanExpired',
+            'isFirstTaskBonus',
+            'joiningBonusAmount'
         ));
     }
 
@@ -73,11 +86,10 @@ class TaskController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Daily task limit reached.'], 403);
         }
 
-        // Save server-side start timestamp in session
         session(["task_started_at_{$task->id}" => now()->timestamp]);
 
         return response()->json([
-            'status' => 'started',
+            'status'       => 'started',
             'wait_seconds' => 15,
         ]);
     }
@@ -117,40 +129,61 @@ class TaskController extends Controller
             return redirect()->route('tasks.index')->with('error', 'Please open the task link and wait at least 15 seconds before claiming your reward.');
         }
 
-        // Clear session timer so it cannot be reused
+        // Clear session timer immediately
         session()->forget("task_started_at_{$task->id}");
 
-        // 5. Fetch Reward based on User's Referral Level
-        $level = $user->referral_level ?? 0;
-        $packageReward = optional(optional($user->activePackage)->package)->reward_per_task ?? 7.00;
-        $rewardAmount = (float) Setting::get("ad_reward_level_{$level}", $packageReward);
+        // 5. Atomic database transaction with row lock to prevent duplicate bonus credits
+        $message = DB::transaction(function () use ($user, $task, $today) {
+            $lockedUser = User::where('id', $user->id)->lockForUpdate()->first();
+            $wallet = $lockedUser->wallet()->lockForUpdate()->first();
+            $userPackageId = optional($lockedUser->activePackage)->id;
 
-        // 6. Credit User Personal Withdrawable Balance & Wallet
-        $wallet = $user->wallet;
-        $wallet->main_balance += $rewardAmount;
-        $wallet->withdrawable_balance += $rewardAmount;
-        $wallet->task_earnings += $rewardAmount;
-        $wallet->save();
+            $hasAnyPreviousTask = TaskLog::where('user_id', $lockedUser->id)->exists();
+            $isFirstTaskWithBonus = (bool) $lockedUser->joining_bonus_eligible
+                && !(bool) $lockedUser->joining_bonus_claimed
+                && !$hasAnyPreviousTask;
 
-        $userPackageId = optional($user->activePackage)->id;
+           if ($isFirstTaskWithBonus) {
+                // First task for new user: Rs. 50 Joining Bonus + Rs. 5 First Task = Rs. 55
+                $joiningBonus = 50.00;
+                $firstTaskReward = 5.00;
+                $totalCredit = $joiningBonus + $firstTaskReward; // Rs. 55.00
 
-        // 7. Log the Task Completion
-        TaskLog::create([
-            'user_id'         => $user->id,
-            'task_id'         => $task->id,
-            'user_package_id' => $userPackageId,
-            'reward_earned'   => $rewardAmount,
-            'completed_date'  => $today,
-        ]);
+                $wallet->main_balance += $totalCredit;
+                $wallet->withdrawable_balance += $totalCredit; // <-- Fixes "Available: Rs 0.00" on /withdraw
+                $wallet->rewards_balance += $joiningBonus;
+                $wallet->referral_earnings += $joiningBonus;   // <-- Ensures /rewards Total shows Rs 55.00
+                $wallet->task_earnings += $firstTaskReward;
+                $wallet->save();
 
-        // 8. Create Transaction Record
-        Transaction::create([
-            'user_id'     => $user->id,
-            'type'        => 'task_reward',
-            'amount'      => $rewardAmount,
-            'description' => "Completed task: {$task->title} (Level {$level} rate)",
-        ]);
+            // 2nd+ task (or existing users): Normal task rate
+            $level = $lockedUser->referral_level ?? 0;
+            $packageReward = optional(optional($lockedUser->activePackage)->package)->reward_per_task ?? 7.00;
+            $rewardAmount = (float) Setting::get("ad_reward_level_{$level}", $packageReward);
 
-        return redirect()->route('tasks.index')->with('success', "Task claimed! Rs {$rewardAmount} added to your withdrawable balance.");
+            $wallet->main_balance += $rewardAmount;
+            $wallet->withdrawable_balance += $rewardAmount;
+            $wallet->task_earnings += $rewardAmount;
+            $wallet->save();
+
+            TaskLog::create([
+                'user_id'         => $lockedUser->id,
+                'task_id'         => $task->id,
+                'user_package_id' => $userPackageId,
+                'reward_earned'   => $rewardAmount,
+                'completed_date'  => $today,
+            ]);
+
+            Transaction::create([
+                'user_id'     => $lockedUser->id,
+                'type'        => 'task_reward',
+                'amount'      => $rewardAmount,
+                'description' => "Completed task: {$task->title} (Level {$level} rate)",
+            ]);
+
+            return "Task claimed! Rs {$rewardAmount} added to your balance.";
+        });
+
+        return redirect()->route('tasks.index')->with('success', $message);
     }
 }

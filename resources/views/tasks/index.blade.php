@@ -8,6 +8,19 @@
     <div class="space-y-3 pt-1 pb-6">
 
         @if ($isPlanExpired ?? false)
+            @if ($isFirstTaskBonus ?? false)
+                <div class="p-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl shadow-md space-y-1">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-gift text-amber-300 text-sm"></i>
+                        <h4 class="text-xs font-black uppercase tracking-wide">New User Welcome Bonus Active</h4>
+                    </div>
+                    <p class="text-[11px] text-white/90 leading-relaxed">
+                        Complete and claim your first task to receive <strong>Rs. 50 Joining Bonus + Rs. 5 Task Earning (Rs.
+                            55 total)</strong> directly in your Main Wallet!
+                    </p>
+                </div>
+            @endif
+
             <div class="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center justify-between gap-3">
                 <div class="space-y-0.5">
                     <h4 class="text-xs font-black text-rose-700">Your Package Has Expired</h4>
@@ -173,7 +186,7 @@
                             <!-- 1. Initial Play Button (Opens link in new tab & starts 15s timer) -->
                             <a href="{{ $taskUrl }}" target="_blank" rel="noopener noreferrer"
                                 id="play-btn-{{ $t->id }}"
-                                onclick="startTaskTimer({{ $t->id }}, '{{ route('tasks.start', $t->id) }}', {{ $rewardPerTask }})"
+                                onclick="startTaskTimer({{ $t->id }}, '{{ route('tasks.start', $t->id) }}', {{ $isFirstTaskBonus ?? false ? 55 : $rewardPerTask }})"
                                 style="background: linear-gradient(135deg, #00c6ff 0%, #0072ff 50%, #7c3aed 100%);"
                                 class="w-12 h-12 rounded-full text-white flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-transform"
                                 title="Open Task Link">
@@ -193,7 +206,11 @@
                                 @csrf
                                 <button type="submit"
                                     class="px-3.5 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-md active:scale-95 transition whitespace-nowrap">
-                                    Claim Rs {{ number_format($rewardPerTask, 0) }}
+                                    @if ($isFirstTaskBonus ?? false)
+                                        Claim Rs 55 (Rs 5 + Rs 50 Bonus)
+                                    @else
+                                        Claim Rs {{ number_format($rewardPerTask, 0) }}
+                                    @endif
                                 </button>
                             </form>
                         @else
