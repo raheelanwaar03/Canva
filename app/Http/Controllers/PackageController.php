@@ -81,6 +81,15 @@ class PackageController extends Controller
             'screenshot.max'      => 'The screenshot size must not exceed 5MB.',
         ]);
 
+        $hasPending = \App\Models\PackagePayment::where('user_id', auth()->id())
+            ->where('status', 'pending')
+            ->exists();
+
+        if ($hasPending) {
+            return redirect()->route('packages.pending')
+                ->with('error', 'You already have a pending payment under verification. Please wait for admin approval.');
+        }
+
         $activeSub = auth()->user()?->activePackage;
         $isUpgrade = false;
         $amountToPay = $package->price;
