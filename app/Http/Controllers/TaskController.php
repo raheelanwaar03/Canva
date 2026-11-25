@@ -143,18 +143,47 @@ class TaskController extends Controller
                 && !(bool) $lockedUser->joining_bonus_claimed
                 && !$hasAnyPreviousTask;
 
-           if ($isFirstTaskWithBonus) {
+            if ($isFirstTaskWithBonus) {
                 // First task for new user: Rs. 50 Joining Bonus + Rs. 5 First Task = Rs. 55
                 $joiningBonus = 50.00;
                 $firstTaskReward = 5.00;
                 $totalCredit = $joiningBonus + $firstTaskReward; // Rs. 55.00
 
                 $wallet->main_balance += $totalCredit;
-                $wallet->withdrawable_balance += $totalCredit; // <-- Fixes "Available: Rs 0.00" on /withdraw
+                $wallet->withdrawable_balance += $totalCredit;
                 $wallet->rewards_balance += $joiningBonus;
-                $wallet->referral_earnings += $joiningBonus;   // <-- Ensures /rewards Total shows Rs 55.00
+                $wallet->referral_earnings += $joiningBonus;
                 $wallet->task_earnings += $firstTaskReward;
                 $wallet->save();
+
+                // Permanently mark joining bonus as claimed so it can never be credited again
+                $lockedUser->joining_bonus_claimed = true;
+                $lockedUser->save();
+
+                TaskLog::create([
+                    'user_id'         => $lockedUser->id,
+                    'task_id'         => $task->id,
+                    'user_package_id' => $userPackageId,
+                    'reward_earned'   => $firstTaskReward,
+                    'completed_date'  => $today,
+                ]);
+
+                Transaction::create([
+                    'user_id'     => $lockedUser->id,
+                    'type'        => 'referral_bonus',
+                    'amount'      => $joiningBonus,
+                    'description' => 'One-time New User Joining Bonus credited on first task claim',
+                ]);
+
+                Transaction::create([
+                    'user_id'     => $lockedUser->id,
+                    'type'        => 'task_reward',
+                    'amount'      => $firstTaskReward,
+                    'description' => "First task completed: {$task->title}",
+                ]);
+
+                return 'Congratulations! Rs 50 Joining Bonus + Rs 5 First Task Earning (Rs 55 total) added to your Main Wallet.';
+            }
 
             // 2nd+ task (or existing users): Normal task rate
             $level = $lockedUser->referral_level ?? 0;
