@@ -86,6 +86,7 @@ Route::middleware(['has_active_package'])->group(function () {
 
     // Advertising Tasks & Timer Verification
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+    Route::post('/tasks/{task}/start', [TaskController::class, 'start'])->name('tasks.start');
     Route::get('/tasks/{task}/view', [TaskController::class, 'view'])->name('tasks.view');
     Route::post('/tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
 
@@ -117,5 +118,4 @@ Route::middleware(['has_active_package'])->group(function () {
     // Complaint Box
     Route::get('/complaints', [ComplaintController::class, 'index'])->name('complaints.index');
     Route::post('/complaints', [ComplaintController::class, 'store'])->name('complaints.store');
-
 });
