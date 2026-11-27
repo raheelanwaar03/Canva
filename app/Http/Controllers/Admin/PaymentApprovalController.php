@@ -62,10 +62,14 @@ class PaymentApprovalController extends Controller
 
             // 1. Mark payment as approved
             $payment->update([
-                'status' => 'approved',
+                'status'      => 'approved',
                 'reviewed_by' => auth()->id(),
                 'reviewed_at' => $now,
             ]);
+
+            if ($user) {
+                $user->update(['status' => 'active']);
+            }
 
             // 2. Expire any previous subscription
             $previousSub = UserPackage::where('user_id', $user->id)

@@ -20,6 +20,20 @@ use Illuminate\Support\Facades\Hash;
 class UserManagementController extends Controller
 {
     /**
+     * Reusable scope: strictly users whose account/plan has been approved by Admin.
+     */
+    private function applyApprovedFilter($query)
+    {
+        return $query->where(function ($q) {
+            $q->whereHas('packagePayments', function ($sub) {
+                $sub->whereIn('status', ['approved', 'active', 1, '1']);
+            })->orWhereHas('packages', function ($sub) {
+                $sub->whereIn('status', ['active', 'upgraded', 'expired']);
+            });
+        });
+    }
+
+    /**
      * List all users with status tabs & search support
      */
     public function index(Request $request)
@@ -30,19 +44,19 @@ class UserManagementController extends Controller
             ->where('role', 'user');
 
         if ($status === 'approved') {
-            $query->whereHas('packages', function ($q) {
-                $q->whereIn('status', ['active', 'upgraded']);
-            });
+            $this->applyApprovedFilter($query);
         } elseif ($status === 'pending') {
             $query->whereHas('packagePayments', function ($q) {
-                $q->where('status', 'pending');
-            });
+                $q->whereIn('status', ['pending', 0, '0']);
+            })->whereDoesntHave('packagePayments', function ($q) {
+                $q->whereIn('status', ['approved', 'active', 1, '1']);
+            })->whereDoesntHave('packages');
         } elseif ($status === 'rejected') {
             $query->whereHas('packagePayments', function ($q) {
-                $q->where('status', 'rejected');
-            })->whereDoesntHave('packages', function ($q) {
-                $q->where('status', 'active');
-            });
+                $q->whereIn('status', ['rejected', 2, '2']);
+            })->whereDoesntHave('packagePayments', function ($q) {
+                $q->whereIn('status', ['approved', 'active', 1, '1']);
+            })->whereDoesntHave('packages');
         }
 
         $users = $query->latest()->get();
@@ -185,18 +199,18 @@ class UserManagementController extends Controller
     public function update(Request $request, User $user)
     {
         $request->validate([
-            'name'             => ['required', 'string', 'max:255'],
-            'email'            => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
-            'phone'            => ['nullable', 'string', 'max:50'],
-            'referral_code'    => ['required', 'string', 'max:50', 'unique:users,referral_code,' . $user->id],
-            'referred_by'      => ['nullable', 'exists:users,id'],
-            'status'           => ['required', 'in:active,pending,banned'],
-            'custom_level'     => ['nullable', 'integer', 'min:0', 'max:8'],
-            'package_id'       => ['nullable', 'exists:packages,id'],
-            'package_days'     => ['nullable', 'integer', 'min:1', 'max:365'],
-            'main_balance'     => ['nullable', 'numeric', 'min:0'],
-            'rewards_balance'  => ['nullable', 'numeric', 'min:0'],
-            'task_earnings'    => ['nullable', 'numeric', 'min:0'],
+            'name'              => ['required', 'string', 'max:255'],
+            'email'             => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'phone'             => ['nullable', 'string', 'max:50'],
+            'referral_code'     => ['required', 'string', 'max:50', 'unique:users,referral_code,' . $user->id],
+            'referred_by'       => ['nullable', 'exists:users,id'],
+            'status'            => ['required', 'in:active,pending,banned'],
+            'custom_level'      => ['nullable', 'integer', 'min:0', 'max:8'],
+            'package_id'        => ['nullable', 'exists:packages,id'],
+            'package_days'      => ['nullable', 'integer', 'min:1', 'max:365'],
+            'main_balance'      => ['nullable', 'numeric', 'min:0'],
+            'rewards_balance'   => ['nullable', 'numeric', 'min:0'],
+            'task_earnings'     => ['nullable', 'numeric', 'min:0'],
             'referral_earnings' => ['nullable', 'numeric', 'min:0'],
         ]);
 
@@ -268,7 +282,7 @@ class UserManagementController extends Controller
     {
         $request->validate([
             'amount' => 'required|numeric|min:0.01',
-            'type'   => 'required|in:add,subtract', // or whatever form inputs you have
+            'type'   => 'required|in:add,subtract',
             'remark' => 'nullable|string|max:255',
         ]);
 
@@ -292,11 +306,10 @@ class UserManagementController extends Controller
             $wallet->decrement('withdrawable_balance', min($wallet->withdrawable_balance, $amount));
         }
 
-        // Use 'referral_bonus' (valid ENUM value) and explain the adjustment in description:
         Transaction::create([
             'user_id'      => $user->id,
             'amount'       => $amount,
-            'type'         => 'referral_bonus', // <--- Uses valid ENUM
+            'type'         => 'referral_bonus',
             'balance_type' => $isAdd ? 'credit' : 'debit',
             'description'  => "Admin balance adjustment: " . ($request->remark ?: ($isAdd ? 'Added by admin' : 'Deducted by admin')),
         ]);
@@ -304,17 +317,13 @@ class UserManagementController extends Controller
         return back()->with('success', 'User balance adjusted successfully!');
     }
 
-
     public function impersonate(User $user)
     {
         if ($user->role === 'admin') {
             return back()->with('error', 'Cannot impersonate another administrator.');
         }
 
-        // Clear any leftover impersonation session keys so no admin trace remains
         session()->forget(['impersonator_id', 'impersonate', 'admin_id']);
-
-        // Log in directly as the standard user
         Auth::login($user);
 
         return redirect()->route('dashboard');
@@ -348,58 +357,58 @@ class UserManagementController extends Controller
     public function pending(Request $request)
     {
         $users = User::where('role', 'user')
-            ->where(function ($q) {
-                $q->where('status', 'pending')
-                    ->orWhereHas('packagePayments', function ($sub) {
-                        $sub->where('status', 'pending');
-                    });
+            ->whereHas('packagePayments', function ($sub) {
+                $sub->whereIn('status', ['pending', 0, '0']);
             })
-            ->with(['referrer', 'activePackage.package', 'packagePayments'])
+            ->whereDoesntHave('packagePayments', function ($sub) {
+                $sub->whereIn('status', ['approved', 'active', 1, '1']);
+            })
+            ->whereDoesntHave('packages')
+            ->with(['wallet', 'referrer', 'activePackage.package', 'packagePayments'])
             ->latest()
             ->get();
 
         return view('admin.users.index', [
             'users'     => $users,
             'pageTitle' => 'Pending Users',
-            'status'    => 'pending'
+            'status'    => 'pending',
         ]);
     }
 
     public function approved(Request $request)
     {
-        $users = User::where('role', 'user')
-            ->where(function ($q) {
-                $q->whereIn('status', ['active', 'approved'])
-                    ->orWhereHas('activePackage');
-            })
-            ->with(['referrer', 'activePackage.package', 'packagePayments'])
-            ->latest()
-            ->get();
+        $query = User::where('role', 'user')
+            ->with(['wallet', 'referrer', 'activePackage.package', 'packagePayments']);
+
+        $this->applyApprovedFilter($query);
+
+        $users = $query->latest()->get();
 
         return view('admin.users.index', [
             'users'     => $users,
             'pageTitle' => 'Approved Users',
-            'status'    => 'approved'
+            'status'    => 'approved',
         ]);
     }
 
     public function rejected(Request $request)
     {
         $users = User::where('role', 'user')
-            ->where(function ($q) {
-                $q->where('status', 'rejected')
-                    ->orWhereHas('packagePayments', function ($sub) {
-                        $sub->where('status', 'rejected');
-                    });
+            ->whereHas('packagePayments', function ($sub) {
+                $sub->whereIn('status', ['rejected', 2, '2']);
             })
-            ->with(['referrer', 'activePackage.package', 'packagePayments'])
+            ->whereDoesntHave('packagePayments', function ($sub) {
+                $sub->whereIn('status', ['approved', 'active', 1, '1']);
+            })
+            ->whereDoesntHave('packages')
+            ->with(['wallet', 'referrer', 'activePackage.package', 'packagePayments'])
             ->latest()
             ->get();
 
         return view('admin.users.index', [
             'users'     => $users,
             'pageTitle' => 'Rejected Users',
-            'status'    => 'rejected'
+            'status'    => 'rejected',
         ]);
     }
 
@@ -413,12 +422,10 @@ class UserManagementController extends Controller
             'new_password.confirmed' => 'Password confirmation does not match.',
         ]);
 
-        // Securely hash and update password (never store or display plain text)
         $user->update([
             'password' => Hash::make($request->new_password),
         ]);
 
-        // Record in Admin Activity Log
         AdminActivityLog::create([
             'admin_id'       => auth()->id(),
             'target_user_id' => $user->id,
@@ -430,26 +437,24 @@ class UserManagementController extends Controller
         return back()->with('success', "Password for {$user->name} has been securely updated.");
     }
 
-    // Today
-
     public function todayApproved()
     {
         $todayStart = \Carbon\Carbon::now('Asia/Karachi')->startOfDay();
         $todayEnd   = \Carbon\Carbon::now('Asia/Karachi')->endOfDay();
 
-        $approvedUserIds = \App\Models\PackagePayment::whereIn('status', ['approved', 'active', 1, '1'])
-            ->whereBetween('updated_at', [$todayStart, $todayEnd])
+        $approvedUserIds = PackagePayment::whereIn('status', ['approved', 'active', 1, '1'])
+            ->where(function ($q) use ($todayStart, $todayEnd) {
+                $q->whereBetween('reviewed_at', [$todayStart, $todayEnd])
+                    ->orWhere(function ($sub) use ($todayStart, $todayEnd) {
+                        $sub->whereNull('reviewed_at')
+                            ->whereBetween('updated_at', [$todayStart, $todayEnd]);
+                    });
+            })
             ->pluck('user_id')
             ->unique();
 
         $users = User::where('role', 'user')
-            ->where(function ($q) use ($approvedUserIds, $todayStart, $todayEnd) {
-                $q->whereIn('id', $approvedUserIds)
-                    ->orWhere(function ($sub) use ($todayStart, $todayEnd) {
-                        $sub->whereIn('status', ['active', 'approved'])
-                            ->whereBetween('updated_at', [$todayStart, $todayEnd]);
-                    });
-            })
+            ->whereIn('id', $approvedUserIds)
             ->with(['wallet', 'referrer', 'activePackage.package', 'packagePayments'])
             ->latest('updated_at')
             ->get();
