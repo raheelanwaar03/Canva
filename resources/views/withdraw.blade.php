@@ -5,7 +5,7 @@
 @endphp
 
 @section('content')
-    <div class="space-y-4 pt-1">
+    <div class="space-y-4 pt-1 pb-6">
 
         <!-- Canva ADS Branding Circle -->
         <div class="flex flex-col items-center">
@@ -30,7 +30,7 @@
         @endif
 
         <!-- Withdrawal Form -->
-        <form action="{{ route('withdraw.store') }}" method="POST" class="space-y-3.5">
+        <form id="withdrawForm" action="{{ route('withdraw.store') }}" method="POST" class="space-y-3.5">
             @csrf
 
             <!-- Payment Method -->
@@ -44,7 +44,7 @@
                     </div>
                     <select name="method" required
                         class="w-full bg-transparent border-0 text-xs text-slate-800 font-semibold focus:outline-none p-2">
-                        <option value="" disabled selected>Select One</option>
+                        <option value="" disabled {{ old('method') ? '' : 'selected' }}>Select One</option>
                         <option value="Easypaisa" {{ old('method') == 'Easypaisa' ? 'selected' : '' }}>Easypaisa</option>
                         <option value="JazzCash" {{ old('method') == 'JazzCash' ? 'selected' : '' }}>JazzCash</option>
                     </select>
@@ -73,23 +73,54 @@
                 </div>
             </div>
 
-            <!-- Account Title & Number -->
+            <!-- 1. Username -->
             <div class="glass-card-item rounded-2xl p-4">
-                <label class="block text-xs font-bold text-slate-700 mb-2">Account Title & Number</label>
+                <label class="block text-xs font-bold text-slate-700 mb-2">Username</label>
+                <div
+                    class="flex items-center bg-white/80 border border-slate-200 rounded-xl px-3 py-1 focus-within:ring-2 focus-within:ring-indigo-400">
+                    <div
+                        class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center mr-2 flex-shrink-0">
+                        <i class="fa-solid fa-at text-sm"></i>
+                    </div>
+                    <input type="text" name="username" value="{{ old('username', auth()->user()->name) }}"
+                        placeholder="Enter your platform username" required
+                        class="w-full bg-transparent border-0 text-xs text-slate-800 font-semibold focus:outline-none p-2">
+                </div>
+            </div>
+
+            <!-- 2. Account Title -->
+            <div class="glass-card-item rounded-2xl p-4">
+                <label class="block text-xs font-bold text-slate-700 mb-2">Account Title</label>
                 <div
                     class="flex items-center bg-white/80 border border-slate-200 rounded-xl px-3 py-1 focus-within:ring-2 focus-within:ring-indigo-400">
                     <div
                         class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center mr-2 flex-shrink-0">
                         <i class="fa-solid fa-user-check text-sm"></i>
                     </div>
-                    <input type="text" name="account_details" value="{{ old('account_details') }}"
-                        placeholder="e.g. Ali Khan - 03001234567" required
+                    <input type="text" name="account_title" value="{{ old('account_title') }}"
+                        placeholder="Enter the account holder’s name" required
+                        class="w-full bg-transparent border-0 text-xs text-slate-800 font-semibold focus:outline-none p-2">
+                </div>
+            </div>
+
+            <!-- 3. Account Number -->
+            <div class="glass-card-item rounded-2xl p-4">
+                <label class="block text-xs font-bold text-slate-700 mb-2">Account Number</label>
+                <div
+                    class="flex items-center bg-white/80 border border-slate-200 rounded-xl px-3 py-1 focus-within:ring-2 focus-within:ring-indigo-400">
+                    <div
+                        class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mr-2 flex-shrink-0">
+                        <i class="fa-solid fa-hashtag text-sm"></i>
+                    </div>
+                    <input type="text" inputmode="numeric" name="account_number" value="{{ old('account_number') }}"
+                        placeholder="Enter the Easypaisa/JazzCash account number" required
                         class="w-full bg-transparent border-0 text-xs text-slate-800 font-semibold focus:outline-none p-2">
                 </div>
             </div>
 
             <!-- Submit Button -->
-            <button type="submit" style="background: linear-gradient(90deg, #00c6ff 0%, #0072ff 50%, #9b51e0 100%);"
+            <button type="submit" id="withdrawSubmitBtn"
+                style="background: linear-gradient(90deg, #00c6ff 0%, #0072ff 50%, #9b51e0 100%);"
                 class="w-full text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg hover:opacity-95 transition flex items-center justify-center space-x-2 text-sm tracking-wide">
                 <span>Submit</span>
                 <i class="fa-solid fa-arrow-right text-xs"></i>
@@ -97,4 +128,25 @@
         </form>
 
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('withdrawForm');
+            const btn = document.getElementById('withdrawSubmitBtn');
+
+            if (form && btn) {
+                form.addEventListener('submit', function(e) {
+                    if (btn.dataset.submitted === 'true') {
+                        e.preventDefault();
+                        return false;
+                    }
+                    btn.dataset.submitted = 'true';
+                    btn.disabled = true;
+                    btn.classList.add('opacity-60', 'cursor-not-allowed');
+                    btn.innerHTML =
+                    '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Submitting Request...';
+                });
+            }
+        });
+    </script>
 @endsection

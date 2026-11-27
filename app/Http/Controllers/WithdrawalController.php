@@ -45,20 +45,28 @@ class WithdrawalController extends Controller
         $minWithdrawal = ($withdrawalCount < 2) ? 30 : 500;
 
         $request->validate([
-            'method' => ['required', 'in:Easypaisa,JazzCash'],
-            'amount' => ['required', 'numeric', 'min:' . $minWithdrawal],
-            'account_details' => ['required', 'string', 'max:255'],
+            'method'         => ['required', 'in:Easypaisa,JazzCash'],
+            'amount'         => ['required', 'numeric', 'min:' . $minWithdrawal],
+            'username'       => ['required', 'string', 'max:100'],
+            'account_title'  => ['required', 'string', 'max:150'],
+            'account_number' => ['required', 'string', 'max:50'],
         ], [
-            'amount.min' => "The minimum withdrawal amount for request #" . ($withdrawalCount + 1) . " is Rs {$minWithdrawal}."
+            'amount.min'              => "The minimum withdrawal amount for request #" . ($withdrawalCount + 1) . " is Rs {$minWithdrawal}.",
+            'username.required'       => 'Please enter your platform username.',
+            'account_title.required'  => 'Please enter the account holder’s name.',
+            'account_number.required' => 'Please enter your Easypaisa/JazzCash account number.',
         ]);
 
         $amount = (float) $request->amount;
+        $username = trim($request->username);
+        $accountTitle = trim($request->account_title);
+        $accountNumber = trim($request->account_number);
 
-        return DB::transaction(function () use ($user, $amount, $request) {
+        return DB::transaction(function () use ($user, $amount, $request, $username, $accountTitle, $accountNumber) {
             $wallet = Wallet::where('user_id', $user->id)->lockForUpdate()->first();
 
-            if ($wallet->withdrawable_balance < $amount) {
-                return back()->withErrors(['amount' => 'Insufficient Main Balance.']);
+            if (!$wallet || $wallet->withdrawable_balance < $amount) {
+                return back()->withInput()->withErrors(['amount' => 'Insufficient Main Balance.']);
             }
 
             // Deduct immediately from Main Balance & Withdrawable Balance
@@ -66,19 +74,22 @@ class WithdrawalController extends Controller
             $wallet->decrement('withdrawable_balance', $amount);
 
             $withdrawal = Withdrawal::create([
-                'user_id' => $user->id,
-                'amount' => $amount,
-                'method' => $request->method,
-                'account_details' => $request->account_details,
-                'status' => 'pending',
+                'user_id'         => $user->id,
+                'amount'          => $amount,
+                'method'          => $request->method,
+                'username'        => $username,
+                'account_title'   => $accountTitle,
+                'account_number'  => $accountNumber,
+                'account_details' => "{$accountTitle} - {$accountNumber}", // Legacy column fallback
+                'status'          => 'pending',
             ]);
 
             Transaction::create([
-                'user_id' => $user->id,
-                'amount' => $amount,
-                'type' => 'withdraw',
+                'user_id'      => $user->id,
+                'amount'       => $amount,
+                'type'         => 'withdraw',
                 'balance_type' => 'debit',
-                'description' => "Withdrawal request ({$request->method})",
+                'description'  => "Withdrawal request ({$request->method} - {$accountTitle} / {$accountNumber})",
                 'reference_id' => $withdrawal->id,
             ]);
 

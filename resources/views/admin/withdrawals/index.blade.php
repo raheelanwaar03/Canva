@@ -53,13 +53,17 @@
             $('#withdrawalsDataTable').DataTable({
                 responsive: true,
                 pageLength: 15,
-                order: [[0, 'desc']],
-                columnDefs: [
-                    { orderable: false, targets: [5] } // Disable sorting on Action column
+                order: [
+                    [0, 'desc']
+                ],
+                columnDefs: [{
+                        orderable: false,
+                        targets: [5]
+                    } // Disable sorting on Action column
                 ],
                 language: {
                     search: "",
-                    searchPlaceholder: "🔍 Search user, email, TID, account..."
+                    searchPlaceholder: "🔍 Search user, username, title, number..."
                 }
             });
         });
@@ -73,24 +77,28 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h1 class="text-2xl font-black text-slate-800 tracking-tight">{{ $pageTitle }}</h1>
-                <p class="text-xs font-semibold text-slate-400 mt-1">Review recipient payment method and account details before transfer.</p>
+                <p class="text-xs font-semibold text-slate-400 mt-1">Review recipient payment method, username, account
+                    title, and account number before transfer.</p>
             </div>
             <div class="flex items-center space-x-3">
-                <span class="px-4 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-black rounded-2xl shadow-sm">
+                <span
+                    class="px-4 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-black rounded-2xl shadow-sm">
                     {{ count($withdrawals) }} Total Records
                 </span>
             </div>
         </div>
 
         @if (session('success'))
-            <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-2xl text-xs font-bold flex items-center space-x-2 shadow-sm">
+            <div
+                class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-2xl text-xs font-bold flex items-center space-x-2 shadow-sm">
                 <i class="fa-solid fa-circle-check text-emerald-500 text-sm"></i>
                 <span>{{ session('success') }}</span>
             </div>
         @endif
 
         @if (session('error'))
-            <div class="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs font-bold flex items-center space-x-2 shadow-sm">
+            <div
+                class="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs font-bold flex items-center space-x-2 shadow-sm">
                 <i class="fa-solid fa-circle-exclamation text-rose-500 text-sm"></i>
                 <span>{{ session('error') }}</span>
             </div>
@@ -102,12 +110,14 @@
             <!-- Card Header & Navigation Sub-Tabs -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-5">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm font-black shadow-inner">
+                    <div
+                        class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm font-black shadow-inner">
                         <i class="fa-solid fa-money-bill-transfer"></i>
                     </div>
                     <div>
                         <h3 class="text-sm font-black text-slate-800">Payout Queue</h3>
-                        <p class="text-[11px] font-semibold text-slate-400">Search users and process transfers instantly.</p>
+                        <p class="text-[11px] font-semibold text-slate-400">Search users and process transfers instantly.
+                        </p>
                     </div>
                 </div>
 
@@ -135,25 +145,28 @@
             <!-- Table with Live DataTables Search -->
             <div class="overflow-x-auto">
                 <table id="withdrawalsDataTable" class="w-full text-left text-xs text-slate-600" style="width:100%">
-                    <thead class="bg-slate-50 border-b border-slate-100 text-slate-400 uppercase text-[10px] font-black tracking-wider">
+                    <thead
+                        class="bg-slate-50 border-b border-slate-100 text-slate-400 uppercase text-[10px] font-black tracking-wider">
                         <tr>
                             <th class="px-5 py-3.5">#ID</th>
                             <th class="px-5 py-3.5">User</th>
                             <th class="px-5 py-3.5">Amount</th>
-                            <th class="px-5 py-3.5">Method & Account (Title & Number)</th>
+                            <th class="px-5 py-3.5">Method & Recipient Details</th>
                             <th class="px-5 py-3.5">Status</th>
                             <th class="px-5 py-3.5 text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
-                        @foreach($withdrawals as $withdrawal)
+                        @foreach ($withdrawals as $withdrawal)
                             @php
-                                $rawDetails = $withdrawal->account_details ??
-                                    ($withdrawal->account_number ??
-                                        ($withdrawal->account ??
-                                            (($withdrawal->account_name
-                                                ? $withdrawal->account_name . ' - ' . ($withdrawal->account_number ?? '')
-                                                : null) ?? 'N/A')));
+                                $hasSeparateFields =
+                                    !empty($withdrawal->username) ||
+                                    !empty($withdrawal->account_title) ||
+                                    !empty($withdrawal->account_number);
+                                $displayUsername = $withdrawal->username ?? ($withdrawal->user->name ?? 'N/A');
+                                $displayTitle = $withdrawal->account_title ?? 'N/A';
+                                $displayNumber = $withdrawal->account_number ?? 'N/A';
+                                $legacyDetails = $withdrawal->account_details ?? 'N/A';
 
                                 $userTeamCount = optional($withdrawal->user)->referrals
                                     ? $withdrawal->user->referrals()->count()
@@ -180,29 +193,54 @@
                                     </div>
                                 </td>
                                 <td class="px-5 py-4">
-                                    <div class="font-bold text-slate-700 flex items-center space-x-1.5">
-                                        <span class="px-2 py-0.5 bg-slate-100 rounded text-[10px] uppercase font-black text-slate-600">
+                                    <div class="font-bold text-slate-700 flex items-center space-x-1.5 mb-1.5">
+                                        <span
+                                            class="px-2 py-0.5 bg-slate-100 rounded text-[10px] uppercase font-black text-slate-600">
                                             {{ $withdrawal->method ?? 'Easypaisa' }}
                                         </span>
                                     </div>
-                                    <div class="font-mono font-extrabold text-indigo-700 text-xs mt-1 bg-indigo-50/60 border border-indigo-100 px-2.5 py-1 rounded-lg inline-block">
-                                        <i class="fa-solid fa-address-card mr-1 text-[10px] text-indigo-400"></i>
-                                        {{ $rawDetails }}
-                                    </div>
+
+                                    @if ($hasSeparateFields)
+                                        <div
+                                            class="space-y-1 text-[11px] bg-indigo-50/50 border border-indigo-100 p-2.5 rounded-xl">
+                                            <div>
+                                                <span class="text-slate-400 font-bold">Username:</span>
+                                                <span class="font-extrabold text-slate-800">{{ $displayUsername }}</span>
+                                            </div>
+                                            <div>
+                                                <span class="text-slate-400 font-bold">Account Title:</span>
+                                                <span class="font-extrabold text-indigo-700">{{ $displayTitle }}</span>
+                                            </div>
+                                            <div>
+                                                <span class="text-slate-400 font-bold">Account Number:</span>
+                                                <span
+                                                    class="font-mono font-black text-emerald-700">{{ $displayNumber }}</span>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <div
+                                            class="font-mono font-extrabold text-indigo-700 text-xs bg-indigo-50/60 border border-indigo-100 px-2.5 py-1 rounded-lg inline-block">
+                                            <i class="fa-solid fa-address-card mr-1 text-[10px] text-indigo-400"></i>
+                                            {{ $legacyDetails }}
+                                        </div>
+                                    @endif
                                 </td>
                                 <td class="px-5 py-4">
                                     @if ($withdrawal->status === 'approved' || $withdrawal->status === 1 || $withdrawal->status === '1')
-                                        <span class="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-xl text-[11px] font-extrabold border border-emerald-100 inline-flex items-center space-x-1">
+                                        <span
+                                            class="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-xl text-[11px] font-extrabold border border-emerald-100 inline-flex items-center space-x-1">
                                             <i class="fa-solid fa-circle-check text-[10px] text-emerald-500"></i>
                                             <span>Paid / Approved</span>
                                         </span>
                                     @elseif($withdrawal->status === 'rejected' || $withdrawal->status === 2 || $withdrawal->status === '2')
-                                        <span class="px-3 py-1 bg-rose-50 text-rose-700 rounded-xl text-[11px] font-extrabold border border-rose-100 inline-flex items-center space-x-1">
+                                        <span
+                                            class="px-3 py-1 bg-rose-50 text-rose-700 rounded-xl text-[11px] font-extrabold border border-rose-100 inline-flex items-center space-x-1">
                                             <i class="fa-solid fa-circle-xmark text-[10px] text-rose-500"></i>
                                             <span>Rejected & Refunded</span>
                                         </span>
                                     @else
-                                        <span class="px-3 py-1 bg-amber-50 text-amber-700 rounded-xl text-[11px] font-extrabold border border-amber-200 inline-flex items-center space-x-1">
+                                        <span
+                                            class="px-3 py-1 bg-amber-50 text-amber-700 rounded-xl text-[11px] font-extrabold border border-amber-200 inline-flex items-center space-x-1">
                                             <i class="fa-solid fa-clock text-[10px] text-amber-500"></i>
                                             <span>Pending Review</span>
                                         </span>
@@ -219,7 +257,9 @@
                                             'team_count' => $userTeamCount,
                                             'amount' => 'Rs ' . number_format($withdrawal->amount, 2),
                                             'method' => $withdrawal->method ?? 'Easypaisa',
-                                            'account_details' => $rawDetails,
+                                            'username' => $displayUsername,
+                                            'account_title' => $hasSeparateFields ? $displayTitle : $legacyDetails,
+                                            'account_number' => $hasSeparateFields ? $displayNumber : 'See Account Title',
                                             'date' => $withdrawal->created_at ? $withdrawal->created_at->format('d M, Y h:i A') : 'N/A',
                                             'impersonate_url' => optional($withdrawal->user)->id
                                                 ? route('admin.users.impersonate', $withdrawal->user->id)
@@ -232,7 +272,9 @@
 
                                     @if ($withdrawal->status === 'pending' || $withdrawal->status === 0 || $withdrawal->status === '0')
                                         <!-- Approve Form -->
-                                        <form method="POST" action="{{ route('admin.withdrawals.approve', $withdrawal->id) }}" class="inline-block">
+                                        <form method="POST"
+                                            action="{{ route('admin.withdrawals.approve', $withdrawal->id) }}"
+                                            class="inline-block">
                                             @csrf
                                             <button type="submit"
                                                 onclick="return confirm('Confirm payout of Rs {{ number_format($withdrawal->amount, 2) }}?');"
@@ -243,7 +285,9 @@
                                         </form>
 
                                         <!-- Reject Form -->
-                                        <form method="POST" action="{{ route('admin.withdrawals.reject', $withdrawal->id) }}" class="inline-block">
+                                        <form method="POST"
+                                            action="{{ route('admin.withdrawals.reject', $withdrawal->id) }}"
+                                            class="inline-block">
                                             @csrf
                                             <button type="submit"
                                                 onclick="return confirm('Reject request and refund Rs {{ number_format($withdrawal->amount, 2) }} to user wallet?');"
@@ -269,17 +313,19 @@
         <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-5">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div class="flex items-center space-x-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm font-black">
+                    <div
+                        class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm font-black">
                         <i class="fa-solid fa-user"></i>
                     </div>
                     <h3 class="text-base font-black text-slate-800">Withdrawal Applicant Details</h3>
                 </div>
-                <button type="button" onclick="closeWithdrawalDetailsModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">×</button>
+                <button type="button" onclick="closeWithdrawalDetailsModal()"
+                    class="text-slate-400 hover:text-slate-600 text-xl font-bold">×</button>
             </div>
 
             <div class="space-y-3 text-xs">
                 <div class="flex justify-between py-1.5 border-b border-slate-50">
-                    <span class="text-slate-400 font-semibold">User:</span>
+                    <span class="text-slate-400 font-semibold">Account User:</span>
                     <span id="wModalUserName" class="font-extrabold text-slate-800"></span>
                 </div>
                 <div class="flex justify-between py-1.5 border-b border-slate-50">
@@ -292,7 +338,8 @@
                 </div>
                 <div class="flex justify-between py-1.5 border-b border-slate-50">
                     <span class="text-slate-400 font-semibold">Total Team Members:</span>
-                    <span id="wModalTeamCount" class="font-black text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-lg"></span>
+                    <span id="wModalTeamCount"
+                        class="font-black text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-lg"></span>
                 </div>
                 <div class="flex justify-between py-1.5 border-b border-slate-50">
                     <span class="text-slate-400 font-semibold">Requested Amount:</span>
@@ -302,9 +349,21 @@
                     <span class="text-slate-400 font-semibold">Payment Gateway:</span>
                     <span id="wModalMethod" class="font-extrabold uppercase text-slate-700"></span>
                 </div>
-                <div class="p-3 bg-indigo-50/60 border border-indigo-100 rounded-2xl">
-                    <span class="text-slate-400 font-semibold block text-[10px] uppercase mb-1">Target Account Title & Number:</span>
-                    <div id="wModalAccountDetails" class="font-mono font-black text-indigo-800 text-sm"></div>
+
+                <!-- Three Separate Verification Fields -->
+                <div class="p-3.5 bg-indigo-50/60 border border-indigo-100 rounded-2xl space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-500 font-bold text-[11px]">1. Platform Username:</span>
+                        <span id="wModalUsername" class="font-extrabold text-slate-800 text-xs"></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-500 font-bold text-[11px]">2. Account Title:</span>
+                        <span id="wModalAccountTitle" class="font-extrabold text-indigo-700 text-xs"></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-500 font-bold text-[11px]">3. Account Number:</span>
+                        <span id="wModalAccountNumber" class="font-mono font-black text-emerald-700 text-sm"></span>
+                    </div>
                 </div>
             </div>
 
@@ -335,7 +394,9 @@
             document.getElementById('wModalTeamCount').innerText = data.team_count + ' Members';
             document.getElementById('wModalAmount').innerText = data.amount;
             document.getElementById('wModalMethod').innerText = data.method;
-            document.getElementById('wModalAccountDetails').innerText = data.account_details;
+            document.getElementById('wModalUsername').innerText = data.username;
+            document.getElementById('wModalAccountTitle').innerText = data.account_title;
+            document.getElementById('wModalAccountNumber').innerText = data.account_number;
 
             if (data.impersonate_url) {
                 document.getElementById('wImpersonateForm').action = data.impersonate_url;
