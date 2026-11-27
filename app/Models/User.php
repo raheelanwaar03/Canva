@@ -221,64 +221,7 @@ class User extends Authenticatable
     /**
      * 15-Day & 7-Day Referral Task Eligibility Rule
      */
-    public function getTaskEligibilityStatus(): array
-    {
-        $activeSub = $this->activePackage;
 
-        if (!$activeSub) {
-            return [
-                'unlocked' => false,
-                'reason' => 'No active package found. Please purchase or upgrade a package.',
-                'days_left' => 0,
-            ];
-        }
-
-        $now = now();
-
-        if ($now->greaterThan($activeSub->expires_at)) {
-            return [
-                'unlocked' => false,
-                'reason' => 'Your 30-day package has expired. Please renew or upgrade.',
-                'days_left' => 0,
-            ];
-        }
-
-        $startedAt = $activeSub->started_at;
-        $daysSinceStart = (int) $startedAt->diffInDays($now);
-
-        // Window 1: First 15 days completely free of referral requirement
-        if ($daysSinceStart < 15) {
-            return [
-                'unlocked' => true,
-                'reason' => 'Active under initial 15-day free period.',
-                'days_left' => 15 - $daysSinceStart,
-            ];
-        }
-
-        // Window 2: After Day 15 -> 7-day rolling window requiring approved referral
-        $sevenDaysAgo = $now->copy()->subDays(7);
-
-        $hasApprovedReferralInWindow = PackagePayment::whereHas('user', function ($query) {
-            $query->where('referred_by', $this->id);
-        })
-            ->where('status', 'approved')
-            ->where('reviewed_at', '>=', $sevenDaysAgo)
-            ->exists();
-
-        if ($hasApprovedReferralInWindow) {
-            return [
-                'unlocked' => true,
-                'reason' => 'Unlocked via approved referral in the last 7 days.',
-                'days_left' => 7,
-            ];
-        }
-
-        return [
-            'unlocked' => false,
-            'reason' => '15-day period ended. You must bring 1 approved direct referral every 7 days to keep tasks unlocked.',
-            'days_left' => 0,
-        ];
-    }
 
     public function refundRequests()
     {
@@ -318,25 +261,87 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if their current plan is still within its active validity period
-     * (used to allow/block daily ad tasks and plan benefits).
+     * 15-Day -> 1 Approved Direct Joining -> 7-Day Repeating Task Lock Cycle
+     * - No package expiry or renewal lock.
+     * - Never stacks a new requirement while the current one is pending.
+     */
+    public function getTaskEligibilityStatus(): array
+    {
+        $activeSub = $this->activePackage;
+
+        if (!$activeSub) {
+            return [
+                'unlocked'  => false,
+                'reason'    => 'No active package found. Please activate a plan to access the Task Room.',
+                'days_left' => 0,
+            ];
+        }
+
+        $now = now();
+        $startedAt = $activeSub->started_at ?? $activeSub->created_at ?? $now;
+
+        // 1. First 15 days: completely unlocked with 0 referral requirement
+        $firstLockAt = $startedAt->copy()->addDays(15);
+
+        if ($now->lt($firstLockAt)) {
+            $daysLeft = max(1, (int) ceil($now->diffInHours($firstLockAt) / 24));
+
+            return [
+                'unlocked'  => true,
+                'reason'    => "Initial 15-day free period active ({$daysLeft} day(s) remaining before first referral requirement).",
+                'days_left' => $daysLeft,
+            ];
+        }
+
+        // 2. Fetch all approved direct referrals chronologically from Day 15 onward
+        $approvedReferrals = PackagePayment::whereHas('user', function ($query) {
+            $query->where('referred_by', $this->id);
+        })
+            ->whereIn('status', ['approved', 'active', 1, '1'])
+            ->orderByRaw('COALESCE(reviewed_at, updated_at) ASC')
+            ->get()
+            ->map(function ($payment) {
+                return $payment->reviewed_at ?? $payment->updated_at;
+            })
+            ->filter()
+            ->values();
+
+        // 3. Walk the cycle step-by-step:
+        // Current lock begins at Day 15. Any 1 approved direct joining at or after $lockStartedAt
+        // immediately unlocks tasks and starts a fresh 7-day countdown from that approval timestamp.
+        $lockStartedAt = $firstLockAt->copy();
+
+        foreach ($approvedReferrals as $approvedAt) {
+            if ($approvedAt->gte($lockStartedAt)) {
+                $cycleEndsAt = $approvedAt->copy()->addDays(7);
+
+                if ($now->lt($cycleEndsAt)) {
+                    $daysLeft = max(1, (int) ceil($now->diffInHours($cycleEndsAt) / 24));
+
+                    return [
+                        'unlocked'  => true,
+                        'reason'    => "Tasks unlocked! {$daysLeft} day(s) left in your current 7-day cycle.",
+                        'days_left' => $daysLeft,
+                    ];
+                }
+
+                // Those 7 days have now passed -> next lock begins when that 7-day cycle ended
+                $lockStartedAt = $cycleEndsAt->copy();
+            }
+        }
+
+        // 4. Current cycle has ended and no approved direct joining has occurred since $lockStartedAt
+        return [
+            'unlocked'  => false,
+            'reason'    => 'Your Task Room is currently locked. Complete 1 approved direct joining to automatically unlock your tasks for the next 7 days.',
+            'days_left' => 0,
+        ];
+    }
+    /**
+     * Plans do not expire (Task Room access is governed exclusively by getTaskEligibilityStatus()).
      */
     public function hasValidUnexpiredPlan(): bool
     {
-        $plan = $this->activePackage;
-
-        if (!$plan) {
-            return false;
-        }
-
-        if ($plan->status === 'expired') {
-            return false;
-        }
-
-        if ($plan->expires_at && now()->greaterThanOrEqualTo($plan->expires_at)) {
-            return false;
-        }
-
-        return true;
+        return $this->hasPurchasedPlan();
     }
 }

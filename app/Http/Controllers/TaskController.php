@@ -17,7 +17,7 @@ class TaskController extends Controller
     {
         $user = auth()->user();
         $today = Carbon::now('Asia/Karachi')->toDateString();
-        $isPlanExpired = !$user->hasValidUnexpiredPlan();
+        $isPlanExpired = false; // Package expiry and renewal removed
 
         $eligibility = $user->getTaskEligibilityStatus();
         $activeSub = $user->activePackage;
@@ -74,8 +74,13 @@ class TaskController extends Controller
         $user = auth()->user();
         $today = Carbon::now('Asia/Karachi')->toDateString();
 
-        if (!$user->hasValidUnexpiredPlan()) {
-            return response()->json(['status' => 'error', 'message' => 'Your package has expired.'], 403);
+        if (!$user->hasPurchasedPlan()) {
+            return response()->json(['status' => 'error', 'message' => 'No active plan found.'], 403);
+        }
+
+        $eligibility = $user->getTaskEligibilityStatus();
+        if (!$eligibility['unlocked']) {
+            return response()->json(['status' => 'error', 'message' => $eligibility['reason']], 403);
         }
 
         $completedTodayCount = TaskLog::where('user_id', $user->id)
@@ -99,9 +104,14 @@ class TaskController extends Controller
         $user = auth()->user();
         $today = Carbon::now('Asia/Karachi')->toDateString();
 
-        // 1. Check plan expiration
-        if (!$user->hasValidUnexpiredPlan()) {
-            return back()->with('error', 'Your package has expired. Please renew or upgrade your plan to continue completing daily tasks.');
+        // 1. Check plan & referral cycle task lock
+        if (!$user->hasPurchasedPlan()) {
+            return redirect()->route('tasks.index')->with('error', 'Please activate a plan first.');
+        }
+
+        $eligibility = $user->getTaskEligibilityStatus();
+        if (!$eligibility['unlocked']) {
+            return redirect()->route('tasks.index')->with('error', $eligibility['reason']);
         }
 
         // 2. Verify daily task limit

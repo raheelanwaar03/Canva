@@ -7,30 +7,16 @@
 @section('content')
     <div class="space-y-3 pt-1 pb-6">
 
-        @if ($isPlanExpired ?? false)
-            @if ($isFirstTaskBonus ?? false)
-                <div class="p-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl shadow-md space-y-1">
-                    <div class="flex items-center space-x-2">
-                        <i class="fa-solid fa-gift text-amber-300 text-sm"></i>
-                        <h4 class="text-xs font-black uppercase tracking-wide">New User Welcome Bonus Active</h4>
-                    </div>
-                    <p class="text-[11px] text-white/90 leading-relaxed">
-                        Complete and claim your first task to receive <strong>Rs. 50 Joining Bonus + Rs. 5 Task Earning (Rs.
-                            55 total)</strong> directly in your Main Wallet!
-                    </p>
+        @if ($isFirstTaskBonus ?? false)
+            <div class="p-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl shadow-md space-y-1">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-gift text-amber-300 text-sm"></i>
+                    <h4 class="text-xs font-black uppercase tracking-wide">New User Welcome Bonus Active</h4>
                 </div>
-            @endif
-
-            <div class="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center justify-between gap-3">
-                <div class="space-y-0.5">
-                    <h4 class="text-xs font-black text-rose-700">Your Package Has Expired</h4>
-                    <p class="text-[11px] text-rose-600 font-medium">Daily task earnings and plan benefits are paused. Renew
-                        or upgrade your plan to resume earning.</p>
-                </div>
-                <a href="{{ route('packages.index') }}"
-                    class="px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-[11px] font-black whitespace-nowrap shadow-sm transition">
-                    Renew Plan →
-                </a>
+                <p class="text-[11px] text-white/90 leading-relaxed">
+                    Complete and claim your first task to receive <strong>Rs. 50 Joining Bonus + Rs. 5 Task Earning (Rs.
+                        55 total)</strong> directly in your Main Wallet!
+                </p>
             </div>
         @endif
 
@@ -47,20 +33,37 @@
             </div>
         @endif
 
-        <!-- Lock Alert Banner (if applicable) -->
+        <!-- Task Lock / Countdown Status Banner -->
         @if (!$eligibility['unlocked'])
-            <div class="bg-gradient-to-r from-rose-500 to-pink-600 rounded-2xl p-4 text-white shadow-lg space-y-1">
+            <div class="bg-gradient-to-r from-rose-500 to-pink-600 rounded-2xl p-4 text-white shadow-lg space-y-2">
                 <div class="flex items-center space-x-2">
                     <i class="fa-solid fa-lock text-base"></i>
-                    <h3 class="font-extrabold text-sm">Tasks Locked</h3>
+                    <h3 class="font-extrabold text-sm">Tasks Locked — Referral Required</h3>
                 </div>
-                <p class="text-[11px] text-white/90 leading-relaxed">{{ $eligibility['reason'] }}</p>
+                <p class="text-[11px] text-white/95 leading-relaxed">{{ $eligibility['reason'] }}</p>
                 @if (!$activeSub)
                     <a href="{{ route('packages.index') }}"
-                        class="inline-block mt-2 px-3 py-1 bg-white text-rose-600 rounded-xl text-xs font-bold shadow-sm">
+                        class="inline-block mt-1 px-3.5 py-1.5 bg-white text-rose-600 rounded-xl text-xs font-bold shadow-sm">
                         Choose Plan →
                     </a>
+                @else
+                    <a href="{{ route('team') }}"
+                        class="inline-flex items-center space-x-1.5 mt-1 px-3.5 py-1.5 bg-white text-rose-600 rounded-xl text-xs font-extrabold shadow-sm">
+                        <i class="fa-solid fa-users text-[11px]"></i>
+                        <span>Invite 1 Direct Member →</span>
+                    </a>
                 @endif
+            </div>
+        @else
+            <div
+                class="bg-indigo-50/90 border border-indigo-100 rounded-2xl px-4 py-2.5 flex items-center justify-between gap-2">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-unlock text-indigo-600 text-xs"></i>
+                    <span class="text-[11px] font-bold text-indigo-900">{{ $eligibility['reason'] }}</span>
+                </div>
+                <span class="px-2.5 py-0.5 rounded-full bg-indigo-600 text-white text-[10px] font-black whitespace-nowrap">
+                    {{ $eligibility['days_left'] }}d Left
+                </span>
             </div>
         @endif
 
@@ -141,11 +144,7 @@
             @forelse($tasks as $index => $t)
                 @php
                     $isDone = in_array($t->id, $completedTaskIds);
-                    $canWatch =
-                        !($isPlanExpired ?? false) &&
-                        $eligibility['unlocked'] &&
-                        !$isDone &&
-                        $completedTodayCount < $dailyLimit;
+                    $canWatch = $eligibility['unlocked'] && !$isDone && $completedTodayCount < $dailyLimit;
                     $svgIllustration = $illustrations[$index % count($illustrations)];
                     $displayTitle = $t->title ?: $defaultTitles[$index % count($defaultTitles)] ?? 'Partner Task';
                     $taskUrl = $t->url ?? ($t->link ?? ($t->ad_url ?? '#'));
